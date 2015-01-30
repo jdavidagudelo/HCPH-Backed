@@ -1,0 +1,107 @@
+package com.artica.telesalud.persona.dao.hibernate;
+
+import java.io.Serializable;
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+
+import com.artica.telesalud.common.data.HibernateDAO;
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.persona.dao.PermissionDAO;
+import com.artica.telesalud.persona.model.impl.PermissionDTO;
+
+public class HibernatePermissionDAO   extends HibernateDAO implements PermissionDAO,
+Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	
+	public List<PermissionDTO> getAll() {
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(PermissionDTO.class);
+
+			@SuppressWarnings("unchecked")
+			List<PermissionDTO> users = criteria.list();
+			tx.commit();
+			return users;
+		} catch (Exception e) {
+			if(tx != null)
+			{
+				tx.rollback();
+			}
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+	}
+
+	
+	public PermissionDTO insert(PermissionDTO permission) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			session.save(permission);
+			tx.commit();
+
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		return permission;
+	}
+
+	
+	public PermissionDTO newBlankPermission() {
+		return new PermissionDTO();
+	}
+
+	
+	public PermissionDTO delete(PermissionDTO permission) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			session.delete(permission);
+			tx.commit();
+
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		return permission;
+	}
+
+	
+	public PermissionDTO update(PermissionDTO permission) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

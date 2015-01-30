@@ -1,0 +1,179 @@
+package com.artica.telesalud.tph.dao.hibernate;
+
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+
+import com.artica.telesalud.common.data.HibernateDAO;
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.tph.dao.CityDAO;
+import com.artica.telesalud.tph.dao.StateProvinceDAO;
+import com.artica.telesalud.tph.model.location.City;
+import com.artica.telesalud.tph.model.location.StateProvince;
+
+public class HibernateCityDAO extends HibernateDAO implements CityDAO {
+	private StateProvinceDAO stateProvinceDAO;
+	public HibernateCityDAO(String configFile) {
+		
+		super(configFile);
+		stateProvinceDAO = new HibernateStateProvinceDAO(configFile);
+		
+	}
+
+	
+	public List<City> getAll() {
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(City.class).add(Restrictions.eq("voided", (short)0));
+			
+			@SuppressWarnings("unchecked")
+			List<City> cities = criteria.list();
+			tx.commit();
+			return cities;
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+			{
+				tx.rollback();
+			}
+			throw new TelesaludException("Exception!",e,HibernateCityDAO.class);
+		} finally{
+			if(session!=null)
+				session.close();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	
+	public List<City> getByState(Integer state){
+		
+		List<City> cities = null;
+		Session session = null;
+		Transaction tx = null;
+		
+		try{
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(City.class);
+			criteria.add(Restrictions.eq("stateProvince.stateProvinceId", state));
+			criteria.addOrder(Order.asc("name"));
+			
+			cities= criteria.list();
+			tx.commit();
+		}catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+			{
+				tx.rollback();
+			}
+			throw new TelesaludException("Exception!",e,HibernateCityDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		
+		return cities;
+		
+	}
+
+	
+	public Integer getState(Integer city) {
+		
+		Session session=null;
+		Integer state = null;
+		Transaction tx = null;
+		try{
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(City.class);
+			criteria.add(Restrictions.eq("cityId", city));
+
+			City cities = (City)criteria.uniqueResult();
+			state= cities.getStateProvince().getStateProvinceId();
+			tx.commit();
+		}catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+			{
+				tx.rollback();
+			}
+			throw new TelesaludException("Exception!",e,HibernateCityDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		
+		return state;
+	}
+	
+	
+	public City getCity(Integer cityId) {
+		Session session = null;
+		Transaction tx = null;
+		City city;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(City.class)
+				.add(Restrictions.eq("cityId", cityId));
+
+			city = (City)criteria.uniqueResult();
+			tx.commit();
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+			{
+				tx.rollback();
+			}
+			throw new TelesaludException("Exception!",e,HibernateCityDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}	
+		return city;
+	}
+
+	
+	public City getCityByName(String cityName, String stateName, String countryName) {
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			StateProvince stateProvince = stateProvinceDAO.getStateByName(countryName, stateName);
+			Criteria criteria = session.createCriteria(City.class);
+			criteria.add(Restrictions.ilike("name", cityName));
+			criteria.add(Restrictions.eq("stateProvince", stateProvince));
+			criteria.addOrder(Order.asc("name"));
+
+			@SuppressWarnings("unchecked")
+			List<City> cities = criteria.list();
+			tx.commit();
+			if(cities.size() > 0)
+			{
+				return cities.get(0);
+			}
+			
+			return null;
+			
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+			{
+				tx.rollback();
+			}
+			throw new TelesaludException("Exception!",e,HibernateStateProvinceDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+	}
+	
+}

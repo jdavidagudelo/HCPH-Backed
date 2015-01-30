@@ -1,0 +1,67 @@
+package com.artica.telesalud.persona.service;
+
+import java.util.HashMap;
+import java.util.List;
+
+import junit.framework.Assert;
+
+import org.junit.Before;
+
+import com.artica.telesalud.common.exception.DataConstraintViolationException;
+import com.artica.telesalud.persona.dao.mysql.MySQLPersonaDAOFactory;
+import com.artica.telesalud.persona.model.Privilege;
+import com.artica.telesalud.persona.model.Role;
+
+public class RoleServiceTest {
+
+	private RoleService roleService;
+	
+	@Before
+	public void init(){
+		
+		/*HashMap<String, String> params = new HashMap<String, String>();
+		
+		params.put(HibernatePersonaDAOFactory.PERSONA_HIBERNATE_CONFIG_FILE, "hibernate-persona.test.cfg.xml");
+		
+		resourceService = new ResourceService("com.artica.telesalud.persona.dao.hibernate.HibernatePersonaDAOFactory", params);
+		*/
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put(MySQLPersonaDAOFactory.PERSONA_CONNECTION_URL, "jdbc:mysql://telesalud.udea.edu.co:3306/RCMedicalRecordTest");
+		params.put(MySQLPersonaDAOFactory.PERSONA_CONNECTION_NAME, "riesgo_user");
+		params.put(MySQLPersonaDAOFactory.PERSONA_CONNECTION_PASSWORD, "r13sg0us3r");
+		
+		roleService = new RoleService("com.artica.telesalud.persona.dao.mysql.MySQLPersonaDAOFactory", params);
+	}
+	
+	//@Test
+	public void addRole() throws DataConstraintViolationException{
+		Role role = roleService.newBlankRole();
+		
+		role.setName("admin");
+		role.setDescription("Administrador");
+		
+		roleService.insertRole(role);
+	}
+	
+	public void listRoles(){
+	}
+	
+	//@Test
+	public void testAncestorStuff(){
+		Role role = roleService.findByName("admin");
+		Assert.assertNotNull(role);
+		
+		List<Role> ancestors = roleService.getAncestorsOf(role);
+		
+		for(Role ancestor : ancestors)
+			System.out.println(ancestor);
+		
+		System.out.println("--------------");
+		
+		List<Privilege> privileges = roleService.getPrivileges(role);
+		for(Privilege p : privileges){
+			System.out.println(p);
+		}
+	}
+
+}

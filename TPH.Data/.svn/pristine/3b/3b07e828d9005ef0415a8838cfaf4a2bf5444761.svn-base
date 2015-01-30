@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 23/11/2010 03:50:10 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.concept.DrugIngredient" table="drug_ingredient" catalog="RCMedicalRecordTPH">
+	    <composite-id name="drugIngredientId" class="com.artica.telesalud.tph.model.concept.DrugIngredientId">
+	    	<key-many-to-one name="concept" class="com.artica.telesalud.tph.model.concept.Concept" lazy="false">
+	            <column name="CONCEPT_ID" />
+	        </key-many-to-one>
+	        <key-many-to-one name="ingredient" class="com.artica.telesalud.tph.model.concept.Concept" lazy="false">
+	            <column name="INGREDIENT_ID" />
+	        </key-many-to-one>
+	    </composite-id>
+    </class>
+</hibernate-mapping>

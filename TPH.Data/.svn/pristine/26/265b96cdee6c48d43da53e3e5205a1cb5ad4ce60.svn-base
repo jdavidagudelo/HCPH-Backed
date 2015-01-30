@@ -1,0 +1,440 @@
+package com.artica.telesalud.tph.dao.hibernate;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+
+import com.artica.telesalud.common.data.HibernateDAO;
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.tph.dao.EventoDAO;
+import com.artica.telesalud.tph.model.evento.Evento;
+
+/**
+ * Manipula la información de los eventos en la base de datos, esta es la implementación para Hibernate de la interface EventoDAO.
+ * @author Elver Suárez Alzate
+ * @version 1.0
+ *
+ */
+public class HibernateEventoDAO extends HibernateDAO implements EventoDAO {
+
+	public HibernateEventoDAO(String configFile) {
+		super(configFile);
+	}
+	
+	public HibernateEventoDAO() {
+		super();
+	}
+
+	/**
+	 * Entrega la lista de eventos del sistema
+	 * 
+	 * @return La lista de eventos resultado 
+	 */
+	@SuppressWarnings("unchecked")
+	
+	public List<Evento> getAll() {
+		
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Evento.class)
+									   .add(Restrictions.eq("voided", 0));
+			List<Evento> result = criteria.list();
+			tx.commit();
+			return result;
+			
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+	}
+
+	/**
+	 * Entrega la lista de eventos según el estado dado
+	 * @param estado Estado de los eventos a consultar
+	 * @return La lista de eventos resultado 
+	 */
+	@SuppressWarnings("unchecked")
+	
+	public List<Evento> getByStatus(String estado) {
+		
+		Session session = null;
+		Transaction tx = null;
+		try {
+		
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Evento.class)
+									   .add(Restrictions.eq("voided", 0))
+									   .add(Restrictions.eq("estado", estado))
+									   .addOrder(Order.desc("fechaLlamada"));
+			List<Evento> result = criteria.list();
+			tx.commit();
+			return result;
+		
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	
+	public List<Evento> getByStatus(String estado, Integer userId, Integer personId) {
+		
+		Session session = null;
+		Transaction tx = null;
+		try {
+			
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Query criteria = session.createQuery("Select distinct e FROM Evento e  left outer join e.lesionados l left outer join l.responsablesAtencion AS ra WHERE e.voided = :Voided AND e.estado=:Estado AND e.creator=:Creador " +
+					" OR ra.persona = :Persona ORDER BY e.fechaLlamada");
+			
+			criteria.setParameter("Voided", 0);
+			criteria.setParameter("Estado", estado);
+			criteria.setParameter("Creador", userId);
+			criteria.setParameter("Persona", personId);
+			List<Evento> result = criteria.list();
+			tx.commit();
+			return result;
+			
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	
+	public List<Evento> getByStatusTeleasistencias(String estado) {
+		
+		Session session = null;
+		Transaction tx = null;
+		try {
+			
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Query criteria = session.createQuery("Select distinct e FROM Evento e  left outer join e.lesionados l WHERE e.voided = :Voided AND e.estado=:Estado " +
+					" AND l.solicitaTeleasistencia = :Teleasistencia ORDER BY e.fechaLlamada");
+			
+			criteria.setParameter("Voided", 0);
+			criteria.setParameter("Estado", estado);
+			criteria.setParameter("Teleasistencia", 1);
+			List<Evento> result = criteria.list();
+			tx.commit();
+			return result;
+		
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+	}
+
+	/**
+	 * Obtiene la información completa de un evento dado su identificador
+	 * @param eventoId Identificador del evento
+	 * @return La información completa del evento
+	 */
+	
+	public Evento getEvento(Integer eventoId) {
+		
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Evento.class)
+									   .add(Restrictions.eq("eventoId", eventoId));
+			Evento result = (Evento)criteria.uniqueResult();
+			tx.commit();
+			return result;
+			
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+	}
+	
+	/**
+	 * Obtiene la información completa de un evento dado su número de caso
+	 * @param numeroCaso Número de caso del evento
+	 * @return La información completa del evento
+	 */
+	@SuppressWarnings("unchecked")
+	
+	public boolean existEvento(String numeroCaso) {
+		
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Evento.class)
+								   .add(Restrictions.eq("numeroCaso", numeroCaso));
+			boolean result = criteria.list().size() > 0;
+			tx.commit();
+			return result;
+				
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		
+	}
+
+	/**
+	 * Almacena la información de un evento nuevo en la base de datos
+	 * @param evento Información del evento
+	 * @return El evento guardado
+	 */
+	
+	public Evento save(Evento evento) {
+		
+		Transaction tx = null;
+		Session session = null;
+		try {
+			
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    if(evento.getDateCreated()==null)
+		    	evento.setDateCreated(new Date());
+		    
+		    evento.setVoided(0);
+		    evento.setUuid(UUID.randomUUID().toString());
+		    
+		    session.save(evento);
+		    tx.commit();
+		    
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return evento;
+	}
+
+	/**
+	 * Actualiza la información de un evento en la base de datos
+	 * @param evento Información del evento a actualizar
+	 * @return El evento actualizado
+	 */
+	
+	public Evento update(Evento evento) {
+		
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    if(evento.getDateChanged()==null)
+		    	evento.setDateChanged(new Date());
+		    
+		    evento = (Evento)session.merge(evento);
+		    
+		    session.update(evento);
+		    tx.commit();
+		    
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return evento;
+	}
+
+	/**
+	 * Entrega un objeto del evento en blanco
+	 * @return El evento construido
+	 */
+	
+	public Evento newEvento() {
+		Evento evento = new Evento();
+		return evento;
+	}
+	
+
+	/**	
+	 * Elimina un evento en la base de datos
+	 * @param evento El evento a eliminar
+	 * @return El evento eliminado
+	 */
+	
+	public Evento delete(Evento evento) {
+		
+		Transaction tx = null;
+		Session session = getNewSession();
+		try {
+		    tx = session.beginTransaction();
+		    
+		    if(evento.getDateVoided()==null){
+		    	evento.setDateVoided(new Date());
+		    	evento.setVoided(1);
+		    }
+		    
+			session.update(evento);
+		    tx.commit();
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return evento;
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public List<Evento> getEventosReporte(Date fechaDesde,
+			Date fechaHasta, String numeroCaso, Integer departamento,
+			Integer ciudad, Integer causa, String estado) {
+		Session session = null;
+		Transaction tx = null;
+		try {
+			
+			session = getNewSession();
+			tx = session.beginTransaction();
+			String sql = "Select distinct e FROM Evento e  left outer join e.ciudad c WHERE e.voided = :Voided ";
+			String query = "";
+			boolean or = false;
+			if(fechaDesde != null && fechaHasta != null) {
+				query += " (e.fechaLlamada >= :Desde AND e.fechaLlamada <= :Hasta) ";
+				or = true;
+			}if(departamento != null){
+				if(or) query += "AND";
+				query += " (c.stateProvince.stateProvinceId = :Departamento) ";
+				or = true;
+			}if(ciudad != null){
+				if(or) query += "AND";
+				query += " (e.ciudad.cityId = :Ciudad) ";
+				or = true;
+			}if(causa != null){
+				if(or) query += "AND";
+				query += " (e.causaAtencion.conceptId = :Causa) ";
+				or = true;
+			}if(estado != null){
+				if(or) query += "AND";
+				query += " e.estado = :Estado";
+				or = true;
+			}if(numeroCaso != null){
+				if(or) query += "OR";
+				query += " (e.numeroCaso = :Caso) ";
+				or = true;
+			}
+			if(or)
+				query = sql+"AND ( "+query+")";
+			else 
+				query = sql;
+			
+			Query criteria = session.createQuery(query);
+			
+			criteria.setParameter("Voided", 0);
+			if(fechaDesde != null && fechaHasta != null)
+			{
+				criteria.setParameter("Desde", fechaDesde);
+				criteria.setParameter("Hasta", fechaHasta);
+			}
+			if(numeroCaso != null)
+				criteria.setParameter("Caso", numeroCaso);
+			if(departamento != null)
+				criteria.setParameter("Departamento", departamento);
+			if(ciudad != null)
+				criteria.setParameter("Ciudad", ciudad);
+			if(causa != null)
+				criteria.setParameter("Causa", causa);
+			if(estado != null)
+				criteria.setParameter("Estado", estado);
+			List<Evento> result = criteria.list();
+			tx.commit();
+			return result;
+			
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+	}
+
+	public Evento getEventoByNumeroCaso(String numeroCaso) {
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Evento.class)
+								   .add(Restrictions.eq("numeroCaso", numeroCaso));
+			@SuppressWarnings("unchecked")
+			List<Evento> result = (List<Evento>)criteria.list();
+			tx.commit();
+			if(result.size() > 0)
+			{
+				return result.get(0);
+			}
+				
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return null;
+	}
+}

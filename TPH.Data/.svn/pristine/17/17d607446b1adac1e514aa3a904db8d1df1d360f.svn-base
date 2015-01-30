@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 23/11/2010 03:50:10 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.concept.Drug" table="drug" catalog="RCMedicalRecordTPH">
+        <id name="drugId" type="java.lang.Integer">
+            <column name="DRUG_ID" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="concept" class="com.artica.telesalud.tph.model.concept.Concept" fetch="select" lazy="false">
+            <column name="CONCEPT_ID" />
+        </many-to-one>
+        <property name="name" type="java.lang.String">
+            <column name="NAME" />
+        </property>
+        <property name="combination" type="java.lang.Boolean">
+            <column name="COMBINATION" />
+        </property>
+        <many-to-one name="dosageForm" class="com.artica.telesalud.tph.model.concept.Concept" fetch="select" lazy="false">
+            <column name="DOSAGE_FORM" />
+        </many-to-one>
+        <property name="doseStrength" type="java.lang.Double">
+            <column name="DOSE_STRENGTH" />
+        </property>
+        <property name="maximunDailyDose" type="java.lang.Double">
+            <column name="MAXIMUN_DAILY_DOSE" />
+        </property>
+        <property name="minimunDailyDose" type="java.lang.Double">
+            <column name="MINIMUN_DAILY_DOSE" />
+        </property>
+        <property name="recomendedDailyDose" type="java.lang.Double">
+            <column name="RECOMENDED_DAILY_DOSE" />
+        </property>
+        <property name="units" type="java.lang.Integer">
+            <column name="UNITS" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="retired" type="java.lang.Boolean">
+            <column name="RETIRED" />
+        </property>
+        <property name="retiredBy" type="java.lang.Integer">
+            <column name="RETIRED_BY" />
+        </property>
+        <property name="dateRetired" type="java.util.Date">
+            <column name="DATE_RETIRED" />
+        </property>
+        <property name="retireReason" type="java.lang.String">
+            <column name="RETIRE_REASON" />
+        </property>
+        <property name="uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+    </class>
+</hibernate-mapping>

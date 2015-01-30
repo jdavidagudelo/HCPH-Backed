@@ -1,0 +1,14 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	url = http://172.21.0.178:8081/eje-5/tph-restful-services-api.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[remote "originown"]
+	url = https://github.com/jdavidagudelo/HCPH-Backed.git
+	fetch = +refs/heads/*:refs/remotes/originown/*

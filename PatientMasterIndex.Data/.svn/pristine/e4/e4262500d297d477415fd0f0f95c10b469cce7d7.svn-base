@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 10, 2014 4:47:09 PM by Hibernate Tools 3.6.0 -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.patientmasterindex.model.Ehr" table="EHR" catalog="RCMedicalRecordTPH">
+        <id name="uuid" type="string">
+            <column name="UUID" />
+            <generator class="assigned" />
+        </id>
+        <property name="name" type="string">
+            <column name="name" not-null="true">
+                <comment>Nombre de la historia cl&#195;&#173;nica</comment>
+            </column>
+        </property>
+        <property name="creationDate" type="date">
+            <column name="creationDate" length="10" not-null="true">
+                <comment>Fecha de creaci&#195;&#179;n de la historia cl&#195;&#173;nica en la base de datos</comment>
+            </column>
+        </property>
+      
+    </class>
+</hibernate-mapping>

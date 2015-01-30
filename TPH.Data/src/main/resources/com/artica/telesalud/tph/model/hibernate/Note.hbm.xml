@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 23/11/2010 03:50:10 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.observation.Note" table="NOTE" catalog="RCMedicalRecordTPH">
+        <id name="noteId" type="java.lang.Integer">
+            <column name="NOTEID" />
+            <generator class="assigned" />
+        </id>
+        <property name="noteType" type="java.lang.String">
+            <column name="NOTETYPE" />
+        </property>
+        <many-to-one name="patient" class="com.artica.telesalud.tph.model.patient.Patient" fetch="join">
+            <column name="PATIENT" />
+        </many-to-one>
+        <many-to-one name="obs" class="com.artica.telesalud.tph.model.observation.Obs" fetch="join">
+            <column name="OBS" />
+        </many-to-one>
+        <many-to-one name="encounter" class="com.artica.telesalud.tph.model.encounter.Encounter" fetch="join">
+            <column name="ENCOUNTER" />
+        </many-to-one>
+        <property name="text" type="java.lang.String">
+            <column name="TEXT" />
+        </property>
+        <property name="priority" type="java.lang.Integer">
+            <column name="PRIORITY" />
+        </property>
+        <one-to-one name="parent" class="com.artica.telesalud.tph.model.observation.Note"></one-to-one>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATECREATED" />
+        </property>
+        <property name="changedBy" type="java.lang.Integer">
+            <column name="CHANGEDBY" />
+        </property>
+        <property name="dateChanged" type="java.util.Date">
+            <column name="DATECHANGED" />
+        </property>
+        <property name="uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+    </class>
+</hibernate-mapping>

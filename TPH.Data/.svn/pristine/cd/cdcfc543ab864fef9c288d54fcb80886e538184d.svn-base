@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2/11/2010 02:06:19 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.person.Relationship" table="relationship" catalog="RCMedicalRecordTPH">
+        <id name="relationshipId" type="java.lang.Integer">
+            <column name="RELATIONSHIP_ID" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="personaA" class="com.artica.telesalud.tph.model.person.Person" fetch="select" lazy="false">
+            <column name="PERSONA_A" />
+        </many-to-one>
+        <many-to-one name="relationship" class="com.artica.telesalud.tph.model.person.RelationshipType" fetch="select" lazy="false">
+            <column name="RELATIONSHIP" />
+        </many-to-one>
+        <many-to-one name="personB" class="com.artica.telesalud.tph.model.person.Person" fetch="select" lazy="false">
+            <column name="PERSON_B" />
+        </many-to-one>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="voided" type="java.lang.Boolean">
+            <column name="VOIDED" />
+        </property>
+        <property name="voidedBy" type="java.lang.Integer">
+            <column name="VOIDED_BY" />
+        </property>
+        <property name="dateVoided" type="java.util.Date">
+            <column name="DATE_VOIDED" />
+        </property>
+        <property name="voidReason" type="java.lang.String">
+            <column name="VOID_REASON" />
+        </property>
+        <property name="Uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+    </class>
+</hibernate-mapping>

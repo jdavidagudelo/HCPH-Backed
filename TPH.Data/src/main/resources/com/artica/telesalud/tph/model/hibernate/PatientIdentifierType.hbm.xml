@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 4/11/2010 11:44:26 AM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.patient.PatientIdentifierType" table="patient_identifier_type" catalog="RCMedicalRecordTPH">
+        <id name="patientIdentifierTypeId" type="java.lang.Integer">
+            <column name="PATIENT_IDENTIFIER_TYPE_ID" />
+            <generator class="identity" />
+        </id>
+        <property name="name" type="java.lang.String">
+            <column name="NAME" />
+        </property>
+        <property name="description" type="java.lang.String">
+            <column name="DESCRIPTION" />
+        </property>
+        <property name="format" type="java.lang.String">
+            <column name="FORMAT" />
+        </property>
+        <property name="checkDigit" type="java.lang.String">
+            <column name="CHECK_DIGIT" />
+        </property>
+        <property name="required" type="java.lang.Integer">
+            <column name="REQUIRED" />
+        </property>
+        <property name="formatDescription" type="java.lang.String">
+            <column name="FORMAT_DESCRIPTION" />
+        </property>
+        <property name="validator" type="java.lang.String">
+            <column name="VALIDATOR" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="timestamp">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="retired" type="short">
+            <column name="RETIRED" />
+        </property>
+        <property name="retiredBy" type="java.lang.Integer">
+            <column name="RETIRED_BY" />
+        </property>
+        <property name="dateRetired" type="timestamp">
+            <column name="DATE_RETIRED" />
+        </property>
+        <property name="retireReason" type="java.lang.String">
+            <column name="RETIRE_REASON" />
+        </property>
+        <property name="Uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+    </class>
+</hibernate-mapping>

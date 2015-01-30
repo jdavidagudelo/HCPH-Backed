@@ -1,0 +1,172 @@
+<filter version="3.0.1">
+  <rules>
+    <rule>
+      <sequenceNumber>0</sequenceNumber>
+      <name>Validate Against XSD</name>
+      <data>
+        <entry>
+          <string>Script</string>
+          <string>// open schema file
+var schemaFile = new Packages.java.io.File(&quot;/home/interoperabilidad/workspace/intero/processable/multicacheschemas/RCMR_IN000031UV01.xsd&quot;);
+// create a schema object
+var schemaFactory = Packages.javax.xml.validation.SchemaFactory.newInstance(&quot;http://www.w3.org/2001/XMLSchema&quot;);
+var schema = schemaFactory.newSchema(schemaFile);
+
+// Create a Reader from the incoming XML message
+var reader = new Packages.java.io.StringReader(connectorMessage.getRawData());
+
+// Acts as an holder for a transformation Source in the form of a stream of XML markup.
+var xmlFile = new Packages.javax.xml.transform.stream.StreamSource(reader);
+
+// create a new validator for the schema
+var validator = schema.newValidator();
+
+try {
+	// validates the message
+	validator.validate(xmlFile);	
+	if(patientId == patientLivingId){
+		// valid message
+		logger.info(&apos;id de paciente validos&apos;);		
+	}else{
+		// invalid message
+		logger.error(&apos;id de paciente diferentes&apos;);
+		return false;
+	}
+	// valid message
+	logger.info(&apos;valid schema&apos;);
+	return true;
+} catch (err) {
+	// invalid message
+	logger.error(err.toString());
+	return false;
+}</string>
+        </entry>
+      </data>
+      <type>JavaScript</type>
+      <script>// open schema file
+var schemaFile = new Packages.java.io.File(&quot;/home/interoperabilidad/workspace/intero/processable/multicacheschemas/RCMR_IN000031UV01.xsd&quot;);
+// create a schema object
+var schemaFactory = Packages.javax.xml.validation.SchemaFactory.newInstance(&quot;http://www.w3.org/2001/XMLSchema&quot;);
+var schema = schemaFactory.newSchema(schemaFile);
+
+// Create a Reader from the incoming XML message
+var reader = new Packages.java.io.StringReader(connectorMessage.getRawData());
+
+// Acts as an holder for a transformation Source in the form of a stream of XML markup.
+var xmlFile = new Packages.javax.xml.transform.stream.StreamSource(reader);
+
+// create a new validator for the schema
+var validator = schema.newValidator();
+
+try {
+	// validates the message
+	validator.validate(xmlFile);	
+	if(patientId == patientLivingId){
+		// valid message
+		logger.info(&apos;id de paciente validos&apos;);		
+	}else{
+		// invalid message
+		logger.error(&apos;id de paciente diferentes&apos;);
+		return false;
+	}
+	// valid message
+	logger.info(&apos;valid schema&apos;);
+	return true;
+} catch (err) {
+	// invalid message
+	logger.error(err.toString());
+	return false;
+}</script>
+      <operator>NONE</operator>
+    </rule>
+    <rule>
+      <sequenceNumber>1</sequenceNumber>
+      <name>BD validate</name>
+      <data>
+        <entry>
+          <string>Script</string>
+          <string>importPackage(java.sql);
+
+var hl7 = new Namespace(&apos;urn:hl7-org:v3&apos;);
+
+new com.mysql.jdbc.Driver();
+var dbConn=DriverManager.getConnection(&apos;jdbc:mysql://172.21.0.174/PatientMasterIndex&apos;,&apos;riesgo_user&apos;,&apos;r13sg0us3r&apos;);
+
+//id del receiver
+var idReceiver = msg.hl7::[&apos;receiver&apos;].hl7::[&apos;device&apos;].hl7::[&apos;id&apos;][&apos;@extension&apos;].toString();
+var idSender = 	msg.hl7::[&apos;sender&apos;].hl7::[&apos;device&apos;].hl7::[&apos;id&apos;][&apos;@extension&apos;].toString();
+var patientId = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;queryByParameter&apos;].hl7::[&apos;patient.id&apos;].hl7::[&apos;value&apos;][&apos;@extension&apos;].toString()
+var patientLivingId = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;queryByParameter&apos;].hl7::[&apos;patientLivingSubject.id&apos;].hl7::[&apos;value&apos;][&apos;@extension&apos;].toString()
+var sql = &apos;SELECT * FROM EHR p WHERE p.UUID = ?&apos;;
+var statementReceiver = dbConn.prepareStatement(sql);
+var statementSender = dbConn.prepareStatement(sql);
+statementReceiver.setString(1, idReceiver);
+statementSender.setString(1, idSender);
+//se ejecuta el query para saber si el dominio existe en la base de datos
+resultsReceiver = statementReceiver.executeQuery();
+resultsSender = statementSender.executeQuery();
+
+if(resultsReceiver.next()){
+	// valid message
+	logger.info(&apos;valid receiver&apos;);	
+	return true;	
+}else{
+	// invalid message
+	logger.error(&apos;invalid receiver&apos;);
+	return false;
+}
+if(resultsSender.next()){
+	// valid message
+	logger.info(&apos;valid sender&apos;);		
+	return true;
+} else{
+	// invalid message
+	logger.error(&apos;invalid sender&apos;);
+	return false;
+}</string>
+        </entry>
+      </data>
+      <type>JavaScript</type>
+      <script>importPackage(java.sql);
+
+var hl7 = new Namespace(&apos;urn:hl7-org:v3&apos;);
+
+new com.mysql.jdbc.Driver();
+var dbConn=DriverManager.getConnection(&apos;jdbc:mysql://172.21.0.174/PatientMasterIndex&apos;,&apos;riesgo_user&apos;,&apos;r13sg0us3r&apos;);
+
+//id del receiver
+var idReceiver = msg.hl7::[&apos;receiver&apos;].hl7::[&apos;device&apos;].hl7::[&apos;id&apos;][&apos;@extension&apos;].toString();
+var idSender = 	msg.hl7::[&apos;sender&apos;].hl7::[&apos;device&apos;].hl7::[&apos;id&apos;][&apos;@extension&apos;].toString();
+var patientId = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;queryByParameter&apos;].hl7::[&apos;patient.id&apos;].hl7::[&apos;value&apos;][&apos;@extension&apos;].toString()
+var patientLivingId = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;queryByParameter&apos;].hl7::[&apos;patientLivingSubject.id&apos;].hl7::[&apos;value&apos;][&apos;@extension&apos;].toString()
+var sql = &apos;SELECT * FROM EHR p WHERE p.UUID = ?&apos;;
+var statementReceiver = dbConn.prepareStatement(sql);
+var statementSender = dbConn.prepareStatement(sql);
+statementReceiver.setString(1, idReceiver);
+statementSender.setString(1, idSender);
+//se ejecuta el query para saber si el dominio existe en la base de datos
+resultsReceiver = statementReceiver.executeQuery();
+resultsSender = statementSender.executeQuery();
+
+if(resultsReceiver.next()){
+	// valid message
+	logger.info(&apos;valid receiver&apos;);	
+	return true;	
+}else{
+	// invalid message
+	logger.error(&apos;invalid receiver&apos;);
+	return false;
+}
+if(resultsSender.next()){
+	// valid message
+	logger.info(&apos;valid sender&apos;);		
+	return true;
+} else{
+	// invalid message
+	logger.error(&apos;invalid sender&apos;);
+	return false;
+}</script>
+      <operator>AND</operator>
+    </rule>
+  </rules>
+</filter>

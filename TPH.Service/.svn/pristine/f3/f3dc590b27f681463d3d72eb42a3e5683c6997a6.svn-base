@@ -1,0 +1,56 @@
+package com.artica.telesalud.tph.service;
+
+import java.util.HashMap;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.artica.telesalud.common.data.HibernateSessionFactoryManager;
+import com.artica.telesalud.tph.dao.hibernate.HibernateTPHDAOFactory;
+import com.artica.telesalud.tph.model.encounter.Encounter;
+import com.artica.telesalud.tph.model.observation.ObservationData;
+
+
+public class ObsServiceTest {
+	
+	EncounterService encounterService;
+	ObsService obsService;
+	@Before
+	public void init(){
+		
+		
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put(HibernateTPHDAOFactory.TPH_HIBERNATE_CONFIG_FILE, "hibernate-tph-test-service.cfg.xml");
+		
+		HibernateSessionFactoryManager manager = HibernateSessionFactoryManager.getInstance();
+		manager.createFactory("hibernate-tph-test-service.cfg.xml");
+		
+		encounterService = new EncounterService("com.artica.telesalud.tph.dao.hibernate.HibernateTPHDAOFactory", params);
+		obsService = new ObsService("com.artica.telesalud.tph.dao.hibernate.HibernateTPHDAOFactory", params);
+	}
+
+	
+	public void testNuevo() {
+		
+		Encounter encuentro = encounterService.getEncounterById(6);
+		
+		obsService.guardarAntecedente(encuentro, 2005, null, "Observacion", 2);
+		
+		
+	}
+	
+	@Test
+	public void testLista() {
+		
+		Encounter encuentro = encounterService.getEncounterById(37);
+		
+		for(ObservationData d : obsService.obtenerAntecedentes(encuentro.getPatient())){
+			System.out.println(d.getObsId());
+			for(ObservationData dd : d.getSons()){
+				System.out.println(dd.getValueNumeric() + "/" + dd.getValueCoded() + "/" + dd.getValueText());
+			}
+		}
+		
+	}
+
+}

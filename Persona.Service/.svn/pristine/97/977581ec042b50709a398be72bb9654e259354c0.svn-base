@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="Persona.Service">
+        <wb-resource deploy-path="/" source-path="/src"/>
+        <dependent-module archiveName="Persona.Data.jar" deploy-path="/" handle="module:/resource/Persona.Data/Persona.Data">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="ArticaCommonGWT.jar" deploy-path="/" handle="module:/resource/ArticaCommonGWT/ArticaCommonGWT">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="Persona.Model.jar" deploy-path="/" handle="module:/resource/Persona.Model/Persona.Model">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="ArticaCommon.jar" deploy-path="/" handle="module:/resource/ArticaCommon/ArticaCommon">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+    </wb-module>
+</project-modules>

@@ -1,0 +1,92 @@
+package com.artica.telesalud.persona.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
+import junit.framework.Assert;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.artica.telesalud.common.service.EncryptionService;
+import com.artica.telesalud.persona.dao.mysql.MySQLPersonaDAOFactory;
+import com.artica.telesalud.persona.model.User;
+import com.artica.telesalud.persona.service.user.PasswordDoesNotMatchException;
+import com.artica.telesalud.persona.service.user.UserNotFoundException;
+
+public class UserServiceTest {
+
+	private UserService srv;
+	
+	@Before
+	public void init(){
+		
+		//HashMap<String, String> params = new HashMap<String, String>();
+		
+		//params.put(HibernatePersonaDAOFactory.PERSONA_HIBERNATE_CONFIG_FILE, "hibernate-persona.test.cfg.xml");
+		
+		//srv = new UserService("com.artica.telesalud.persona.dao.hibernate.HibernatePersonaDAOFactory", params);
+		
+		HashMap<String, String> params = new HashMap<String, String>();
+		//params.put(MySQLPersonaDAOFactory.PERSONA_CONNECTION_URL, "jdbc:mysql://telesalud.udea.edu.co:3306/UsersTest");
+		//params.put(MySQLPersonaDAOFactory.PERSONA_CONNECTION_NAME, "user_manager");
+		//params.put(MySQLPersonaDAOFactory.PERSONA_CONNECTION_PASSWORD, "user_manager1234");
+		params.put(MySQLPersonaDAOFactory.PERSONA_CONNECTION_URL, "jdbc:mysql://172.21.0.174/RCMedicalRecordTPH");
+		params.put(MySQLPersonaDAOFactory.PERSONA_CONNECTION_NAME, "riesgo_user");
+		params.put(MySQLPersonaDAOFactory.PERSONA_CONNECTION_PASSWORD, "r13sg0us3r");
+		
+		srv = new UserService("com.artica.telesalud.persona.dao.mysql.MySQLPersonaDAOFactory", params);
+	}
+	
+	//@Test
+	public void testChangePassword(){
+		User user = srv.findUserByName("general");
+		Assert.assertNotNull(user);
+		
+		srv.changePassword(user, "general");
+	}
+	
+	//@Test
+	public void testGetValidUser() throws UserNotFoundException, PasswordDoesNotMatchException {
+		/*
+		srv.registerUser("elver", "elver1234", "abc");
+		*/
+		
+		User user = srv.getValidUser("general", "general");
+		
+		Assert.assertNotNull(user);
+		
+	}
+
+	//@Test
+	public void testCount(){
+		int count = srv.countUsers();
+		Assert.assertNotSame(-1, count);
+	}
+	
+	//@Test
+	public void testPaginate(){
+		List<User> users = srv.getUsers(30, 0);
+		
+		Assert.assertNotNull(users);
+		
+		Assert.assertNotSame(0, users.size());
+	}
+	
+	//@Test
+	public void testViewRoleInfo(){
+	}
+	@Test
+	public void modifyPassword()
+	{
+		for(User user : srv.getUsers(100, 0)){
+			System.out.println(user.getUsername());
+			String salt = UUID.randomUUID().toString();
+			user.setSalt(salt);
+			srv.changePassword(user, user.getUsername());
+			srv.updateUser(user);
+			
+		}
+	}
+}

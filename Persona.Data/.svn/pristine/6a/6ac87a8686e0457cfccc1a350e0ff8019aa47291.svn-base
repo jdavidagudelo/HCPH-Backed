@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Sep 12, 2014 10:42:39 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+	<class name="com.artica.telesalud.persona.model.impl.PrivilegeDTO"
+		table="privileges">
+		<composite-id class="com.artica.telesalud.persona.model.impl.PrivilegeId" name="id">
+			<key-property name="resource" type="int">
+				<column name="resource" />
+			</key-property>
+			<key-property name="operation" type="int">
+				<column name="operation" />
+			</key-property>
+		</composite-id>
+		<property name="resource" type="java.lang.Integer">
+			<column name="RESOURCE" />
+		</property>
+		<property name="operation" type="java.lang.Integer">
+			<column name="OPERATION" />
+		</property>
+	</class>
+</hibernate-mapping>

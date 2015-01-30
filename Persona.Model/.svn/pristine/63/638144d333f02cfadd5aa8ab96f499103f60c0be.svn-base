@@ -1,0 +1,66 @@
+package com.artica.telesalud.persona.model.impl;
+import java.io.Serializable;
+
+import com.artica.telesalud.persona.model.Permission;
+
+public class PermissionDTO implements Permission, Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Integer role;
+	private Integer resource;
+	private Integer operation;
+	
+	@Override
+	public Integer getRole(){
+		return this.role;
+	}
+	
+	@Override
+	public void setRole(Integer role){
+		this.role = role;
+	}
+	
+	@Override
+	public Integer getResource(){
+		return this.resource;
+	}
+	
+	@Override
+	public void setResource(Integer resource){
+		this.resource = resource;
+	}
+	
+	@Override
+	public Integer getOperation(){
+		return this.operation;
+	}
+	
+	@Override
+	public void setOperation(Integer operation){
+		this.operation = operation;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if( !(obj instanceof Permission) )
+			return false;
+		
+		Permission p = (Permission)obj;
+		
+		boolean sameOperation = (operation == null) ? p.getOperation() == null : operation.equals(p.getOperation());
+		
+		boolean sameResource = (resource == null) ? p.getResource() == null : resource.equals(p.getResource());
+		
+		boolean sameRole = (role == null) ? p.getRole() == null : role.equals(p.getRole());
+		
+		return sameOperation && sameResource && sameRole;
+	}
+
+	@Override
+	public String toString() {
+		return "Role: " + role + ", Operation: " + operation + ", Resource: " + resource;
+	}
+	
+}

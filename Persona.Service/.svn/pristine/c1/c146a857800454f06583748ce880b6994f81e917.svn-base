@@ -1,0 +1,64 @@
+package com.artica.telesalud.persona.service;
+
+import java.util.HashMap;
+import java.util.List;
+
+import junit.framework.Assert;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.artica.telesalud.persona.model.Operation;
+import com.artica.telesalud.persona.model.Resource;
+
+public class ResourceServiceTest {
+
+	private ResourceService resourceService;
+	
+	@Before
+	public void init(){
+		
+		/*HashMap<String, String> params = new HashMap<String, String>();
+		
+		params.put(HibernatePersonaDAOFactory.PERSONA_HIBERNATE_CONFIG_FILE, "hibernate-persona.test.cfg.xml");
+		
+		resourceService = new ResourceService("com.artica.telesalud.persona.dao.hibernate.HibernatePersonaDAOFactory", params);
+		*/
+		HashMap<String, String> params = new HashMap<String, String>();
+//		params.put(MySQLPersonaDAOFactory.CONNECTION_URL, "jdbc:mysql://telesalud.udea.edu.co:3306/UsersTest");
+//		params.put(MySQLPersonaDAOFactory.CONNECTION_NAME, "user_manager");
+//		params.put(MySQLPersonaDAOFactory.CONNECTION_PASSWORD, "user_manager1234");
+//		
+		resourceService = new ResourceService("com.artica.telesalud.persona.dao.mysql.MySQLPersonaDAOFactory", params);
+	}
+
+	@Test
+	public void testSetOperations() {
+		
+		List<Resource> resources = resourceService.readAll();
+		
+		Resource r0 = resources.get(0);
+		
+		List<Operation> operations = resourceService.getOperationsFor(r0);
+		
+		/*Resource r1 = resourceService.newBlankResource();
+		r1.setName("TestResource");
+		r1.setCategory("Test");
+		r1.setDescription("Something");
+		r1.setTag("MyTag");
+		r1.setUrl("something");
+		r1 = resourceService.insertResource(r1);
+		*/
+		Resource r1 = resourceService.findByName("TestResource");
+		Assert.assertNotNull(r1);
+		operations.remove(0);
+		resourceService.setOperations(r1, operations);
+		
+		//resourceService.setOperations(r0, resourceService.getOperationsFor(r1));
+		List<Operation> r1Op = resourceService.getOperationsFor(r1);
+		
+		Assert.assertEquals(r1Op.size(), operations.size());
+		
+	}
+
+}

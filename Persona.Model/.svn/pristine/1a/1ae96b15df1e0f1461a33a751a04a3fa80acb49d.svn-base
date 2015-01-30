@@ -1,0 +1,54 @@
+package com.artica.telesalud.persona.model.impl;
+import java.io.Serializable;
+
+import com.artica.telesalud.persona.model.Privilege;
+
+public class PrivilegeDTO implements Privilege, Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Integer resource;
+	private Integer operation;
+	
+	@Override
+	public Integer getResource(){
+		return this.resource;
+	}
+	
+	@Override
+	public void setResource(Integer resource){
+		this.resource = resource;
+	}
+	
+	@Override
+	public Integer getOperation(){
+		return this.operation;
+	}
+	
+	@Override
+	public void setOperation(Integer operation){
+		this.operation = operation;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if( !(obj instanceof Privilege) )
+			return false;
+		
+		Privilege p = (Privilege)obj;
+		
+		boolean sameOperation = (operation == null) ? p.getOperation() == null : operation.equals(p.getOperation());
+		
+		boolean sameResource = (resource == null) ? p.getResource() == null : resource.equals(p.getResource());
+		
+		return sameOperation && sameResource;
+	}
+
+	@Override
+	public String toString() {
+		return "Operation: " + operation + ", Resource: " + resource;
+	}
+	
+	
+}

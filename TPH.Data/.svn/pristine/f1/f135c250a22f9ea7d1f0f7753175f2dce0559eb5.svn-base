@@ -1,0 +1,237 @@
+package com.artica.telesalud.tph.dao.hibernate;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
+
+import com.artica.telesalud.common.data.HibernateDAO;
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.tph.dao.TripulacionDAO;
+import com.artica.telesalud.tph.model.evento.Evento;
+import com.artica.telesalud.tph.model.evento.Tripulacion;
+
+/**
+ * Manipula la información de los eventos en la base de datos, esta es la implementación para Hibernate de la interface EventoDAO.
+ * @author Elver Suárez Alzate
+ * @version 1.0
+ *
+ */
+public class HibernateTripulacionDAO extends HibernateDAO implements TripulacionDAO {
+
+	public HibernateTripulacionDAO(String configFile) {
+		super(configFile);
+	}
+	
+	public HibernateTripulacionDAO() {
+		super();
+	}
+
+	/**
+	 * Entrega la lista de tripulaciones del sistema
+	 * 
+	 * @return La lista de tripulaciones resultado 
+	 */
+	@SuppressWarnings("unchecked")
+	
+	public List<Tripulacion> getAll() {
+		
+		Session session = null;
+		List<Tripulacion> tripulaciones = new ArrayList<Tripulacion>();
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Tripulacion.class)
+									   .add(Restrictions.eq("voided", 0));
+			
+			tripulaciones = criteria.list();
+			tx.commit();
+			
+		} catch (Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return tripulaciones;
+	}
+
+
+	/**
+	 * Obtiene la información completa de una tripulacion dado su identificador
+	 * @param tripulacionId Identificador de la tripulacion
+	 * @return La información completa de la tripulacion
+	 */
+	
+	public Tripulacion getTripulacion(Integer tripulacionId) {
+		
+		Session session = null;
+		Tripulacion tripulacion = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx =session.beginTransaction();
+			Criteria criteria = session.createCriteria(Tripulacion.class)
+								   .add(Restrictions.eq("tripulacionId", tripulacionId));
+		
+			tripulacion = (Tripulacion)criteria.uniqueResult();
+		tx.commit();
+			
+		} catch (Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return tripulacion;
+	}
+
+	/**
+	 * Almacena la información de una tripulación nueva en la base de datos
+	 * @param tripulacion Información de la tripulación
+	 * @return La tripulación guardada
+	 */
+	
+	public Tripulacion save(Tripulacion tripulacion) {
+		
+		Transaction tx = null;
+		Session session = null;
+		
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    if(tripulacion.getDateCreated()==null)
+		    	tripulacion.setDateCreated(new Date());
+		    
+		    tripulacion.setVoided(0);
+		    tripulacion.setUuid(UUID.randomUUID().toString());
+		    
+		    session.save(tripulacion);
+		    tx.commit();
+		    
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return tripulacion;
+	}
+
+	/**
+	 * Actualiza la información de un evento en la base de datos
+	 * @param evento Información del evento a actualizar
+	 * @return El evento actualizado
+	 */
+	
+	public Tripulacion update(Tripulacion tripulacion) {
+		
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    if(tripulacion.getDateChanged()==null)
+		    	tripulacion.setDateChanged(new Date());
+		    
+		    session.update(tripulacion);
+		    session.flush();
+		    tx.commit();
+		    
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return tripulacion;
+	}
+
+	/**
+	 * Entrega un objeto del evento en blanco
+	 * @return El evento construido
+	 */
+	
+	public Tripulacion newTripulacion() {
+		Tripulacion tripulacion = new Tripulacion();
+		return tripulacion;
+	}
+	
+
+	/**	
+	 * Elimina un evento en la base de datos
+	 * @param evento El evento a eliminar
+	 * @return El evento eliminado
+	 */
+	
+	public Tripulacion delete(Tripulacion tripulacion) {
+		
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    if(tripulacion.getDateVoided()==null){
+		    	tripulacion.setDateVoided(new Date());
+		    	tripulacion.setVoided(1);
+		    }
+		    
+			session.update(tripulacion);
+		    tx.commit();
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return tripulacion;
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public List<Tripulacion> getTripulacion(Evento evento) {
+		
+		Session session = getNewSession();
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Tripulacion.class)
+								   .add(Restrictions.eq("voided", 0))
+								   .add(Restrictions.eq("evento", evento));
+		List<Tripulacion> result = criteria.list();
+		tx.commit();
+			return result;
+		
+		} catch (Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			throw new TelesaludException("Exception!",e,HibernateConceptDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+	}
+
+
+
+}

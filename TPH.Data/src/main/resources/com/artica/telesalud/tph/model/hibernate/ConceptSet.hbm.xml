@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 23/11/2010 03:50:10 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.concept.ConceptSet" table="concept_set" catalog="RCMedicalRecordTPH">
+        <id name="conceptSetId" type="java.lang.Integer">
+            <column name="CONCEPT_SET_ID" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="concept" class="com.artica.telesalud.tph.model.concept.Concept" fetch="select" lazy="false">
+            <column name="CONCEPT_ID" />
+        </many-to-one>
+        <many-to-one name="conceptSet" class="com.artica.telesalud.tph.model.concept.Concept" fetch="select" lazy="false">
+            <column name="CONCEPT_SET" />
+        </many-to-one>
+        <property name="sortWeight" type="java.lang.Double">
+            <column name="SORT_WEIGHT" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 23/11/2010 03:50:10 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.concept.ConceptNameTag" table="concept_name_tag" catalog="RCMedicalRecordTPH">
+        <id name="conceptNameTagId" type="java.lang.Integer">
+            <column name="CONCEPT_NAME_TAG_ID" />
+            <generator class="identity" />
+        </id>
+        <property name="tag" type="java.lang.String">
+            <column name="TAG" />
+        </property>
+        <property name="description" type="java.lang.String">
+            <column name="DESCRIPTION" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="voided" type="java.lang.Boolean">
+            <column name="VOIDED" />
+        </property>
+        <property name="dateVoided" type="java.util.Date">
+            <column name="DATE_VOIDED" />
+        </property>
+        <property name="voidedBy" type="java.lang.Integer">
+            <column name="VOIDED_BY" />
+        </property>
+        <property name="voidedReason" type="java.lang.String">
+            <column name="VOIDED_REASON" />
+        </property>
+        <property name="uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+    </class>
+</hibernate-mapping>

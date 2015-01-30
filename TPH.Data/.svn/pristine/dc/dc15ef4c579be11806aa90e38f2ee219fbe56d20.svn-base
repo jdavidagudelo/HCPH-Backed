@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2/11/2010 02:06:19 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.person.Person" table="person" catalog="RCMedicalRecordTPH">
+        <id name="personId" type="java.lang.Integer">
+            <column name="PERSON_ID" />
+            <generator class="identity"></generator>
+        </id>
+        <property name="gender" type="java.lang.String">
+            <column name="GENDER" />
+        </property>
+        <property name="birthdate" type="java.util.Date">
+            <column name="BIRTHDATE" />
+        </property>
+        <property name="birthdateEstimated" type="java.lang.Boolean">
+            <column name="BIRTHDATE_ESTIMATED" />
+        </property>
+        <many-to-one name="location" class="com.artica.telesalud.tph.model.location.Location" fetch="select" lazy="false">
+            <column name="LOCATION" />
+        </many-to-one>
+        <property name="specialty" type="java.lang.Integer">
+            <column name="SPECIALTY" />
+        </property>
+        <property name="identification" type="java.lang.String">
+            <column name="IDENTIFICATION" />
+        </property>
+        <property name="registro" type="java.lang.String">
+            <column name="REGISTRO" />
+        </property>
+        <many-to-one name="erp" class="com.artica.telesalud.tph.model.concept.Concept" fetch="select" lazy="false">
+            <column name="ERP" />
+        </many-to-one>
+        <many-to-one name="nivel" class="com.artica.telesalud.tph.model.concept.Concept" fetch="select" lazy="false">
+            <column name="NIVEL" />
+        </many-to-one>
+        <property name="firma" type="java.lang.String">
+            <column name="FIRMA" />
+        </property>
+        <many-to-one name="controlAph" class="com.artica.telesalud.tph.model.concept.Concept" fetch="join" lazy="false">
+            <column name="CONTROL_APH" />
+        </many-to-one>
+        <property name="dead" type="java.lang.Boolean">
+            <column name="DEAD" />
+        </property>
+        <property name="deathDate" type="java.util.Date">
+            <column name="DEATH_DATE" />
+        </property>
+        <many-to-one name="causeOfDeath" class="com.artica.telesalud.tph.model.concept.Concept" fetch="select" lazy="false">
+            <column name="CAUSE_OF_DEATH" />
+        </many-to-one>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="changedBy" type="java.lang.Integer">
+            <column name="CHANGED_BY" />
+        </property>
+        <property name="dateChanged" type="java.util.Date">
+            <column name="DATE_CHANGED" />
+        </property>
+        <property name="voided" type="java.lang.Boolean">
+            <column name="VOIDED" />
+        </property>
+        <property name="voidedBy" type="java.lang.Integer">
+            <column name="VOIDED_BY" />
+        </property>
+        <property name="dateVoided" type="java.util.Date">
+            <column name="DATE_VOIDED" />
+        </property>
+        <property name="voidReason" type="java.lang.String">
+            <column name="VOID_REASON" />
+        </property>
+        <property name="Uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+     
+    </class>
+</hibernate-mapping>

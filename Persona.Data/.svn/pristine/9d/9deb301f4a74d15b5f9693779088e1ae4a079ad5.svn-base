@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Sep 12, 2014 10:42:39 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.persona.model.impl.UserDTO" table="users">
+        <id name="user_id" type="java.lang.Integer">
+            <column name="user_id" />
+            <generator class="identity" />
+        </id>
+        <property name="uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+        <property name="user_id" type="java.lang.Integer" access="field">
+            <column name="USER_ID" />
+        </property>
+        <property name="system_id" type="java.lang.String" access="field">
+            <column name="SYSTEM_ID" />
+        </property>
+        <property name="username" type="java.lang.String">
+            <column name="USERNAME" />
+        </property>
+        <property name="password" type="java.lang.String">
+            <column name="PASSWORD" />
+        </property>
+        <property name="salt" type="java.lang.String">
+            <column name="SALT" />
+        </property>
+        <property name="secret_question" type="java.lang.String" access="field">
+            <column name="SECRET_QUESTION" />
+        </property>
+        <property name="secret_answer" type="java.lang.String" access="field">
+            <column name="SECRET_ANSWER" />
+        </property>
+        <property name="role" type="java.lang.Integer">
+            <column name="ROLE" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="date_created" type="java.util.Date" access="field">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="changed_by" type="java.lang.Integer" access="field">
+            <column name="CHANGED_BY" />
+        </property>
+        <property name="date_changed" type="java.util.Date" access="field">
+            <column name="DATE_CHANGED" />
+        </property>
+        <property name="person_id" type="java.lang.Integer" access="field">
+            <column name="PERSON_ID" />
+        </property>
+        <property name="retired" type="java.lang.Boolean">
+            <column name="RETIRED" />
+        </property>
+        <property name="retired_by" type="java.lang.Integer" access="field">
+            <column name="RETIRED_BY" />
+        </property>
+        <property name="date_retired" type="java.util.Date" access="field">
+            <column name="DATE_RETIRED" />
+        </property>
+        <property name="retire_reason" type="java.lang.String" access="field">
+            <column name="RETIRE_REASON" />
+        </property>
+    </class>
+</hibernate-mapping>

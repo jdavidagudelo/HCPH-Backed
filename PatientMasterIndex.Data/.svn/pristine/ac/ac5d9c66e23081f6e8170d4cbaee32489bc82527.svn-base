@@ -1,0 +1,10 @@
+package com.artica.telesalud.patientmasterindex.dao;
+
+import java.util.List;
+
+import com.artica.telesalud.patientmasterindex.model.PatientIndex;
+
+public interface PatientIndexDAO {
+	public List<PatientIndex> findClinicHistoriesByPatient(String patientIdentifier, String domainUuid);
+	public List<PatientIndex> findExternalClinicHistoriesByPatient(String patientIdentifier, String ehrUuid);
+}

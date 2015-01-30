@@ -1,0 +1,183 @@
+package com.artica.telesalud.persona.service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
+import com.artica.telesalud.common.data.DataConstraintViolation;
+import com.artica.telesalud.common.exception.DataConstraintViolationException;
+import com.artica.telesalud.common.service.DAOFactoryInstantiator;
+import com.artica.telesalud.persona.dao.PermissionDAO;
+import com.artica.telesalud.persona.dao.PersonaDAOFactory;
+import com.artica.telesalud.persona.dao.RoleDAO;
+import com.artica.telesalud.persona.model.Operation;
+import com.artica.telesalud.persona.model.Permission;
+import com.artica.telesalud.persona.model.Privilege;
+import com.artica.telesalud.persona.model.Resource;
+import com.artica.telesalud.persona.model.Role;
+import com.artica.telesalud.persona.service.user.RoleIsParentException;
+
+public class RoleService {
+	
+	private RoleDAO roleDao;
+	private PermissionDAO permissionDao;
+	
+	public RoleService(String daoClassName, HashMap<String, String> params){
+		roleDao = DAOFactoryInstantiator.instantiateDaoFactory(PersonaDAOFactory.class, 
+			daoClassName, params).getRoleDao();
+		permissionDao = DAOFactoryInstantiator.instantiateDaoFactory(PersonaDAOFactory.class, 
+				daoClassName, params).getPermissionDao();
+	}
+	
+	public List<Role> readAll(){
+		return roleDao.getAll();
+	}
+	
+	public Role newBlankRole(){
+		return roleDao.newBlankRole();
+	}
+	
+	public Role insertRole(Role role) throws DataConstraintViolationException{
+		if( role.getUuid() == null || role.getUuid().isEmpty() )
+			role.setUuid(UUID.randomUUID().toString());
+		
+		assertValid(role);
+		
+		return roleDao.insert(role);
+	}
+	
+	public Role updateRole(Role role) throws DataConstraintViolationException{
+		assertValid(role);
+		return roleDao.update(role);
+	}
+	
+	public Role deleteRole(Role role) throws RoleIsParentException{
+		if( roleDao.getChildren(role).size() > 0 ){
+			throw new RoleIsParentException(role);
+		}
+		return roleDao.delete(role);
+	}
+	
+	public List<Role> getDescendentsOf(Role role){
+		
+		if( role == null || role.getRoleId() == null || role.getRoleId().intValue() == 0 )
+			return new ArrayList<Role>(0);
+		
+		ArrayList<Role> descendents = new ArrayList<Role>();
+		
+		List<Role> children = roleDao.getChildren(role);
+		
+		for( Role child : children ){
+			descendents.add(child);
+			descendents.addAll(getDescendentsOf(child));
+		}
+		
+		return descendents;
+	}
+	
+	public List<Role> getAncestorsOf(Role role){
+		ArrayList<Role> ancestors = new ArrayList<Role>();
+		
+		Role ancestor = roleDao.getParent(role);
+		while( ancestor != null ){
+			ancestors.add(ancestor);
+			ancestor = roleDao.getParent(ancestor);
+		}
+			
+		return ancestors;
+	}
+	
+	public boolean isAncestorOf(Role role, Role ancestor){
+		Role p = roleDao.getParent(role);
+		while( p != null ){
+			if( p.equals(ancestor) )
+				return true;
+			p = roleDao.getParent(p);
+		}
+		return false;
+	}
+	
+	public List<Privilege> getInheritedPrivileges(Role role){
+		
+		List<Privilege> inheritedPrivileges = new ArrayList<Privilege>();
+		
+		if( role == null )
+			return inheritedPrivileges;
+		
+		Role parent = roleDao.getParent(role);
+		
+		if( parent != null ){
+			inheritedPrivileges.addAll( getPrivileges(parent));
+			inheritedPrivileges.addAll(getInheritedPrivileges(parent));			
+		}
+		
+		return inheritedPrivileges;
+	}
+	
+	public boolean hasPrivilege(Role role, Resource resource, Operation operation){
+		
+		if( resource == null || operation == null )
+			return false;
+		
+		for(Privilege p : getPrivileges(role))
+			if( p.getResource().equals(resource.getResourceId()) && p.getOperation().equals(operation.getOperationId()) )
+			//if( p.getResource() == resource.getResourceId() && p.getOperation() == operation.getOperationId())
+				return true;
+		
+		return false;
+	}
+	
+	public List<Privilege> getPrivileges(Role role){
+		if( role == null )
+			return new ArrayList<Privilege>(0);
+		return roleDao.getPrivilegesFor(role);
+	}
+	
+	public boolean inheritsPrivilege(Role role, Resource resource, Operation operation){
+		if( roleDao.getParent(role) == null )
+			return false;
+		
+		if( hasPrivilege(roleDao.getParent(role), resource, operation) )
+			return true;
+		else
+			return inheritsPrivilege(roleDao.getParent(role), resource, operation);
+	}
+	
+	public Permission newBlankPermission(){
+		return permissionDao.newBlankPermission();
+	}
+	
+	
+	public void assertValid(Role role) throws DataConstraintViolationException{
+		List<DataConstraintViolation> violations = roleDao.validate(role);
+		
+		if( violations.size() > 0)
+			throw new DataConstraintViolationException(violations);
+		
+	}
+
+	public Role findById(int id) {
+		return roleDao.findById(id);
+	}
+	
+	public Role findByName(String name){
+		return roleDao.findByName(name);
+	}
+	
+	public List<Resource> getPartAccessibleResources(Role role){
+		return roleDao.getPartAccesibleResources(role);
+	}
+	
+	public void setPrivileges(Role role, List<Privilege> newPrivileges){
+		List<Privilege> actualPrivileges = roleDao.getPrivilegesFor(role);
+		
+		for(Privilege actual : actualPrivileges)
+			if( !newPrivileges.contains(actual))
+				roleDao.removePrivilegeFrom(role, actual);
+		
+		for(Privilege newP : newPrivileges)
+			if( !actualPrivileges.contains(newP))
+				roleDao.addPrivilegeTo(role, newP);
+	}
+}

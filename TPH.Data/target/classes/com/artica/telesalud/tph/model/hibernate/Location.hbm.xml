@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 23/11/2010 03:50:10 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.location.Location" table="location" catalog="RCMedicalRecordTPH">
+        <id name="locationId" type="java.lang.Integer">
+            <column name="LOCATION_ID" />
+            <generator class="identity" />
+        </id>
+        <property name="name" type="java.lang.String">
+            <column name="NAME" />
+        </property>
+        <property name="description" type="java.lang.String">
+            <column name="DESCRIPTION" />
+        </property>
+        <property name="address1" type="java.lang.String">
+            <column name="ADDRESS1" />
+        </property>
+        <property name="address2" type="java.lang.String">
+            <column name="ADDRESS2" />
+        </property>
+        <many-to-one name="city" class="com.artica.telesalud.tph.model.location.City" fetch="select" lazy="false">
+            <column name="CITY" />
+        </many-to-one>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="region" type="java.lang.String">
+            <column name="REGION" />
+        </property>
+        <property name="retired" type="java.lang.Integer">
+            <column name="RETIRED" />
+        </property>
+        <property name="retiredBy" type="java.lang.Integer">
+            <column name="RETIRED_BY" />
+        </property>
+        <property name="dateRetired" type="java.util.Date">
+            <column name="DATE_RETIRED" />
+        </property>
+        <property name="retireReason" type="java.lang.String">
+            <column name="RETIRE_REASON" />
+        </property>
+        <many-to-one name="parentLocation" class="com.artica.telesalud.tph.model.location.Location" fetch="select" lazy="false">
+             <column name="PARENT_LOCATION" />
+        </many-to-one>
+        <property name="uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+    </class>
+</hibernate-mapping>

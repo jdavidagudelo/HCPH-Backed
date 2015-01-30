@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 4/11/2010 11:44:26 AM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.patient.PatientIdentifier" table="patient_identifier" catalog="RCMedicalRecordTPH">
+        <id name="PatientIdentifierId" type="java.lang.Integer">
+            <column name="PATIENT_IDENTIFIER_ID" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="patient" class="com.artica.telesalud.tph.model.patient.Patient" fetch="join" lazy="false">
+            <column name="PATIENT_ID"/>
+        </many-to-one>
+        <property name="identifier" type="java.lang.String">
+            <column name="IDENTIFIER" />
+        </property>
+        <many-to-one name="patientIdentifierType" class="com.artica.telesalud.tph.model.patient.PatientIdentifierType" fetch="select" lazy="false">
+            <column name="IDENTIFIER_TYPE"/>
+        </many-to-one>
+        <property name="preferred" type="java.lang.Boolean">
+            <column name="PREFERRED" />
+        </property>
+        <property name="country" type="java.lang.Integer">
+            <column name="COUNTRY" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="voided" type="java.lang.Boolean">
+            <column name="VOIDED" />
+        </property>
+        <property name="voidedBy" type="java.lang.Integer">
+            <column name="VOIDED_BY" />
+        </property>
+        <property name="dateVoided" type="java.util.Date">
+            <column name="DATE_VOIDED" />
+        </property>
+        <property name="voidReason" type="java.lang.String">
+            <column name="VOID_REASON" />
+        </property>
+        <property name="Uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 10, 2014 4:47:09 PM by Hibernate Tools 3.6.0 -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.patientmasterindex.model.PatientIndexed" table="Patient" catalog="PatientMasterIndex">
+        <id name="personId" type="string">
+            <column name="personId" length="50" />
+            <generator class="assigned" />
+        </id>
+        <property name="patientId" type="string">
+            <column name="patientId" length="50" not-null="true" unique="true">
+                <comment>Indentificador de la historia cl&#195;&#173;nica del paciente</comment>
+            </column>
+        </property>
+        <property name="name" type="string">
+            <column name="name" not-null="true">
+                <comment>Nombre y apellido del paciente.</comment>
+            </column>
+        </property>
+        <property name="gender" type="string">
+            <column name="gender" not-null="true">
+                <comment>G&#195;&#169;nero del paciente</comment>
+            </column>
+        </property>
+        <property name="dateBirth" type="string">
+            <column name="dateBirth" length="50">
+                <comment>Fecha de nacimiento del paciente</comment>
+            </column>
+        </property>
+        <property name="creationDate" type="date">
+            <column name="creationDate" length="10" not-null="true">
+                <comment>Fecha de creaci&#195;&#179;n del paciente</comment>
+            </column>
+        </property>
+      
+    </class>
+</hibernate-mapping>

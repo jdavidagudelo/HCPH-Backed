@@ -1,0 +1,164 @@
+package com.artica.telesalud.persona.dao.hibernate;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
+
+import com.artica.telesalud.common.data.DataConstraintViolation;
+import com.artica.telesalud.common.data.HibernateDAO;
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.persona.dao.OperationDAO;
+import com.artica.telesalud.persona.model.impl.OperationDTO;
+import com.artica.telesalud.persona.model.impl.PermissionDTO;
+import com.artica.telesalud.persona.model.impl.PrivilegeDTO;
+
+public class HibernateOperationDAO   extends HibernateDAO implements OperationDAO,
+Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	
+	public List<OperationDTO> getAll() {
+		Session session = null;
+		try {
+			session = getNewSession();
+			Criteria criteria = session.createCriteria(OperationDTO.class);
+
+			@SuppressWarnings("unchecked")
+			List<OperationDTO> users = criteria.list();
+
+			return users;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+	}
+
+	
+	public OperationDTO insert(OperationDTO operation) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			session.save(operation);
+			tx.commit();
+
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		return operation;
+	}
+
+	
+	public OperationDTO update(OperationDTO operation) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			session.update(operation);
+			tx.commit();
+
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		return operation;
+	}
+
+	
+	public OperationDTO newBlankOperation() {
+		return new OperationDTO();
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public OperationDTO delete(OperationDTO operation) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			session.delete(operation);
+			Criteria criteria = session.createCriteria(PrivilegeDTO.class).add(Restrictions.eq("operation",
+					operation.getOperationId()));
+			for(PrivilegeDTO privilege : (List<PrivilegeDTO>)criteria.list())
+			{
+				session.delete(privilege);
+			}
+			criteria = session.createCriteria(PermissionDTO.class).add(Restrictions.eq("operation", 
+					operation.getOperationId()));
+			for(PermissionDTO privilege : (List<PermissionDTO>)criteria.list())
+			{
+				session.delete(privilege);
+			}
+			tx.commit();
+
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		return operation;
+	}
+
+	
+	public List<DataConstraintViolation> validate(OperationDTO operation) {
+		return new ArrayList<DataConstraintViolation>();
+	}
+
+	
+	public OperationDTO findByName(String name) {
+		Session session = null;
+		OperationDTO user = null;
+		try {
+			session = getNewSession();
+			Criteria criteria = session.createCriteria(OperationDTO.class).add(
+					Restrictions.eq("name", name));
+
+			user = (OperationDTO) criteria.uniqueResult();
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		return user;
+	}
+}

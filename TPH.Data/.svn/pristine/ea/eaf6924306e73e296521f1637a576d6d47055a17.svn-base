@@ -1,0 +1,25 @@
+package com.artica.telesalud.tph.dao;
+
+import java.util.List;
+
+import com.artica.telesalud.tph.model.encounter.Encounter;
+import com.artica.telesalud.tph.model.evento.Evento;
+import com.artica.telesalud.tph.model.evento.Lesionado;
+
+public interface LesionadoDAO {
+	
+	public Lesionado getLesionado(Integer lesionadoId);
+	public List<Lesionado> getLesionados(Evento evento);
+	public Lesionado save(Lesionado lesionado);
+	public Lesionado update(Lesionado lesionado);
+	public Lesionado newLesionado();
+	public Lesionado delete(Lesionado lesionado);
+	public List<Lesionado> getLesionadosSolicitudTeleasistencia(Evento evento);
+	public List<Lesionado> getLesionados(Evento evento, Integer userId, Integer personId);
+	public List<Lesionado> getLesionadosPorIdentificacion(String identificacion, Integer tipo);
+	public List<Lesionado> getLesionadosPorRegistro(String registro);
+	public List<Lesionado> getLesionadosEncounter(Integer encounterId);
+	public List<Lesionado> getLesionadosEvent(Evento evento, Integer userId,
+			Integer personId);
+	public Lesionado getLesionadoEvento(Evento evento, Integer eventLocalIdentifierId);
+}

@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 23/11/2010 03:50:10 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.concept.InteractionType" table="INTERACTIONTYPE" catalog="RCMedicalRecordTPH">
+        <id name="interactionTypeId" type="java.lang.Integer">
+            <column name="INTERACTIONTYPEID" />
+            <generator class="assigned" />
+        </id>
+        <property name="name" type="java.lang.String">
+            <column name="NAME" />
+        </property>
+        <property name="description" type="java.lang.String">
+            <column name="DESCRIPTION" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATECREATED" />
+        </property>
+        <property name="retired" type="java.lang.Boolean">
+            <column name="RETIRED" />
+        </property>
+        <property name="retiredBy" type="java.lang.Integer">
+            <column name="RETIREDBY" />
+        </property>
+        <property name="dateRetired" type="java.util.Date">
+            <column name="DATERETIRED" />
+        </property>
+        <property name="retireReason" type="java.lang.String">
+            <column name="RETIREREASON" />
+        </property>
+        <property name="uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+    </class>
+</hibernate-mapping>

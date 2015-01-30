@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 23/11/2010 03:50:10 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.concept.ConceptNumeric" table="concept_numeric" catalog="RCMedicalRecordTPH">
+        <id name="concept" type="com.artica.telesalud.tph.model.concept.Concept">
+            <column name="CONCEPT_ID" />
+            <generator class="assigned"/>
+        </id>
+        <property name="hiAbsolute" type="java.lang.Double">
+            <column name="HI_ABSOLUTE" />
+        </property>
+        <property name="hiCritical" type="java.lang.Double">
+            <column name="HI_CRITICAL" />
+        </property>
+        <property name="hiNormal" type="java.lang.Double">
+            <column name="HI_NORMAL" />
+        </property>
+        <property name="lowAbsolute" type="java.lang.Double">
+            <column name="LOW_ABSOLUTE" />
+        </property>
+        <property name="lowCritical" type="java.lang.Double">
+            <column name="LOW_CRITICAL" />
+        </property>
+        <property name="lowNormal" type="java.lang.Double">
+            <column name="LOW_NORMAL" />
+        </property>
+        <property name="units" type="java.lang.String">
+            <column name="UNITS" />
+        </property>
+        <property name="precise" type="java.lang.Integer">
+            <column name="PRECISE" />
+        </property>
+    </class>
+</hibernate-mapping>

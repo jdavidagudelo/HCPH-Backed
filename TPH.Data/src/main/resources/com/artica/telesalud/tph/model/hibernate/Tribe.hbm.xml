@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 4/11/2010 11:44:26 AM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.patient.Tribe" table="tribe" catalog="RCMedicalRecordTPH">
+        <id name="tribeId" type="java.lang.Integer">
+            <column name="TRIBE_ID" />
+            <generator class="identity" />
+        </id>
+        <property name="retired" type="java.lang.Boolean">
+            <column name="RETIRED" />
+        </property>
+        <property name="name" type="java.lang.String">
+            <column name="NAME" />
+        </property>
+    </class>
+</hibernate-mapping>

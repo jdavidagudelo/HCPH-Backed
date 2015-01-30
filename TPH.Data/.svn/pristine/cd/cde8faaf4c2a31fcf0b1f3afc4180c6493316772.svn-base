@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 8/11/2010 03:19:25 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.form.Field" table="field" catalog="RCMedicalRecordTPH">
+        <id name="fieldId" type="java.lang.Integer">
+            <column name="FIELD_ID" />
+            <generator class="identity" />
+        </id>
+        <property name="name" type="java.lang.String">
+            <column name="NAME" />
+        </property>
+        <property name="description" type="java.lang.String">
+            <column name="DESCRIPTION" />
+        </property>
+        <many-to-one name="fieldType" class="com.artica.telesalud.tph.model.form.FieldType" fetch="join" lazy="false">
+            <column name="FIELD_TYPE" />
+        </many-to-one>
+        <many-to-one name="concept" class="com.artica.telesalud.tph.model.concept.Concept" fetch="join" lazy="false">
+            <column name="CONCEPT_ID" />
+        </many-to-one>
+        <property name="tableName" type="java.lang.String">
+            <column name="TABLE_NAME" />
+        </property>
+        <property name="attributeName" type="java.lang.String">
+            <column name="ATTRIBUTE_NAME" />
+        </property>
+        <property name="defaultValue" type="java.lang.String">
+            <column name="DEFAULT_VALUE" />
+        </property>
+        <property name="selectMultiple" type="java.lang.Boolean">
+            <column name="SELECT_MULTIPLE" />
+        </property>
+        <property name="size" type="java.lang.Integer">
+            <column name="SIZE" />
+        </property>
+        <property name="maxlength" type="java.lang.Integer">
+            <column name="MAXLENGTH" />
+        </property>
+        <property name="cols" type="java.lang.Integer">
+            <column name="COLS" />
+        </property>
+        <property name="rows" type="java.lang.Integer">
+            <column name="ROWS" />
+        </property>
+         <property name="serializable" type="java.lang.Boolean">
+            <column name="SERIALIZABLE" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="changedBy" type="java.lang.Integer">
+            <column name="CHANGED_BY" />
+        </property>
+        <property name="dateChanged" type="java.util.Date">
+            <column name="DATE_CHANGED" />
+        </property>
+        <property name="retired" type="java.lang.Boolean">
+            <column name="RETIRED" />
+        </property>
+        <property name="retiredBy" type="java.lang.Integer">
+            <column name="RETIRED_BY" />
+        </property>
+        <property name="dateRetired" type="java.util.Date">
+            <column name="DATE_RETIRED" />
+        </property>
+        <property name="retireReason" type="java.lang.String">
+            <column name="RETIRE_REASON" />
+        </property>
+        <property name="Uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+    </class>
+</hibernate-mapping>

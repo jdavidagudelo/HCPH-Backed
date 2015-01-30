@@ -1,0 +1,23 @@
+package com.artica.telesalud.persona.service.user;
+
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.persona.model.Role;
+
+public class RoleIsParentException extends TelesaludException {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Role role;
+
+	public RoleIsParentException(Role role) {
+		super("Error");
+		this.role = role;
+	}
+
+	public Role getRole() {
+		return role;
+	}
+	
+	
+}

@@ -1,0 +1,196 @@
+package com.artica.telesalud.tph.dao.hibernate;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
+
+import com.artica.telesalud.common.data.HibernateDAO;
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.tph.dao.PatientDAO;
+import com.artica.telesalud.tph.model.patient.Patient;
+import com.artica.telesalud.tph.model.patient.PatientIdentifier;
+
+public class HibernatePatientDAO extends HibernateDAO implements PatientDAO {
+
+	public HibernatePatientDAO(String configFile) {
+		super(configFile);
+	}
+
+	
+	public Patient delete(Patient patient) {
+		
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    if(patient.getDateVoided()==null){
+		    	patient.setDateVoided(new Date());
+		    	patient.setVoided((short)1);
+		    }
+		    
+			session.update(patient);
+		    tx.commit();
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    throw new TelesaludException("Exception!",e,HibernatePatientDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return patient;
+		
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public List<Patient> getAll() {
+		
+		List<Patient> patients=new ArrayList<Patient>();
+		Session session = null;
+		Transaction tx = null;
+		try{
+			session = getNewSession();
+		tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Patient.class).add(Restrictions.eq("voided",(short)0));
+			
+			patients = criteria.list();
+			tx.commit();
+			
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    throw new TelesaludException("Exception!",e,HibernatePatientDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		
+		return patients;
+		
+	}
+
+	
+	public Patient insert(Patient patient) {
+		
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    if(patient.getDateCreated()== null)
+		    	patient.setDateCreated(new Date());
+		    
+		    session.save(patient);
+		    tx.commit();
+		    
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    throw new TelesaludException("Exception!",e,HibernatePatientDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return patient;
+		
+	}
+
+	
+	public Patient newBlankPatient() {
+		Patient patient = new Patient();
+		patient.setVoided((short)0);
+		return patient;
+	}
+
+	
+	public Patient update(Patient patient) {
+		
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    patient.setDateChanged(new Date());
+		    
+		    session.update(patient);
+		    tx.commit();
+		    
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    throw new TelesaludException("Exception!",e,HibernatePatientDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return patient;
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	
+	public List<PatientIdentifier> getPatients(String identifier) throws TelesaludException{
+		
+		List<PatientIdentifier> patients = new ArrayList<PatientIdentifier>();
+		Session session = null;
+		Transaction tx = null;
+		try{
+			session = getNewSession();
+
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(PatientIdentifier.class)
+							    .add(Restrictions.ilike("identifier", identifier));
+			
+			patients= criteria.list();
+			tx.commit();
+		}catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    throw new TelesaludException("Exception!",e,HibernatePatientDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		
+		return patients;
+		
+	}
+	
+	
+	public Patient getPatient(Integer identifier) throws TelesaludException{
+		
+		Patient patient = null;
+		Session session = null;
+		Transaction tx = null;
+		try{
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Patient.class).add(Restrictions.eq("patientId", identifier));
+			patient= (Patient)criteria.uniqueResult();
+			tx.commit();
+		}catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			throw new TelesaludException("Exception!",e,HibernatePatientDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		
+		return patient;
+		
+	}
+
+}

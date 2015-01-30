@@ -1,0 +1,462 @@
+package com.artica.telesalud.tph.message.service.interactions;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
+import org.jdom2.Attribute;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
+import org.springframework.util.Base64Utils;
+
+import com.artica.telesalud.common.data.HibernateSessionFactoryManager;
+import com.artica.telesalud.message.service.dto.AntecedenteAmp;
+import com.artica.telesalud.tph.dao.hibernate.HibernateTPHDAOFactory;
+import com.artica.telesalud.tph.message.service.exception.InvalidPatientException;
+import com.artica.telesalud.tph.message.service.properties.ClinicalDocumentHCPHProperties;
+import com.artica.telesalud.tph.message.service.properties.HibernateProperties;
+import com.artica.telesalud.tph.message.service.properties.XMLPathProperties;
+import com.artica.telesalud.tph.message.service.util.HL7Formatter;
+import com.artica.telesalud.tph.model.encounter.Encounter;
+import com.artica.telesalud.tph.model.patient.Patient;
+import com.artica.telesalud.tph.model.person.Person;
+import com.artica.telesalud.tph.model.user.User;
+import com.artica.telesalud.tph.service.EncounterService;
+import com.artica.telesalud.tph.service.PatientService;
+import com.artica.telesalud.tph.service.PersonService;
+import com.artica.telesalud.tph.service.UserService;
+
+/**
+ * Esta clase permite crear y enviar mensajes que contienen un documento CDA
+ * (Clinical Document Architecture). Para el caso de la historia clinica de
+ * atencion prehospitalaria este documento contiene un cuerpo no estructurado
+ * que incluye un archivo PDF codificado como un String en base 64.
+ * 
+ * @author Juan David Agudelo Alvarez jdaaa2009@gmail.com
+ * 
+ */
+public class ClinicalDocumentHCPHMessageService {
+	/**
+	 * Atributo utilizado para obtener informacion por defecto a partir de la
+	 * base de datos.
+	 */
+	private static final HibernateProperties HIBERNATE_PROPERTIES = HibernateProperties
+			.getInstance();
+	/**
+	 * Propiedades requeridas para direcciones de archivos y espacios de nombre
+	 * por defecto.
+	 */
+	private static final XMLPathProperties XPATH_PROPERTIES = XMLPathProperties
+			.getInstance();
+	/**
+	 * Espacio de nombre asociado con HL7 V3. Es utilizado para procesar el
+	 * documento CDA.
+	 */
+	public static final Namespace HL7_NAMESPACE = Namespace.getNamespace(
+			XPATH_PROPERTIES.getXpathNameSpaceHl7Name(),
+			XPATH_PROPERTIES.getXpathNameSpaceHl7Url());
+	/**
+	 * Atributo utilizado para obtener a partir de un paciente la informacion
+	 * requerida para completar el documento CDA generado.
+	 */
+	private static final HL7Formatter HL7_FORMATTER = HL7Formatter
+			.getInstance();
+	/**
+	 * Atributo empleado para procesar el documento CDA y obtener los atributos
+	 * y elementos necesario a partir de la plantilla XML y generar el documento
+	 * CDA que será enviado al bus de servicios.
+	 */
+	private static final ClinicalDocumentHCPHXMLParser PARSER = ClinicalDocumentHCPHXMLParser
+			.getInstance();
+	/**
+	 * Atributo utilizado para conocer el nombre de los elementos del documento
+	 * CDA que requieren ser leidos.
+	 */
+	private static final ClinicalDocumentHCPHProperties CLINICAL_DOCUMENT_HCPH_PROPERTIES = ClinicalDocumentHCPHProperties
+			.getInstance();
+	/**
+	 * Servicio utilizado para obtener los usuarios del sistema.
+	 */
+	private UserService userService;
+	/**
+	 * Servicio utilizado para obtener la informacion de las personas.
+	 */
+	private PersonService personService;
+	/**
+	 * Servicio utilizado para obtener la informacion de un enecuentro de
+	 * emergencias.
+	 */
+	private EncounterService encounterService;
+	/**
+	 * Servicio utilizado para obtener la informacion de un paciente lesionado
+	 * en un encuentro de emergencias.
+	 */
+	private PatientService patientService;
+	/**
+	 * Url utilizada para cargar las plantillas XML utilizadas por esta clase.
+	 * Este atributo debe ser especificado a partir del ambiente en el que se
+	 * ejecute este servicio. Para el caso de esta aplicacion es configurado a
+	 * partir de parametros almacenados en el archivo web.xml de la aplicacion
+	 * web asociada a esta historia clinica. El valor por defecto corresponde al
+	 * especificado en el archivo de propiedades.
+	 */
+	private String urlBaseTemplates = XPATH_PROPERTIES
+			.getXmlTemplateRootFilePath();
+	/**
+	 * Url utilizada para cargar las plantillas XSL utilizadas por esta clase.
+	 * Este atributo debe ser especificado a partir del ambiente en el que se
+	 * ejecute este servicio. Para el caso de esta aplicacion es configurado a
+	 * partir de parametros almacenados en el archivo web.xml de la aplicacion
+	 * web asociada a esta historia clinica. El valor por defecto corresponde al
+	 * especificado en el archivo de propiedades.
+	 */
+	private String urlBaseXsl = XPATH_PROPERTIES.getXmlXslRootFilePath();
+
+	/**
+	 * Constructor que permite inicializar los servicios requeridos por esta
+	 * clase a partir de los parametros de configuracion especificados como
+	 * argumento.
+	 * 
+	 * @param daoClassName
+	 *            nombre calificado de la clase que sirve con Fabrica para los
+	 *            objetos Dao especificados en la capa de persistencia de la
+	 *            aplicacion.
+	 * @param params
+	 *            corresponde a una lista de pares clave y valor que contiene
+	 *            los parametros de configuracion de Hibernate.
+	 */
+	public ClinicalDocumentHCPHMessageService(String daoClassName,
+			HashMap<String, String> params) {
+
+		patientService = new PatientService(daoClassName, params);
+		encounterService = new EncounterService(daoClassName, params);
+		userService = new UserService(daoClassName, params);
+		personService = new PersonService(daoClassName, params);
+	}
+
+	/**
+	 * Constructor por defecto. Este constructor inicializa los servicios de la
+	 * capa de logica del negocio con la informacion alamacenda en el archivo de
+	 * propiedades. No deberia ser usado en modo de produccion.
+	 */
+	public ClinicalDocumentHCPHMessageService() {
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put(HibernateTPHDAOFactory.TPH_HIBERNATE_CONFIG_FILE,
+				HIBERNATE_PROPERTIES.getHibernateTphCfgXml());
+		HibernateSessionFactoryManager manager = HibernateSessionFactoryManager
+				.getInstance();
+		manager.createFactory(HIBERNATE_PROPERTIES.getHibernateTphCfgXml());
+		patientService = new PatientService(
+				HIBERNATE_PROPERTIES.getHibernateFactoryClass(), params);
+		encounterService = new EncounterService(
+				HIBERNATE_PROPERTIES.getHibernateFactoryClass(), params);
+		userService = new UserService(
+				HIBERNATE_PROPERTIES.getHibernateFactoryClass(), params);
+		personService = new PersonService(
+				HIBERNATE_PROPERTIES.getHibernateFactoryClass(), params);
+	}
+
+	/**
+	 * Este metodo permite crear un documento HTML a partir de un CDA en formato
+	 * XML. Para este proposito se utiliza un archivo XSL en el cual se definen
+	 * los estilos que serán utilizados durante la generacion del documento XML.
+	 * 
+	 * @param cda
+	 *            documento en formato XML que contiene la informacion de un
+	 *            paciente en formato XML. Generalmente esta informacion
+	 *            corresponde a los antecedentes, patologias y medicamentos de
+	 *            un paciente registrado en una historia clinica.
+	 * @return
+	 * @throws IOException
+	 * @throws TransformerException
+	 */
+	public String getHtmlFromCDA(String cda) throws IOException,
+			TransformerException {
+		// Instancia utilizada para crear un transformador del documento XML a
+		// HTML usando XSL
+		TransformerFactory tFactory = TransformerFactory.newInstance();
+		Source xslDocument = new StreamSource(urlBaseXsl
+				+ XPATH_PROPERTIES.getXmlXslCDAFilePath());
+		// documento xml obtenido a partir del cda
+		Source xmlDocument = new StreamSource(new StringReader(cda));
+		// Transformador de documentos XML a HTML usando XSL
+		Transformer trasform = tFactory.newTransformer(xslDocument);
+		// Utilizado para escribir en un String
+		StringWriter stringWriter = new StringWriter();
+		// se efectua la transformacion de XML a HTML usando XSL
+		trasform.transform(xmlDocument, new StreamResult(stringWriter));
+		// Se obtiene el String a partir del buffer almacenado
+		return stringWriter.getBuffer().toString();
+	}
+
+	
+	/**
+	 * Metodo utilizado para crear un CDA a partir de un Id de un encuentro y un
+	 * archivo PDF ingresado como argumento.
+	 * 
+	 * @param encounterId
+	 *            ID del encuentro
+	 * @param pdfData
+	 *            archivo pdf que se incluira dentro del cuerpo no estructurado
+	 *            del CDA
+	 * @return String codificado en base 64 que contiene el CDA requerido por la
+	 *         plantilla RCMR_IN000002UV01 y que contiene dentro de la etiqueta
+	 *         noXmlBody un archivo PDF codificado en base 64.
+	 * @throws InvalidPatientException
+	 * @throws IOException
+	 * @throws JDOMException
+	 */
+	public String createMessage(Integer encounterId, byte[] pdfData)
+			throws InvalidPatientException, IOException, JDOMException {
+		// se obtiene el encuentro a partir del id
+		Encounter encounter = encounterService.getEncounterById(encounterId);
+		// se obtiene el paciente a partir del encuentro
+		Patient patient = encounter.getPatient();
+		patient = patientService.buscarPatient(patient.getPatientId());
+		// se obtiene el usuario creador del encuentro
+		Integer userCreatorId = encounter.getCreator();
+		User creatorUser = userService.getUser(userCreatorId);
+		Person creator = personService
+				.obtenerPersona(creatorUser.getPersonId());
+		// inicializacion del documento que sera utilizado para crear el mensaje
+		SAXBuilder builder = new SAXBuilder();
+		Document document = null;
+		document = builder
+				.build(new FileInputStream(urlBaseTemplates
+						+ XPATH_PROPERTIES
+								.getXmlTemplateClinicalDocumentHCPHFilePath()));
+		// variable utilizada para generar un String a partir del documento XML
+		// generado
+		XMLOutputter xml = new XMLOutputter();
+		// el archivo pdf es codificado en base 64
+		String encoded = Base64Utils.encodeToString(pdfData);
+		String encodedString = encoded;
+		Attribute documentType = PARSER.getClinicalDocumentRecordTargetPatientRolePatientIdRoot(document);
+		documentType.setValue(HL7_FORMATTER.getPatientIdentifierType(patient));
+		// fecha inicial del encuentro de emergencias
+		Attribute low = PARSER
+				.getClinicalDocumentComponentOfEncompassingEncounterEffectiveTimeLowValue(document);
+		low.setValue(HL7_FORMATTER.getEncounterDateLow(encounter));
+		// identificador universal del mensaje generado
+		Attribute messageId = PARSER.getClinicalDocumentIdExtension(document);
+		messageId.setValue(HL7_FORMATTER.getUuidMensaje());
+		// Fecha de creacion del mensaje
+		Attribute effectiveTime = PARSER
+				.getClinicalDocumentEffectiveTimeValue(document);
+		effectiveTime.setValue(HL7_FORMATTER.getFormattedCreationTime());
+		// Identificador del encuentro de emergencias
+		Attribute encounterIdAttribute = PARSER
+				.getClinicalDocumentComponentOfEncompassingEncounterIdExtension(document);
+		encounterIdAttribute.setValue(String.valueOf(encounterId));
+		// Elemento que contendra el documento PDF codificado
+		Element nonXmlBody = PARSER.getClinicalDocumentComponentNonXMLBodyText(
+				document).get(0);
+		nonXmlBody.setText(encodedString);
+		// Identificador de la historia clinica del paciente, normalmente el
+		// mismo numero de identificacion del paciente
+		Attribute history = PARSER
+				.getClinicalDocumentRecordTargetPatientRoleIdExtension(document);
+		history.setValue(HL7_FORMATTER.getHistoryCode(patient));
+		// numero de identificacion del paciente
+		Attribute identifier = PARSER
+				.getClinicalDocumentRecordTargetPatientRolePatientIdExtension(document);
+		identifier.setValue(HL7_FORMATTER.getIdentifier(patient));
+		// Lista de nombres del paciente
+		List<Element> names = PARSER
+				.getClinicalDocumentRecordTargetPatientRolePatientNameGiven(document);
+		Element given = names.get(0);
+		Element middle = names.get(1);
+		given.setText(HL7_FORMATTER.getPersonNameGiven(patient));
+		middle.setText(HL7_FORMATTER.getPersonNameMiddle(patient));
+		// Lista de apellidos del paciente
+		List<Element> familyNames = PARSER
+				.getClinicalDocumentRecordTargetPatientRolePatientNameFamily(document);
+		Element family1 = familyNames.get(0);
+		Element family2 = familyNames.get(1);
+		family1.setText(HL7_FORMATTER.getPersonNameFamily1(patient));
+		family2.setText(HL7_FORMATTER.getPersonNameFamily2(patient));
+		// fecha de nacimiento del paciente
+		Attribute birthTime = PARSER
+				.getClinicalDocumentRecordTargetPatientRolePatientBirthTimeValue(document);
+		birthTime.setValue(HL7_FORMATTER.getFormattedBirthTime(patient));
+		// nombre del genero del paciente
+		Attribute gender = PARSER
+				.getClinicalDocumentRecordTargetPatientRolePatientAdministrativeGenderCodeDisplayName(document);
+		gender.setValue(HL7_FORMATTER.getGenderCodeDisplayName(patient));
+		// codigo del genero del paciente
+		Attribute genderCode = PARSER
+				.getClinicalDocumentRecordTargetPatientRolePatientAdministrativeGenderCodeCode(document);
+		genderCode.setValue(HL7_FORMATTER.getGenderCode(patient));
+		// Nombres del autor del documento
+		List<Element> authorName = PARSER
+				.getClinicalDocumentAuthorAssignedAuthorAssignedPersonNameGiven(document);
+		Element firstName = authorName.get(0);
+		firstName.setText(HL7_FORMATTER.getAuthorGivenName(creator));
+		// apellidos del autor del documento
+		List<Element> authorFamilyName = PARSER
+				.getClinicalDocumentAuthorAssignedAuthorAssignedPersonNameFamily(document);
+		Element familyName = authorFamilyName.get(0);
+		familyName.setText(HL7_FORMATTER.getAuthorFamilyName(creator));
+		// telefono del autor del documento
+		Attribute authorTelephone = PARSER
+				.getClinicalDocumentAuthorAssignedAuthorTelecomValue(document);
+		authorTelephone.setValue(HL7_FORMATTER.getAuthorTelephon(creator));
+		// numero de registro del autor del documento
+		Attribute authorRegister = PARSER
+				.getClinicalDocumentAuthorAssignedAuthorIdExtension(document);
+		authorRegister.setValue(HL7_FORMATTER.getAuthorRegister(creator));
+		// fecha final del encuentro
+		Attribute encounterDateHigh = PARSER
+				.getClinicalDocumentComponentOfEncompassingEncounterEffectiveTimeHighValue(document);
+		encounterDateHigh.setValue(HL7_FORMATTER
+				.getEncounterDateHigh(encounter));
+		// fecha inicial del encuentro
+		Attribute encounterDateLow = PARSER
+				.getClinicalDocumentComponentOfEncompassingEncounterEffectiveTimeLowValue(document);
+		encounterDateLow.setValue(HL7_FORMATTER.getEncounterDateLow(encounter));
+		// se obtiene el String retornado a partir del documento modificado
+		String outputString = xml.outputString(document);
+		// se codifica el Documento CDA en base 64 y se retorna
+		String encodedBytes = Base64Utils.encodeToString(outputString.getBytes(XPATH_PROPERTIES.getXmlEncodeCharsetUTF8()));
+		outputString = encodedBytes;
+		return outputString;
+	}
+
+	/**
+	 * Metodo utilizado para obtener la lista de los antecedentes almacenados en
+	 * este CDA en caso de que este contenga un cuerpo estructurado.
+	 * 
+	 * @param cda
+	 *            documento XML que contiene un cuerpo estructurado.
+	 * @return Lista de los antecedentes especificados en el documentos CDA
+	 *         especificado como argumento.
+	 * @throws JDOMException
+	 * @throws IOException
+	 */
+	public List<AntecedenteAmp> getAntecedentes(String cda)
+			throws JDOMException, IOException {
+		List<AntecedenteAmp> antecedentes = new ArrayList<AntecedenteAmp>();
+		// se obtiene el documento a partir del String ingresado
+		SAXBuilder builder = new SAXBuilder();
+		Document document = builder.build(new StringReader(cda));
+		// componentes que contienen la informacion de los antecedentes
+		List<Element> components = PARSER
+				.getComponentStructureBodyComponent(document);
+		for (Element element : components) {
+			AntecedenteAmp antecedente = new AntecedenteAmp();
+			List<String> descripciones = new ArrayList<String>();
+			List<String> fechas = new ArrayList<String>();
+			// Obtiene el elemento Section hijo del elemento Component contenido
+			// dentro del cuerpo estructurado
+			Element section = element
+					.getChild(
+							CLINICAL_DOCUMENT_HCPH_PROPERTIES
+									.getXpathComponentStructureBodyComponentSectionElementName(),
+							HL7_NAMESPACE);
+			// Obtiene el elemento Title hijo del elemento Section hijo del
+			// elemento Component contenido dentro del cuerpo estructurado
+			Element title = section
+					.getChild(
+							CLINICAL_DOCUMENT_HCPH_PROPERTIES
+									.getXpathComponentStructureBodyComponentSectionTitleElementName(),
+							HL7_NAMESPACE);
+			// tipo de antecedentes
+			antecedente.setTipoAntecedente(title.getText());
+			// Obtiene el elemento Text hijo del elemento Section hijo del
+			// elemento Component contenido dentro del cuerpo estructurado
+			Element text = section
+					.getChild(
+							CLINICAL_DOCUMENT_HCPH_PROPERTIES
+									.getXpathComponentStructureBodyComponentSectionTextElementName(),
+							HL7_NAMESPACE);
+			// Elementos contentText contenidos dentro del elemento text
+//			List<Element> contentsText = text
+//					.getChildren(
+//							CLINICAL_DOCUMENT_HCPH_PROPERTIES
+//									.getXpathComponentStructureBodyComponentSectionTextContentElementName(),
+//							HL7_NAMESPACE);
+			// Elementos list contenidos dentro del elemento text
+			List<Element> listsText = text
+					.getChildren(
+							CLINICAL_DOCUMENT_HCPH_PROPERTIES
+									.getXpathComponentStructureBodyComponentSectionTextListElementName(),
+							HL7_NAMESPACE);
+			// cada elemento de contentText con informacion se considera un
+			// nuevo antecedente
+//			for (Element content : contentsText) {
+//				if (!content.getText().isEmpty()) {
+//					descripciones.add(content.getText());				
+//				}
+//			}
+			// Cada elemento list contiene informacion de antecedentes
+			for (Element list : listsText) {
+
+				// items de un elemento list
+				List<Element> itemsList = list
+						.getChildren(
+								CLINICAL_DOCUMENT_HCPH_PROPERTIES
+										.getXpathComponentStructureBodyComponentSectionTextListItemElementName(),
+								HL7_NAMESPACE);
+				// Cada elemento item del elemento list contiene antecedentes
+				for (Element item : itemsList) {
+					// item sin hijos, debe contener antecedentes
+//					if (item.getChildren().isEmpty()) {
+//						if (!item.getText().isEmpty()) {
+					descripciones.add(item.getText());
+					fechas.add(item.getChildText(CLINICAL_DOCUMENT_HCPH_PROPERTIES.getXpathComponentStructureBodyComponentSectionTextContentElementName(), HL7_NAMESPACE));
+//						}
+//					} else {
+//						// se recorren los hijos del elemento item para obtener
+//						// los antecedentes
+//						List<Element> contentsItem = item
+//								.getChildren(
+//										CLINICAL_DOCUMENT_HCPH_PROPERTIES
+//												.getXpathComponentStructureBodyComponentSectionTextContentElementName(),
+//										HL7_NAMESPACE);
+//						for (Element content : contentsItem) {
+//							if (!content.getText().isEmpty()) {
+//								descripciones.add(content.getText());
+//							}
+//						}
+//					}
+				}
+			}
+			// se almacena la lista de antecedentes
+			antecedente.setListaAntecedentes(descripciones);
+			antecedente.setListaFechas(fechas);
+			antecedentes.add(antecedente);
+		}
+		return antecedentes;
+	}
+
+	public String getUrlBaseTemplates() {
+		return urlBaseTemplates;
+	}
+
+	public void setUrlBaseTemplates(String urlBaseTemplates) {
+		this.urlBaseTemplates = urlBaseTemplates;
+	}
+
+	public String getUrlBaseXsl() {
+		return urlBaseXsl;
+	}
+
+	public void setUrlBaseXsl(String urlBaseXsl) {
+		this.urlBaseXsl = urlBaseXsl;
+	}
+}

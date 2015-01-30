@@ -1,0 +1,903 @@
+package com.artica.telesalud.tph.dao.hibernate;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+
+import com.artica.telesalud.common.data.HibernateDAO;
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.common.service.EncryptionService;
+import com.artica.telesalud.tph.dao.ObsDAO;
+import com.artica.telesalud.tph.model.encounter.Encounter;
+import com.artica.telesalud.tph.model.observation.Obs;
+import com.artica.telesalud.tph.model.observation.ObservationData;
+import com.artica.telesalud.tph.model.patient.Patient;
+
+public class HibernateObsDAO extends HibernateDAO implements ObsDAO{
+	
+	private static final String ALGORITHM = "SHA1";
+	EncryptionService encryption = new EncryptionService();
+	
+	public HibernateObsDAO(String configFile) {
+		super(configFile);
+	}
+	
+	private void validar(Obs obs) {
+//		if(obs!=null)
+//			if(obs.getCheck() != null) {
+//				
+//				System.out.println(obs.calculateCheck());
+//				String check = encryption.encrypt(obs.calculateCheck(), ALGORITHM);
+//				
+//				if(!obs.getCheck().equals(check)) {
+//					throw new TelesaludException("Datos corruptos en obs "+obs.getObsId());
+//				}
+//			}
+	}
+	
+	@SuppressWarnings("unchecked")
+	
+	public List<Obs> getAll() {
+		
+		Session session = null;
+		List<Obs> obs = new ArrayList<Obs>();
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class);
+		
+			obs = criteria.list();
+			for(Obs observation : obs)
+				validar(observation);
+			tx.commit();
+				
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		
+		return obs;
+	}
+
+	
+	public Obs insert(Obs obs) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    if(obs.getDateCreated()==null)
+		    	obs.setDateCreated(new Date());
+		    
+		    obs.setVoided(0);
+		    obs.setUuid(UUID.randomUUID().toString());
+		    
+     	    String check = encryption.encrypt(obs.calculateCheck(), ALGORITHM);
+		    obs.setCheck(check);
+		    
+		    session.save(obs);
+		    tx.commit();
+		    
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+	
+	
+	public Obs update(Obs obs) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    String check = encryption.encrypt(obs.calculateCheck(), ALGORITHM);
+		    obs.setCheck(check);
+		    session.update(obs);
+		    tx.commit();
+		    
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+
+	
+	
+	public Obs newObs() {
+		Obs obs = new Obs();
+		
+		return obs;
+	}
+
+	
+	public Obs delete(Obs obs) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    if(obs.getDateVoided()==null){
+		    	obs.setDateVoided(new Date());
+		    	obs.setVoided(1);
+		    }
+		    
+		    String check = encryption.encrypt(obs.calculateCheck(), ALGORITHM);
+		    obs.setCheck(check);
+		    
+			session.update(obs);
+		    tx.commit();
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+	
+	
+	public List<Obs> getObsList(Encounter encounter,Obs obsGroup, Integer concept) {
+		Session session = null;
+		List<Obs> obs = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+								   .add(Restrictions.eq("concept",concept))
+								   .add(Restrictions.eq("encounter", encounter))
+								   .add(Restrictions.eq("obsGroup", obsGroup));
+
+			obs=(List<Obs>)criteria.list();
+			for(Obs o:obs)
+			{
+				validar(o);
+			}
+			tx.commit();
+		
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+	public Obs getObs(Encounter encounter,Obs obsGroup, Integer concept) {
+		Session session = null;
+		Transaction tx = null;
+		Obs obs = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+								   .add(Restrictions.eq("concept",concept))
+								   .add(Restrictions.eq("encounter", encounter))
+								   .add(Restrictions.eq("obsGroup", obsGroup));
+
+			obs=(Obs)criteria.uniqueResult();
+			validar(obs);
+			tx.commit();
+		
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+	
+	@SuppressWarnings("unchecked")
+	
+	public List<Obs> getListObs(Encounter encounter,Obs obsGroup, Integer concept) {
+		Session session = null;
+		Transaction tx = null;
+		List<Obs> obss = new ArrayList<Obs>();
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+								   .add(Restrictions.eq("concept",concept))
+								   .add(Restrictions.eq("encounter", encounter))
+								   .add(Restrictions.eq("obsGroup", obsGroup));
+
+			obss=criteria.list();
+		
+			for(Obs obs : obss)
+				validar(obs);
+			tx.commit();
+			
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obss;
+	}
+	
+	@SuppressWarnings("unchecked")
+	
+	public Boolean conceptContainValue(Patient patient, Integer concept, List<Integer> values) {
+		
+		Session session = null;
+		Boolean resultado = false;
+		List<Obs> listaResultado = new ArrayList<Obs>();
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+							.add(Restrictions.eq("person", patient.getPerson()));
+		
+			if(concept!=null)
+				criteria.add(Restrictions.eq("concept",concept));
+		
+			if(values.size()>0){
+				
+				if(values.size()==1){
+					criteria.add(Restrictions.eq("valueCoded", values.get(0)));
+				}else{
+					
+					Disjunction or = Restrictions.disjunction();
+					
+					for(Integer value : values){
+						or.add(Restrictions.eq("valueCoded", value));
+					}
+					
+					criteria.add(or);
+				}
+			}
+
+			listaResultado = criteria.list();
+		
+			if(listaResultado.size()>0)
+				resultado = true;
+			tx.commit();
+		
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return resultado;
+	}
+	
+	@SuppressWarnings("unchecked")
+	
+	public List<Obs> getObsByConcept(Patient patient, Integer concept) {
+		Session session = null;
+		Transaction tx = null;
+		List<Obs> lista = new ArrayList<Obs>();
+		
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+								   .add(Restrictions.eq("concept",concept))
+								   .add(Restrictions.eq("person", patient.getPerson()));
+		
+			lista=criteria.list();
+			for(Obs observation : lista)
+				validar(observation);
+			tx.commit();
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return lista;
+	}
+	
+	public List<Obs> getObsByDate(Patient patient, Integer concept, Date date)
+	{
+	Session session = null;
+		Transaction tx = null;
+		List<Obs> lista = new ArrayList<Obs>();
+		
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+					.add(Restrictions.eq("dateCreated", date))
+								   .add(Restrictions.eq("concept",concept))
+								   .add(Restrictions.eq("person", patient.getPerson()));
+		
+			lista=criteria.list();
+			for(Obs observation : lista)
+				validar(observation);
+			tx.commit();
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return lista;
+	}
+	public Obs getObs(Encounter encounter, Integer concept) {
+		Session session = null;
+		Obs obs = null;
+		Transaction tx = null;
+		try{
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+									   .add(Restrictions.eq("concept",concept))
+									   .add(Restrictions.eq("encounter", encounter))
+									   .setMaxResults(1);
+			obs=(Obs)criteria.uniqueResult();
+			validar(obs);
+			tx.commit();
+			
+		}catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+	
+	
+	public Obs getObs(Integer obsId) {
+		Session session = null;
+		Obs obs = null;
+		Transaction tx = null;
+		try{
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+									   .add(Restrictions.eq("obsId",obsId));
+			
+			obs=(Obs)criteria.uniqueResult();
+			validar(obs);
+			tx.commit();
+		}catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+	
+	
+	public void deleteChildren(Obs obs) {
+		Transaction tx = null;
+		Session session = null;
+		String hql = "";
+		
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    hql="delete from Obs where obsGroup=:Obs";
+		    Query query=session.createQuery(hql);
+		    query.setParameter("Obs", obs);
+		    query.executeUpdate();
+		    
+			session.flush();
+		    tx.commit();
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+	}
+	
+	
+	public Obs getObs(Patient patient, Integer concept) {
+		
+		Session session = null;
+		Obs obs = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+								   .add(Restrictions.eq("concept",concept))
+								   .add(Restrictions.eq("person", patient.getPerson()))
+								   .addOrder(Order.desc("obsDatetime"));
+		
+		criteria.setMaxResults(1);
+		
+		obs=(Obs)criteria.uniqueResult();
+		validar(obs);
+		tx.commit();
+		
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+	@SuppressWarnings("unchecked")
+	
+	public List<Obs> getObsPatient(Patient patient, Integer concept){
+		Session session = null;
+		Transaction tx = null;
+		List<Obs> obs = new ArrayList<Obs>();
+		
+		try{
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+								   .add(Restrictions.eq("concept",concept))
+								   .add(Restrictions.eq("person", patient.getPerson()))
+								   .addOrder(Order.desc("obsDatetime"));
+		
+		obs = criteria.list();
+		for(Obs observation : obs)
+			validar(observation);
+		tx.commit();
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		
+		return obs;
+	}
+	@SuppressWarnings("unchecked")
+	
+	public List<Obs> getObservations(Patient patient, Integer concept, Integer maxResults) {
+		
+		Session session = null;
+		List<Obs> obs = new ArrayList<Obs>();
+		Transaction tx = null;
+		
+		try{
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+								   .add(Restrictions.eq("concept",concept))
+								   .add(Restrictions.eq("person", patient.getPerson()))
+								   .add(Restrictions.isNull("obsGroup"))
+								   .addOrder(Order.desc("obsDatetime"));
+		if(maxResults > 0)
+			criteria.setMaxResults(maxResults);
+		
+		obs = criteria.list();
+		for(Obs observation : obs)
+			validar(observation);
+
+		tx.commit();
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		
+		return obs;
+	}
+	
+	@SuppressWarnings("unchecked")
+	
+	public List<Obs> getObservations(Encounter encounter, Integer concept, Integer maxResults) {
+		
+		Session session = null;
+		List<Obs> obs = new ArrayList<Obs>();
+		Transaction tx = null;
+		try{
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+								   .add(Restrictions.eq("concept",concept))
+								   .add(Restrictions.eq("encounter", encounter))
+								   .add(Restrictions.isNull("obsGroup"))
+								   .addOrder(Order.asc("obsDatetime"));
+			if(maxResults > 0)
+				criteria.setMaxResults(maxResults);
+			
+			obs = criteria.list();
+			for(Obs observation : obs)
+				validar(observation);
+		tx.commit();
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+	
+	
+	public Obs getLastObservation(Integer encounter, Integer concept) {
+		
+		Session session = null;
+		Transaction tx = null;
+		Obs obs = null;
+		try{
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+								   .add(Restrictions.eq("concept",concept))
+								   .add(Restrictions.eq("encounter.encounterId", encounter))
+								   .addOrder(Order.desc("obsDatetime"));
+		
+			criteria.setMaxResults(1);
+		
+			obs = (Obs)criteria.uniqueResult();
+			if(obs!=null)
+				validar(obs);
+			tx.commit();
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+	
+	
+	
+	@SuppressWarnings("unchecked")
+	
+	public List<Obs> getObservationsValue(Patient patient, Integer concept, Integer maxResults) {
+		
+		Session session = null;
+		Transaction tx = null;
+		List<Obs> obs = new ArrayList<Obs>();
+		
+		try{
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+								   .add(Restrictions.eq("valueCoded",concept))
+								   .add(Restrictions.eq("person", patient.getPerson()))
+								   .addOrder(Order.desc("obsDatetime"));
+			if(maxResults > 0)
+				criteria.setMaxResults(maxResults);
+			
+			obs = criteria.list();
+			for(Obs observation : obs)
+				validar(observation);
+			tx.commit();
+		
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+	
+	
+	public Obs getObsRevisionParaclinico(Patient patient, Integer concept) {
+		
+		Session session = null;
+		Obs obsP=null;
+		Obs obs=null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			String hql="SELECT ob FROM Obs ob WHERE ob.concept=19848 AND ob.person=:Persona AND (SELECT count(O) FROM Obs O WHERE O.obsGroup=ob.obsId and O.valueCoded=:Concepto)>0 ORDEr BY ob.obsDatetime DESC";
+		    Query query=session.createQuery(hql);
+		    query.setParameter("Persona", patient.getPerson());
+		    query.setParameter("Concepto", concept);
+		    
+		    query.setMaxResults(1);
+		    
+			obs=(Obs)query.uniqueResult();
+			validar(obs);
+		
+			if(obs!=null){
+				Criteria criteria = session.createCriteria(Obs.class)
+				   .add(Restrictions.eq("obsGroup",obs))
+				   .add(Restrictions.eq("concept", Integer.valueOf(12567)));
+				
+				obsP=(Obs)criteria.uniqueResult();
+			}
+			tx.commit();
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}		
+		
+		return obsP;
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public List<Obs> getObsByParent(Obs observationParent) {
+		
+		Session session = null;
+		List<Obs> obs = new ArrayList<Obs>();
+		Transaction tx = null;
+		
+		try{
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+									   .add(Restrictions.eq("obsGroup",observationParent));		
+			
+			obs = criteria.list();
+			for(Obs observation : obs)
+				validar(observation);
+			tx.commit();
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	
+	public List<Obs> getEncounterObservations(Encounter encounter) {
+		
+		List<Obs> obs = new ArrayList<Obs>();
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+							.add(Restrictions.eq("encounter", encounter))
+							.add(Restrictions.isNull("obsGroup"));
+		
+			obs = criteria.list();
+			for(Obs observation : obs)
+				validar(observation);
+			tx.commit();
+			
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+	
+	@SuppressWarnings({ "unchecked" })
+	
+	public List<Obs> getSonObservations(Obs observation) {
+		
+		List<Obs> obs = new ArrayList<Obs>();
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+							.add(Restrictions.eq("obsGroup", observation));
+		
+			obs = criteria.list();
+			for(Obs observations : obs)
+				validar(observations);
+			tx.commit();
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+
+	
+	public Obs getLastDiagnosis(Encounter encounter) {
+	
+		Obs obs = new Obs();
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+							.add(Restrictions.eq("encounter", encounter))
+							.add(Restrictions.eq("concept",12571))
+							.addOrder(Order.desc("obsDatetime"))
+							.setMaxResults(1);
+							
+			obs = (Obs)criteria.uniqueResult();
+			if(obs != null)
+				validar(obs);
+			tx.commit();
+			
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		
+		return obs;
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public List<Obs> getListObs(Patient patient, Obs obsGroup, Integer concept) {
+		
+		Session session = null;
+		List<Obs> obss = new ArrayList<Obs>();
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+								   .add(Restrictions.eq("concept",concept))
+								   .add(Restrictions.eq("person", patient.getPerson()))
+								   .add(Restrictions.eq("obsGroup", obsGroup));
+
+			obss=criteria.list();
+		
+			for(Obs obs : obss)
+				validar(obs);
+			tx.commit();
+			
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obss;
+	}
+
+	
+	public Obs getObsClinicHistory(Patient patient, String ehrUuid,
+			Integer concept) {
+		Session session = null;
+		Transaction tx = null;
+		Obs obs = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Obs.class)
+								   .add(Restrictions.eq("concept",concept))
+								   .add(Restrictions.eq("person", patient.getPerson()))
+								   .add(Restrictions.eq("valueText", ehrUuid));
+
+			obs=(Obs)criteria.uniqueResult();
+		tx.commit();
+			
+		} catch (Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,HibernateObsDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return obs;
+	}
+}

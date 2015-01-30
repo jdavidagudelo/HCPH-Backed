@@ -1,0 +1,298 @@
+package com.artica.telesalud.persona.dao.hibernate;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
+
+import com.artica.telesalud.common.data.DataConstraintViolation;
+import com.artica.telesalud.common.data.HibernateDAO;
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.persona.dao.ResourceDAO;
+import com.artica.telesalud.persona.model.impl.OperationDTO;
+import com.artica.telesalud.persona.model.impl.PermissionDTO;
+import com.artica.telesalud.persona.model.impl.PrivilegeDTO;
+import com.artica.telesalud.persona.model.impl.ResourceDTO;
+
+public class HibernateResourceDAO  extends HibernateDAO implements ResourceDAO,
+Serializable {
+	
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	
+	public List<ResourceDTO> getAll() {
+		Session session = null;
+		try {
+			session = getNewSession();
+			Criteria criteria = session.createCriteria(ResourceDTO.class);
+
+			@SuppressWarnings("unchecked")
+			List<ResourceDTO> users = criteria.list();
+
+			return users;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		
+	}
+
+	
+	public ResourceDTO insert(ResourceDTO resource) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			session.save(resource);
+			tx.commit();
+
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		return resource;
+	}
+
+	
+	public ResourceDTO update(ResourceDTO resource) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			session.update(resource);
+			tx.commit();
+
+		} catch (Exception e) {
+			if (tx != null) {
+				tx.rollback();
+			}
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		return resource;
+	}
+
+	
+	public ResourceDTO newBlankResource() {
+		return new ResourceDTO();
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public ResourceDTO delete(ResourceDTO resource) {
+		Transaction tx = null;
+		
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			session.delete(resource);
+			Criteria criteria = session.createCriteria(PrivilegeDTO.class).add(Restrictions.eq("resource",
+					resource.getResourceId()));
+			for(PrivilegeDTO privilege : (List<PrivilegeDTO>)criteria.list())
+			{
+				session.delete(privilege);
+			}
+			criteria = session.createCriteria(PermissionDTO.class).add(Restrictions.eq("resource", 
+					resource.getResourceId()));
+			for(PermissionDTO privilege : (List<PermissionDTO>)criteria.list())
+			{
+				session.delete(privilege);
+			}
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		return resource;
+	}
+
+	
+	public List<DataConstraintViolation> validate(ResourceDTO resource) {
+		// TODO Auto-generated method stub
+		return new ArrayList<DataConstraintViolation>();
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public List<OperationDTO> getOperationsFor(ResourceDTO resource) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			session.delete(resource);
+			Criteria criteria = session.createCriteria(PrivilegeDTO.class).add(Restrictions.eq("resource",
+					resource.getResourceId()));
+			List<OperationDTO> operations = new ArrayList<OperationDTO>();
+			for(PrivilegeDTO privilege : (List<PrivilegeDTO>)criteria.list())
+			{
+				Criteria criteria1 = session.createCriteria(OperationDTO.class).add(Restrictions.eq("operationId", 
+						privilege.getOperation()));
+				operations.addAll(criteria1.list());
+			}
+			tx.commit();
+			return operations;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+	}
+
+	
+	public ResourceDTO findByName(String name) {
+		Session session = null;
+		try {
+			session = getNewSession();
+			Criteria criteria = session.createCriteria(ResourceDTO.class).add(Restrictions.eq("name", name));
+
+			return (ResourceDTO)criteria.uniqueResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+	}
+
+	
+	public void addOperationTo(ResourceDTO resource, OperationDTO operation) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			PrivilegeDTO privilege = new PrivilegeDTO();
+			privilege.setOperation(operation.getOperationId());
+			privilege.setResource(resource.getResourceId());
+			session.saveOrUpdate(privilege);
+			tx.commit();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}		
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public void removeOperationFrom(ResourceDTO resource, OperationDTO operation) {
+		Transaction tx = null;
+		
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(PrivilegeDTO.class).add(Restrictions.eq("resource",
+					resource.getResourceId())).add(Restrictions.eq("operation", operation.getOperationId()));
+			for(PrivilegeDTO privilege : (List<PrivilegeDTO>)criteria.list())
+			{
+				session.delete(privilege);
+			}
+			criteria = session.createCriteria(PermissionDTO.class).add(Restrictions.eq("resource", 
+					resource.getResourceId())).add(Restrictions.eq("operation", operation.getOperationId()));
+			for(PermissionDTO privilege : (List<PermissionDTO>)criteria.list())
+			{
+				session.delete(privilege);
+			}
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	
+	public int deletePrivilegesFor(ResourceDTO resource) {
+		Transaction tx = null;
+		
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(PrivilegeDTO.class).add(Restrictions.eq("resource",
+					resource.getResourceId()));
+			for(PrivilegeDTO privilege : (List<PrivilegeDTO>)criteria.list())
+			{
+				session.delete(privilege);
+			}
+			criteria = session.createCriteria(PermissionDTO.class).add(Restrictions.eq("resource", 
+					resource.getResourceId()));
+			for(PermissionDTO privilege : (List<PermissionDTO>)criteria.list())
+			{
+				session.delete(privilege);
+			}
+			tx.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		return 0;
+	}
+
+	
+	public ResourceDTO findById(Integer id) {
+		Session session = null;
+		try {
+			session = getNewSession();
+			Criteria criteria = session.createCriteria(ResourceDTO.class).add(Restrictions.eq("resourceId", id));
+
+			return (ResourceDTO)criteria.uniqueResult();
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!", e,
+					HibernateUserDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+	}
+}

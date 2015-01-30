@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+	version="2.5">
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/spring/root-context.xml</param-value>
+	</context-param>
+	<context-param>
+		<description></description>
+		<param-name>HIBERNATE_CONFIGURATION_FILE_NAME</param-name>
+		<param-value>hibernate-tph.cfg.xml</param-value>
+	</context-param>
+	
+	<context-param>
+		<description></description>
+		<param-name>TPH_DAO_CLASS_FACTORY_IMPL</param-name>
+		<param-value>com.artica.telesalud.tph.dao.hibernate.HibernateTPHDAOFactory</param-value>
+	</context-param>
+	
+		<context-param>
+		<description></description>
+		<param-name>PATIENT_MASTER_INDEX_DAO_CLASS_FACTORY_IMPL</param-name>
+		<param-value>com.artica.telesalud.patientmasterindex.dao.hibernate.HibernateMasterPatientMasterIndexDAOFactory</param-value>
+	</context-param>
+	<context-param>
+		<description></description>
+		<param-name>PERSONA_DAO_CLASS_FACTORY_IMPL</param-name>
+		<param-value>com.artica.telesalud.persona.dao.hibernate.HibernatePersonaDAOFactory</param-value>
+	</context-param>
+	<context-param>
+		<description>Nombre de usuario de la base de datos utilizada.</description>
+		<param-name>PERSONA_CONNECTION_NAME</param-name>
+		<param-value>riesgo_user</param-value>
+	</context-param>
+	<context-param>
+		<description>Clave de la base de datos utilizada.</description>
+		<param-name>PERSONA_CONNECTION_PASSWORD</param-name>
+		<param-value>r13sg0us3r</param-value>
+	</context-param>
+	<!-- TODO: Add <servlet> tags for each servlet here. TODO: Add <servlet-mapping> 
+		tags for each <servlet> here. TODO: Optionally add a <welcome-file-list> 
+		tag to display a welcome file. -->
+	<context-param>
+		<description>URL de la base de datos utilizada.</description>
+		<param-name>PERSONA_CONNECTION_URL</param-name>
+		<param-value>jdbc:mysql://172.21.0.174/RCMedicalRecordTPH</param-value>
+	</context-param>
+<context-param>
+  <description>Ruta en la que se encuentran las plantillas para los mensajes XML utilizados para 
+los mensajes de interoperabilidad.</description>
+  <param-name>URL_BASE_XML_TEMPLATES</param-name>
+  <!-- <param-value>/home/interoperabilidad/workspace/TPH.WebGWT/war/templates/</param-value> -->
+  <param-value>/opt/tomcat7/apache-tomcat-7.0.56/webapps/TPH.Spring/resources/templates/</param-value>
+ </context-param>
+ <context-param>
+  <param-name>URL_BASE_XSL_TEMPLATES</param-name>
+  <param-value>/opt/tomcat7/apache-tomcat-7.0.56/webapps/TPH.Spring/resources/xsl/</param-value>
+ </context-param>
+ <!-- 	para el muñeco -->
+ <context-param>
+  <description>Ruta de la imagen requerida para mostrar el documento pdf asociado a un encuentro de emergencias.</description>
+  <param-name>body</param-name>
+  <param-value>/opt/tomcat7/apache-tomcat-7.0.56/webapps/TPH.Spring/resources/body.gif</param-value>
+ </context-param>
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+
+	</filter>
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>/WEB-INF/spring/appServlet/servlet-context.xml</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+	<session-config>
+		<session-timeout>100000</session-timeout>
+	</session-config>
+</web-app>

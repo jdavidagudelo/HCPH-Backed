@@ -1,0 +1,464 @@
+<filter version="3.0.1">
+  <rules>
+    <rule>
+      <sequenceNumber>0</sequenceNumber>
+      <name>Validate Against XSD</name>
+      <data>
+        <entry>
+          <string>Script</string>
+          <string>// open schema file
+var schemaFile = new Packages.java.io.File(&quot;/home/interoperabilidad/workspace/intero/processable/multicacheschemas/RCMR_IN000032UV01.xsd&quot;);
+// create a schema object
+var schemaFactory = Packages.javax.xml.validation.SchemaFactory.newInstance(&quot;http://www.w3.org/2001/XMLSchema&quot;);
+var schema = schemaFactory.newSchema(schemaFile);
+
+// Create a Reader from the incoming XML message
+var reader = new Packages.java.io.StringReader(connectorMessage.getRawData());
+
+// Acts as an holder for a transformation Source in the form of a stream of XML markup.
+var xmlFile = new Packages.javax.xml.transform.stream.StreamSource(reader);
+
+// create a new validator for the schema
+var validator = schema.newValidator();
+
+try {
+	// validates the message
+	validator.validate(xmlFile);	
+	// valid message
+	logger.info(&apos;RCMR_IN000032UV01&apos; + &apos; valid schema&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;success&apos;) );
+	return true;
+	
+} catch (err) {
+	// invalid message
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+	logger.error(&apos;RCMR_IN000032UV01 &apos; + err.toString());
+	return false;
+}</string>
+        </entry>
+      </data>
+      <type>JavaScript</type>
+      <script>// open schema file
+var schemaFile = new Packages.java.io.File(&quot;/home/interoperabilidad/workspace/intero/processable/multicacheschemas/RCMR_IN000032UV01.xsd&quot;);
+// create a schema object
+var schemaFactory = Packages.javax.xml.validation.SchemaFactory.newInstance(&quot;http://www.w3.org/2001/XMLSchema&quot;);
+var schema = schemaFactory.newSchema(schemaFile);
+
+// Create a Reader from the incoming XML message
+var reader = new Packages.java.io.StringReader(connectorMessage.getRawData());
+
+// Acts as an holder for a transformation Source in the form of a stream of XML markup.
+var xmlFile = new Packages.javax.xml.transform.stream.StreamSource(reader);
+
+// create a new validator for the schema
+var validator = schema.newValidator();
+
+try {
+	// validates the message
+	validator.validate(xmlFile);	
+	// valid message
+	logger.info(&apos;RCMR_IN000032UV01&apos; + &apos; valid schema&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;success&apos;) );
+	return true;
+	
+} catch (err) {
+	// invalid message
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+	logger.error(&apos;RCMR_IN000032UV01 &apos; + err.toString());
+	return false;
+}</script>
+      <operator>NONE</operator>
+    </rule>
+    <rule>
+      <sequenceNumber>1</sequenceNumber>
+      <name>Validate fields</name>
+      <data>
+        <entry>
+          <string>Script</string>
+          <string>var hl7 = new Namespace(&apos;urn:hl7-org:v3&apos;);
+//Identificador de la historia clinica del paciente
+var interactionId = msg.hl7::[&apos;interactionId&apos;][&apos;@extension&apos;].toString();
+var domainUuid = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;code&apos;][&apos;@code&apos;].toString();
+var personId = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;id&apos;][&apos;@extension&apos;].toString();
+var senderId = msg.hl7::[&apos;sender&apos;].hl7::[&apos;device&apos;].hl7::[&apos;id&apos;][&apos;@extension&apos;].toString();
+var receiverId = msg.hl7::[&apos;receiver&apos;].hl7::[&apos;device&apos;].hl7::[&apos;id&apos;][&apos;@extension&apos;].toString();
+var codeTarget = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;code&apos;][&apos;@code&apos;].toString();
+var given1 = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;name&apos;].hl7::[&apos;given&apos;][0].toString();
+var given2 = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;name&apos;].hl7::[&apos;given&apos;][1].toString();
+var family1 = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;name&apos;].hl7::[&apos;family&apos;][0].toString();
+var family2 = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;name&apos;].hl7::[&apos;family&apos;][1].toString();
+var birthDate = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;birthTime&apos;][&apos;@value&apos;].toString()
+var idRegex = /^[0-9]+$/;
+var requiredNameRegex = /^[a-zñÑA-Záéíóúü-]{1,20}$/;
+var senderReceiverRegex = /^[a-z.]+$/;
+var domainRegex = /^[a-z.]+$/;
+var nameRegex = /^[a-zñÑA-Záéíóúü-]{0,20}$/;
+var dateRegex = /^((19|20|21)\d{2}(0{1}[1-9]|1[012])(0{1}[1-9]{1}|[12]{1}[0-9]{1}|3{1}[01]{1})|0{8})$/;
+
+	
+	if (interactionId != &apos;RCMR_IN000032UV01&apos;){
+		logger.error(interactionId + &apos; El id de la interaccion es incorrecto&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;));
+		return false;
+	}
+	if (codeTarget ==&apos;&apos;){
+		logger.error(interactionId + &apos; El target no tiene code&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+		return false;
+	}
+	if (!domainRegex.test(domainUuid)){
+		logger.error(interactionId +  &apos; El domain contiene errores&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+		return false;
+	}
+	if (!senderReceiverRegex.test(senderId)){
+		logger.error(interactionId +  &apos; El sender contiene errores&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+		return false;
+	}
+	if (!senderReceiverRegex.test(receiverId)){
+		logger.error(interactionId +  &apos; El receiver contiene errores&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+		return false;
+	}&#xd;	if (!idRegex.test(personId)){
+		logger.error(interactionId + &apos; La identificacion contiene caracteres no numericos&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+		return false;
+	}
+	if (!requiredNameRegex.test(given1) || !nameRegex.test(given2) || !requiredNameRegex.test(family1) || !nameRegex.test(family2)){
+		logger.error(interactionId + &apos; Los campos de nombre del paciente tienen errores&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;));
+		return false;
+	}
+	if (!dateRegex.test(birthDate)){
+		logger.error(interactionId + &apos; Los campos de fecha de nacimiento tiene errores&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+		return false;
+	}
+	// valid message
+	logger.info(interactionId + &apos; valid fields&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;success&apos;) );
+	return true;</string>
+        </entry>
+      </data>
+      <type>JavaScript</type>
+      <script>var hl7 = new Namespace(&apos;urn:hl7-org:v3&apos;);
+//Identificador de la historia clinica del paciente
+var interactionId = msg.hl7::[&apos;interactionId&apos;][&apos;@extension&apos;].toString();
+var domainUuid = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;code&apos;][&apos;@code&apos;].toString();
+var personId = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;id&apos;][&apos;@extension&apos;].toString();
+var senderId = msg.hl7::[&apos;sender&apos;].hl7::[&apos;device&apos;].hl7::[&apos;id&apos;][&apos;@extension&apos;].toString();
+var receiverId = msg.hl7::[&apos;receiver&apos;].hl7::[&apos;device&apos;].hl7::[&apos;id&apos;][&apos;@extension&apos;].toString();
+var codeTarget = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;code&apos;][&apos;@code&apos;].toString();
+var given1 = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;name&apos;].hl7::[&apos;given&apos;][0].toString();
+var given2 = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;name&apos;].hl7::[&apos;given&apos;][1].toString();
+var family1 = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;name&apos;].hl7::[&apos;family&apos;][0].toString();
+var family2 = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;name&apos;].hl7::[&apos;family&apos;][1].toString();
+var birthDate = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;birthTime&apos;][&apos;@value&apos;].toString()
+var idRegex = /^[0-9]+$/;
+var requiredNameRegex = /^[a-zñÑA-Záéíóúü-]{1,20}$/;
+var senderReceiverRegex = /^[a-z.]+$/;
+var domainRegex = /^[a-z.]+$/;
+var nameRegex = /^[a-zñÑA-Záéíóúü-]{0,20}$/;
+var dateRegex = /^((19|20|21)\d{2}(0{1}[1-9]|1[012])(0{1}[1-9]{1}|[12]{1}[0-9]{1}|3{1}[01]{1})|0{8})$/;
+
+	
+	if (interactionId != &apos;RCMR_IN000032UV01&apos;){
+		logger.error(interactionId + &apos; El id de la interaccion es incorrecto&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;));
+		return false;
+	}
+	if (codeTarget ==&apos;&apos;){
+		logger.error(interactionId + &apos; El target no tiene code&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+		return false;
+	}
+	if (!domainRegex.test(domainUuid)){
+		logger.error(interactionId +  &apos; El domain contiene errores&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+		return false;
+	}
+	if (!senderReceiverRegex.test(senderId)){
+		logger.error(interactionId +  &apos; El sender contiene errores&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+		return false;
+	}
+	if (!senderReceiverRegex.test(receiverId)){
+		logger.error(interactionId +  &apos; El receiver contiene errores&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+		return false;
+	}&#xd;	if (!idRegex.test(personId)){
+		logger.error(interactionId + &apos; La identificacion contiene caracteres no numericos&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+		return false;
+	}
+	if (!requiredNameRegex.test(given1) || !nameRegex.test(given2) || !requiredNameRegex.test(family1) || !nameRegex.test(family2)){
+		logger.error(interactionId + &apos; Los campos de nombre del paciente tienen errores&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;));
+		return false;
+	}
+	if (!dateRegex.test(birthDate)){
+		logger.error(interactionId + &apos; Los campos de fecha de nacimiento tiene errores&apos;);
+		channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+		return false;
+	}
+	// valid message
+	logger.info(interactionId + &apos; valid fields&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;success&apos;) );
+	return true;</script>
+      <operator>AND</operator>
+    </rule>
+    <rule>
+      <sequenceNumber>2</sequenceNumber>
+      <name>Controled vocabulary</name>
+      <data>
+        <entry>
+          <string>Script</string>
+          <string>var hl7 = new Namespace(&apos;urn:hl7-org:v3&apos;);
+var gender = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;administrativeGenderCode&apos;][&apos;@code&apos;].toString();
+
+if ((gender != &apos;M&apos; &amp;&amp; gender != &apos;F&apos; &amp;&amp; gender != &apos;UN&apos;) || gender==&apos;&apos;){
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+	logger.error(&apos;RCMR_IN000032UV01 &apos; + &apos;El genero es incorrecto&apos;);
+	return false;
+}
+channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+logger.error(&apos;RCMR_IN000032UV01&apos; + &apos; valid vocabulary&apos;);
+return true;</string>
+        </entry>
+      </data>
+      <type>JavaScript</type>
+      <script>var hl7 = new Namespace(&apos;urn:hl7-org:v3&apos;);
+var gender = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;administrativeGenderCode&apos;][&apos;@code&apos;].toString();
+
+if ((gender != &apos;M&apos; &amp;&amp; gender != &apos;F&apos; &amp;&amp; gender != &apos;UN&apos;) || gender==&apos;&apos;){
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+	logger.error(&apos;RCMR_IN000032UV01 &apos; + &apos;El genero es incorrecto&apos;);
+	return false;
+}
+channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+logger.error(&apos;RCMR_IN000032UV01&apos; + &apos; valid vocabulary&apos;);
+return true;</script>
+      <operator>AND</operator>
+    </rule>
+    <rule>
+      <sequenceNumber>3</sequenceNumber>
+      <name>BD sender and receiver validate</name>
+      <data>
+        <entry>
+          <string>Script</string>
+          <string>importPackage(java.sql);
+
+var hl7 = new Namespace(&apos;urn:hl7-org:v3&apos;);
+
+new com.mysql.jdbc.Driver();
+var dbConn=DriverManager.getConnection(&apos;jdbc:mysql://172.21.0.174/PatientMasterIndex&apos;,&apos;riesgo_user&apos;,&apos;r13sg0us3r&apos;);
+
+//id del receiver
+var idReceiver = msg.hl7::[&apos;receiver&apos;].hl7::[&apos;device&apos;].hl7::[&apos;id&apos;][&apos;@extension&apos;].toString();
+var idSender = 	msg.hl7::[&apos;sender&apos;].hl7::[&apos;device&apos;].hl7::[&apos;id&apos;][&apos;@extension&apos;].toString();
+var sql = &apos;SELECT * FROM EHR p WHERE p.UUID = ?&apos;;
+var statementReceiver = dbConn.prepareStatement(sql);
+var statementSender = dbConn.prepareStatement(sql);
+statementReceiver.setString(1, idReceiver);
+statementSender.setString(1, idSender);
+//se ejecuta el query para saber si el dominio existe en la base de datos
+resultsReceiver = statementReceiver.executeQuery();
+resultsSender = statementSender.executeQuery();
+
+if(resultsReceiver.next()){
+	// valid message
+	logger.info(&apos;RCMR_IN000032UV01 &apos; + &apos;valid receiver&apos;);	
+}else{
+	// invalid message
+	logger.error(&apos;RCMR_IN000032UV01 &apos; + &apos;non-existent receiver&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+	return false;
+}
+if(resultsSender.next()){
+	// valid message
+	logger.info(&apos;RCMR_IN000032UV01 &apos; + &apos;valid sender&apos;);		
+} else{
+	// invalid message
+	logger.error(&apos;RCMR_IN000032UV01 &apos; + &apos;non-existent sender&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+	return false;
+}
+channelMap.put(&apos;response&apos;, globalMap.get(&apos;success&apos;) );
+return true;</string>
+        </entry>
+      </data>
+      <type>JavaScript</type>
+      <script>importPackage(java.sql);
+
+var hl7 = new Namespace(&apos;urn:hl7-org:v3&apos;);
+
+new com.mysql.jdbc.Driver();
+var dbConn=DriverManager.getConnection(&apos;jdbc:mysql://172.21.0.174/PatientMasterIndex&apos;,&apos;riesgo_user&apos;,&apos;r13sg0us3r&apos;);
+
+//id del receiver
+var idReceiver = msg.hl7::[&apos;receiver&apos;].hl7::[&apos;device&apos;].hl7::[&apos;id&apos;][&apos;@extension&apos;].toString();
+var idSender = 	msg.hl7::[&apos;sender&apos;].hl7::[&apos;device&apos;].hl7::[&apos;id&apos;][&apos;@extension&apos;].toString();
+var sql = &apos;SELECT * FROM EHR p WHERE p.UUID = ?&apos;;
+var statementReceiver = dbConn.prepareStatement(sql);
+var statementSender = dbConn.prepareStatement(sql);
+statementReceiver.setString(1, idReceiver);
+statementSender.setString(1, idSender);
+//se ejecuta el query para saber si el dominio existe en la base de datos
+resultsReceiver = statementReceiver.executeQuery();
+resultsSender = statementSender.executeQuery();
+
+if(resultsReceiver.next()){
+	// valid message
+	logger.info(&apos;RCMR_IN000032UV01 &apos; + &apos;valid receiver&apos;);	
+}else{
+	// invalid message
+	logger.error(&apos;RCMR_IN000032UV01 &apos; + &apos;non-existent receiver&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+	return false;
+}
+if(resultsSender.next()){
+	// valid message
+	logger.info(&apos;RCMR_IN000032UV01 &apos; + &apos;valid sender&apos;);		
+} else{
+	// invalid message
+	logger.error(&apos;RCMR_IN000032UV01 &apos; + &apos;non-existent sender&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+	return false;
+}
+channelMap.put(&apos;response&apos;, globalMap.get(&apos;success&apos;) );
+return true;</script>
+      <operator>AND</operator>
+    </rule>
+    <rule>
+      <sequenceNumber>4</sequenceNumber>
+      <name>BD domain validate</name>
+      <data>
+        <entry>
+          <string>Script</string>
+          <string>importPackage(java.sql);
+//Espacio de nombres asociado a los mensajes HL7 V3
+var hl7 = new Namespace(&apos;urn:hl7-org:v3&apos;);
+
+new com.mysql.jdbc.Driver();
+var dbConn=DriverManager.getConnection(&apos;jdbc:mysql://172.21.0.174/PatientMasterIndex&apos;,&apos;riesgo_user&apos;,&apos;r13sg0us3r&apos;);
+
+//dominio HCE
+var domainUuid = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;code&apos;][&apos;@code&apos;].toString();
+var sql = &apos;SELECT * FROM Domains p WHERE p.UUID = ?&apos;;
+var statement = dbConn.prepareStatement(sql);
+statement.setString(1, domainUuid);
+//se ejecuta el query para saber si el dominio existe en la base de datos
+results = statement.executeQuery();
+//verifica si el dominio existe
+if(results.next())
+{
+	// valid message
+	logger.info(&apos;RCMR_IN000001UV01 &apos; + &apos;valid domain&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;success&apos;) );
+	return true;
+} else{
+	// invalid message
+	logger.error(&apos;RCMR_IN000001UV01 &apos; + &apos;El dominio no existe&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+	return false;
+}</string>
+        </entry>
+      </data>
+      <type>JavaScript</type>
+      <script>importPackage(java.sql);
+//Espacio de nombres asociado a los mensajes HL7 V3
+var hl7 = new Namespace(&apos;urn:hl7-org:v3&apos;);
+
+new com.mysql.jdbc.Driver();
+var dbConn=DriverManager.getConnection(&apos;jdbc:mysql://172.21.0.174/PatientMasterIndex&apos;,&apos;riesgo_user&apos;,&apos;r13sg0us3r&apos;);
+
+//dominio HCE
+var domainUuid = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;code&apos;][&apos;@code&apos;].toString();
+var sql = &apos;SELECT * FROM Domains p WHERE p.UUID = ?&apos;;
+var statement = dbConn.prepareStatement(sql);
+statement.setString(1, domainUuid);
+//se ejecuta el query para saber si el dominio existe en la base de datos
+results = statement.executeQuery();
+//verifica si el dominio existe
+if(results.next())
+{
+	// valid message
+	logger.info(&apos;RCMR_IN000001UV01 &apos; + &apos;valid domain&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;success&apos;) );
+	return true;
+} else{
+	// invalid message
+	logger.error(&apos;RCMR_IN000001UV01 &apos; + &apos;El dominio no existe&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+	return false;
+}</script>
+      <operator>AND</operator>
+    </rule>
+    <rule>
+      <sequenceNumber>5</sequenceNumber>
+      <name>BD documentType validate</name>
+      <data>
+        <entry>
+          <string>Script</string>
+          <string>importPackage(java.sql);
+//Espacio de nombres asociado a los mensajes HL7 V3
+var hl7 = new Namespace(&apos;urn:hl7-org:v3&apos;);
+
+new com.mysql.jdbc.Driver();
+var dbConn=DriverManager.getConnection(&apos;jdbc:mysql://172.21.0.174/PatientMasterIndex&apos;,&apos;riesgo_user&apos;,&apos;r13sg0us3r&apos;);
+
+//dominio HCE
+var documentType = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;id&apos;][&apos;@root&apos;].toString();
+var sql = &apos;SELECT * FROM DocumentType p WHERE p.OID = ?&apos;;
+var statement = dbConn.prepareStatement(sql);
+statement.setString(1, documentType);
+//se ejecuta el query para saber si el dominio existe en la base de datos
+results = statement.executeQuery();
+//verifica si el dominio existe
+if(results.next())
+{
+	// valid message
+	logger.info(&apos;RCMR_IN000001UV01 &apos; + &apos;Tipo de documento valido&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;success&apos;) );
+	return true;
+} else{
+	// invalid message
+	logger.error(&apos;RCMR_IN000001UV01 &apos; + &apos;tipo de documento invalido&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+	return false;
+}</string>
+        </entry>
+      </data>
+      <type>JavaScript</type>
+      <script>importPackage(java.sql);
+//Espacio de nombres asociado a los mensajes HL7 V3
+var hl7 = new Namespace(&apos;urn:hl7-org:v3&apos;);
+
+new com.mysql.jdbc.Driver();
+var dbConn=DriverManager.getConnection(&apos;jdbc:mysql://172.21.0.174/PatientMasterIndex&apos;,&apos;riesgo_user&apos;,&apos;r13sg0us3r&apos;);
+
+//dominio HCE
+var documentType = msg.hl7::[&apos;controlActProcess&apos;].hl7::[&apos;subject&apos;].hl7::[&apos;target&apos;].hl7::[&apos;recordTarget&apos;].hl7::[&apos;patient&apos;].hl7::[&apos;patientPerson&apos;].hl7::[&apos;id&apos;][&apos;@root&apos;].toString();
+var sql = &apos;SELECT * FROM DocumentType p WHERE p.OID = ?&apos;;
+var statement = dbConn.prepareStatement(sql);
+statement.setString(1, documentType);
+//se ejecuta el query para saber si el dominio existe en la base de datos
+results = statement.executeQuery();
+//verifica si el dominio existe
+if(results.next())
+{
+	// valid message
+	logger.info(&apos;RCMR_IN000001UV01 &apos; + &apos;Tipo de documento valido&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;success&apos;) );
+	return true;
+} else{
+	// invalid message
+	logger.error(&apos;RCMR_IN000001UV01 &apos; + &apos;tipo de documento invalido&apos;);
+	channelMap.put(&apos;response&apos;, globalMap.get(&apos;error&apos;) );
+	return false;
+}</script>
+      <operator>AND</operator>
+    </rule>
+  </rules>
+</filter>

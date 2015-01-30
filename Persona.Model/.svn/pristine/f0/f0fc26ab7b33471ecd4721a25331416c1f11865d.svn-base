@@ -1,0 +1,14 @@
+package com.artica.telesalud.persona.model;
+
+public interface Role{
+	public String getName();
+	public void setName(String Name);
+	public String getDescription();
+	public void setDescription(String description);
+	public Integer getParentId();
+	public void setParentId(Integer parentId);
+	public String getUuid();
+	public void setUuid(String Uuid);
+	public Integer getRoleId();
+	public void setRoleId(Integer roleId);
+}

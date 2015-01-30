@@ -1,0 +1,8 @@
+package com.artica.telesalud.persona.model;
+
+public interface Privilege{
+	public Integer getResource();
+	public void setResource(Integer Resource);
+	public Integer getOperation();
+	public void setOperation(Integer Operation);
+}

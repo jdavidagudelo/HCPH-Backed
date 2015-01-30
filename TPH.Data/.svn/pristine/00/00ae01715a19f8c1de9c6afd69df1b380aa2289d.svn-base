@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2/11/2010 02:06:19 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping catalog="RCMedicalRecordTPH">
+    <class name="com.artica.telesalud.tph.model.evento.Lesionado" table="lesionado" catalog="RCMedicalRecordTPH">
+        <id name="lesionadoId" type="java.lang.Integer">
+            <column name="LESIONADO_ID" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="encuentro" class="com.artica.telesalud.tph.model.encounter.Encounter" fetch="join" lazy="false">
+            <column name="ENCOUNTER_ID" />
+        </many-to-one>
+        <many-to-one name="evento" class="com.artica.telesalud.tph.model.evento.Evento" fetch="join" lazy="false">
+            <column name="EVENTO_ID" />
+        </many-to-one>
+        <many-to-one name="tripulacion" class="com.artica.telesalud.tph.model.evento.Tripulacion" fetch="join" lazy="false">
+            <column name="TRIPULACION_ID" />
+        </many-to-one>
+        <many-to-one name="resultado" class="com.artica.telesalud.tph.model.concept.Concept" fetch="join" lazy="false">
+            <column name="RESULTADO" />
+        </many-to-one>
+        <many-to-one name="dispositivoTransporte" class="com.artica.telesalud.tph.model.concept.Concept" fetch="join" lazy="false">
+            <column name="DISPOSITIVO_TRANSPORTE" />
+        </many-to-one>
+        <property name="niegaAtencion" type="java.lang.Boolean">
+            <column name="NIEGA_ATENCION" />
+        </property>
+        <many-to-one name="tipoNegacion" class="com.artica.telesalud.tph.model.concept.Concept" fetch="join" lazy="false">
+            <column name="TIPO_NEGACION" />
+        </many-to-one>
+        <property name="observacionNegacion" type="java.lang.String">
+            <column name="OBSERVACION_NEGACION" />
+        </property>
+        <many-to-one name="entidadRecepcion" class="com.artica.telesalud.tph.model.evento.Hospital" fetch="join" lazy="false">
+            <column name="ENTIDAD_RECEPCION" />
+        </many-to-one>
+        <property name="recibidoPor" type="java.lang.String">
+            <column name="RECIBIDO_POR" />
+        </property>
+        <property name="registroRecibe" type="java.lang.String">
+            <column name="REGISTRO_RECIBE" />
+        </property>
+        <many-to-one name="eps" class="com.artica.telesalud.tph.model.concept.Concept" fetch="join" lazy="false">
+            <column name="EPS" />
+        </many-to-one>
+        <many-to-one name="aseguradora" class="com.artica.telesalud.tph.model.concept.Concept" fetch="join" lazy="false">
+            <column name="ASEGURADORA" />
+        </many-to-one>
+        <many-to-one name="planBeneficios" class="com.artica.telesalud.tph.model.concept.Concept" fetch="join" lazy="false">
+            <column name="PLAN_BENEFICIOS" />
+        </many-to-one>    
+        <property name="solicitaTeleasistencia" type="java.lang.Boolean">
+            <column name="SOLICITO_TELEASISTENCIA" />
+        </property>    
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="changedBy" type="java.lang.Integer">
+            <column name="CHANGED_BY" />
+        </property>
+        
+        <property name="eventLocalIdentifier" type="java.lang.Integer">
+            <column name="EVENT_LOCAL_IDENTIFIER" />
+        </property>
+        <property name="dateChanged" type="java.util.Date">
+            <column name="DATE_CHANGED" />
+        </property>
+        <property name="voided" type="java.lang.Boolean">
+            <column name="VOIDED" />
+        </property>
+        <property name="voidedBy" type="java.lang.Integer">
+            <column name="VOIDED_BY" />
+        </property>
+        <property name="dateVoided" type="java.util.Date">
+            <column name="DATE_VOIDED" />
+        </property>
+        <property name="voidReason" type="java.lang.String">
+            <column name="VOID_REASON" />
+        </property>
+        <property name="cargoEncargadoRecepcion" type="java.lang.String">
+            <column name="CARGO_ENCARGADO_RECEPCION" />
+        </property>
+        <property name="fechaUltimaMenstruacion" type="java.util.Date"
+            >
+            <column name="fecha_ultima_menstruacion"></column>
+        </property>
+        <property name="Uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+        <set name="responsablesAtencion" inverse="true" lazy="false" fetch="select">
+        	
+        	<key>
+        		<column name="lesionado_id"></column>
+        	</key>
+        	
+        	<one-to-many class="com.artica.telesalud.tph.model.evento.ResponsableAtencion"/>
+        </set>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,154 @@
+package com.artica.telesalud.persona.service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.Vector;
+
+import com.artica.telesalud.common.data.DataConstraintViolation;
+import com.artica.telesalud.common.exception.DataConstraintViolationException;
+import com.artica.telesalud.common.service.DAOFactoryInstantiator;
+import com.artica.telesalud.persona.dao.PersonaDAOFactory;
+import com.artica.telesalud.persona.dao.ResourceDAO;
+import com.artica.telesalud.persona.model.Operation;
+import com.artica.telesalud.persona.model.Resource;
+
+public class ResourceService {
+	
+	private ResourceDAO resourceDao;
+	//private PrivilegeDAO privilegeDao;
+	
+	public ResourceService(String daoClassName, HashMap<String, String> params){
+		resourceDao = DAOFactoryInstantiator.instantiateDaoFactory(PersonaDAOFactory.class, 
+			daoClassName, params).getResourceDao();
+		
+		//privilegeDao = DAOFactoryInstantiator.instantiateDaoFactory(PersonaDAOFactory.class, 
+		//		daoClassName, params).getPrivilegeDao();
+	}
+	
+	public List<Resource> readAll(){
+		return resourceDao.getAll();
+	}
+	
+	public Resource newBlankResource(){
+		return resourceDao.newBlankResource();
+	}
+	
+	public Resource insertResource(Resource resource) throws DataConstraintViolationException{
+		
+		if( resource.getUuid() == null || resource.getUuid().isEmpty() )
+			resource.setUuid(UUID.randomUUID().toString());
+		
+		assertValid(resource);
+		
+		return resourceDao.insert(resource);
+	}
+	
+	public Resource updateResource(Resource resource) throws DataConstraintViolationException{
+		
+		assertValid(resource);
+		
+		return resourceDao.update(resource);
+	}
+	
+	public Resource deleteResource(Resource resource){
+		return resourceDao.delete(resource);
+	}
+	
+	public void assertValid(Resource resource) throws DataConstraintViolationException{
+		List<DataConstraintViolation> violations = resourceDao.validate(resource);
+		
+		if( violations.size() > 0)
+			throw new DataConstraintViolationException(violations);
+		
+	}
+
+	public List<Operation> getOperationsFor(Resource resource) {
+		if( resource == null || resource.getResourceId() == null )
+			return new ArrayList<Operation>(0);
+		return resourceDao.getOperationsFor(resource);
+	}
+	
+	public void setOperations(Resource resource, List<Operation> newOperations){
+		
+		List<Operation> actualOperations = resourceDao.getOperationsFor(resource);
+		
+		//List<Privilege> privileges = new ArrayList<Privilege>();
+		
+		for(Operation actual : actualOperations)
+			if(!newOperations.contains(actual)){
+				/*Privilege privilege = privilegeDao.newBlankPrivilege();
+				privilege.setOperation(actual.getOperationId());
+				privilege.setResource(resource.getResourceId());
+				privileges.add(privilege);*/
+				resourceDao.removeOperationFrom(resource, actual);
+			}
+		
+		//for(Privilege privilege : privileges)
+		//	privilegeDao.delete(privilege);
+		//	resource.getPrivileges().remove(privilege);
+		
+		//privileges.clear();
+		
+		for(Operation newOp: newOperations)
+			if(!actualOperations.contains(newOp)){
+				/*Privilege privilege = privilegeDao.newBlankPrivilege();
+				privilege.setOperation(newOp.getOperationId());
+				privilege.setResource(resource.getResourceId());
+				privileges.add(privilege);*/
+				resourceDao.addOperationTo(resource, newOp);
+			}
+		
+		
+		
+		
+	}
+	
+	/*public Map<String, List<Resource>> mapByCategory() {
+		HashMap<String, List<Resource>> resources = new HashMap<String, List<Resource>>();
+
+		List<Resource> rList =  resourceDao.getAll();
+		
+		for(Resource r : rList){
+			List<Resource> forCategory = resources.get(r.getCategory());
+			if( forCategory == null ){
+				forCategory = new Vector<Resource>();
+				resources.put(r.getCategory(), forCategory);
+			}			
+			forCategory.add(r);
+		}
+		
+		return resources;
+	}	*/
+	
+	public Map<String, List<Resource>> mapByCategory(List<Resource> rList) {
+		HashMap<String, List<Resource>> resources = new HashMap<String, List<Resource>>();
+
+		if( rList == null)
+			rList =  resourceDao.getAll();
+		
+		for(Resource r : rList){
+			List<Resource> forCategory = resources.get(r.getCategory());
+			if( forCategory == null ){
+				forCategory = new Vector<Resource>();
+				resources.put(r.getCategory(), forCategory);
+			}			
+			forCategory.add(r);
+		}
+		
+		return resources;
+	}
+	
+	public Resource findByName(String name){
+		return resourceDao.findByName(name);
+	}
+
+	public Resource findById(Integer id){
+		if( id == null )
+			return null;
+		return resourceDao.findById(id);
+	}
+	
+}

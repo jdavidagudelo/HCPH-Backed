@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2/11/2010 02:06:19 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.person.AttributeTypeOptions" table="attribute_type_options" catalog="RCMedicalRecordTPH">
+        <id name="attributeTypeOptionsId" type="java.lang.Integer">
+            <column name="ATTRIBUTE_TYPE_OPTIONS_ID" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="personAttributeType" class="com.artica.telesalud.tph.model.person.PersonAttributeType" fetch="select" lazy="false">
+            <column name="PERSON_ATTRIBUTE_TYPE_ID" />
+        </many-to-one>
+        <property name="name" type="java.lang.String">
+            <column name="NAME" />
+        </property>
+        <property name="defaultValue" type="java.lang.Boolean">
+            <column name="DEFAULT_VALUE" />
+        </property>
+    </class>
+</hibernate-mapping>

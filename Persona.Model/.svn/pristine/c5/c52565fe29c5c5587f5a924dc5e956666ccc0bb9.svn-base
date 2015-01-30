@@ -1,0 +1,22 @@
+package com.artica.telesalud.persona.model;
+
+import java.io.Serializable;
+
+
+
+public interface Resource extends Serializable{
+	public Integer getResourceId();
+	public void setResourceId(Integer resourceId);
+	public String getName();
+	public void setName(String Name);
+	public String getDescription();
+	public void setDescription(String Description);
+	public String getUuid();
+	public void setUuid(String Uuid);
+	public String getUrl();
+	public void setUrl(String Url);
+	public String getCategory();
+	public void setCategory(String Category);
+	public String getTag();
+	public void setTag(String Tag);
+}

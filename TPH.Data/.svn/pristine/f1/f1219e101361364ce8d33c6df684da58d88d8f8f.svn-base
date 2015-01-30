@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 8/11/2010 03:19:25 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.form.Form" table="form" catalog="RCMedicalRecordTPH">
+        <id name="formId" type="java.lang.Integer">
+            <column name="FORM_ID" />
+            <generator class="identity" />
+        </id>
+        <property name="name" type="java.lang.String">
+            <column name="NAME" />
+        </property>
+        <property name="version" type="java.lang.String">
+            <column name="VERSION" />
+        </property>
+        <property name="description" type="java.lang.String">
+            <column name="DESCRIPTION" />
+        </property>
+        <property name="encounterType" type="java.lang.Integer">
+            <column name="ENCOUNTER_TYPE" />
+        </property>
+        <property name="template" type="java.lang.String">
+            <column name="TEMPLATE" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="changedBy" type="java.lang.Integer">
+            <column name="CHANGED_BY" />
+        </property>
+        <property name="dateChanged" type="java.util.Date">
+            <column name="DATE_CHANGED" />
+        </property>
+        <property name="retired" type="java.lang.Integer">
+            <column name="RETIRED" />
+        </property>
+        <property name="retiredBy" type="java.lang.Integer">
+            <column name="RETIRED_BY" />
+        </property>
+        <property name="dateRetired" type="java.util.Date">
+            <column name="DATE_RETIRED" />
+        </property>
+        <property name="retiredReason" type="java.lang.String">
+            <column name="RETIRED_REASON" />
+        </property>
+        <property name="uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+        
+        <set name="fields" inverse="true" lazy="false" fetch="select" order-by="field_number" where="parent_form_field is null">
+        	<key>
+        		<column name="FORM_ID"></column>
+        	</key>
+        	<one-to-many class="com.artica.telesalud.tph.model.form.FormField"/>
+        </set>
+    </class>
+</hibernate-mapping>

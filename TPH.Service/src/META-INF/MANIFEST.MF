@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: TPH.DataBackup.jar 
+ Persona.Data2.jar
+

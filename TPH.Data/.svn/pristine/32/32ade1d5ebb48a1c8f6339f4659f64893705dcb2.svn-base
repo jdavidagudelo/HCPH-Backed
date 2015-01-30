@@ -1,0 +1,50 @@
+package com.artica.telesalud.tph.dao.hibernate;
+
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+
+import com.artica.telesalud.common.data.HibernateDAO;
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.tph.dao.ConceptSetDAO;
+import com.artica.telesalud.tph.dao.CountryDAO;
+import com.artica.telesalud.tph.model.location.Country;
+import com.artica.telesalud.tph.model.location.StateProvince;
+
+public class HibernateCountryDAO  extends HibernateDAO implements CountryDAO {
+public HibernateCountryDAO(String configFile) {
+		
+		super(configFile);
+		
+	}
+	
+	public Country getCountryByName(String countryName) {
+		Session session = null;
+		
+		try {
+			session = getNewSession();
+			Criteria criteria = session.createCriteria(Country.class);
+			criteria.add(Restrictions.ilike("name", countryName));
+			
+			criteria.addOrder(Order.asc("name"));
+
+			List<Country> states = criteria.list();
+			if(states.size() > 0)
+			{
+				return states.get(0);
+			}
+			return null;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,HibernateStateProvinceDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+	}
+
+}

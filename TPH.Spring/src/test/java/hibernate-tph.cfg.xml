@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <!-- Database connection settings -->
+<!--     <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+		<property name="connection.url">jdbc:mysql://172.21.0.174/RCMedicalRecordTPH</property>
+        <property name="connection.username">riesgo_user</property>
+        <property name="connection.password">r13sg0us3r</property> 
+         -->
+         <property name="connection.driver_class">org.postgresql.Driver</property>
+        <property name="connection.url">jdbc:postgresql://172.21.0.181:5432/rcmedicalrecordtph</property>
+        <property name="connection.username">tph_user</property>
+        <property name="connection.password">4dm!n/tph</property>
+        <property name="hibernate.default_schema">public</property> 
+        
+        
+        
+	    <!--  pool de conexiones -->
+	    <property name="hibernate.c3p0.idle_test_period">300</property>
+	    <property name="hibernate.c3p0.max_size">50</property>
+	    <property name="hibernate.c3p0.max_statements">0</property>
+	    <property name="hibernate.c3p0.min_size">1</property>
+	    <property name="hibernate.c3p0.timeout">10000</property>
+        <!-- seconds -->
+        
+         <property name="connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider</property> 
+         <property name="transaction.factory_class">org.hibernate.transaction.JDBCTransactionFactory</property> 
+        
+        <!-- SQL dialect -->
+        <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        <!-- <property name="dialect">org.hibernate.dialect.MySQLDialect</property> -->
+        <!-- Enable Hibernate's automatic session context management -->
+        <property name="current_session_context_class">thread</property>
+        <!-- Echo all executed SQL to stdout -->
+        <property name="show_sql">false</property>
+        <property name="connection.autoReconnect">true</property>
+        
+        
+       <!-- Drop and re-create the database schema on startup --> 
+        
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/AttributeType.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/AttributeTypeOptions.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Concept.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/ConceptShort.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/ConceptClass.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/ConceptDataType.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/ConceptSet.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Person.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/PersonAddress.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/PersonAttribute.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/PersonAttributeType.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/PersonName.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Relationship.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/RelationshipType.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Patient.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/PatientIdentifierType.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/PatientIdentifier.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Tribe.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Form.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/FieldAnswer.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Field.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/FormField.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/FieldType.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Encounter.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/EncounterType.hbm.xml"/>
+		
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Location.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/City.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/StateProvince.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Country.hbm.xml"/>
+		
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Obs.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Order.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Drug.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/OrderType.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/DrugOrder.hbm.xml"/>
+		
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Evento.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/EventAddress.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Tripulacion.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Hospital.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/Lesionado.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/PrimerRespondiente.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/ResponsableAtencion.hbm.xml"/>
+		<mapping resource="com/artica/telesalud/tph/model/hibernate/User.hbm.xml"/>
+        
+<!--     <mapping resource="com/artica/telesalud/patientmasterindex/dao/hibernate/mapping/PatientIndex.hbm.xml"/>
+    <mapping resource="com/artica/telesalud/patientmasterindex/dao/hibernate/mapping/PatientIndexed.hbm.xml"/>
+    <mapping resource="com/artica/telesalud/patientmasterindex/dao/hibernate/mapping/Ehr.hbm.xml"/>
+    <mapping resource="com/artica/telesalud/patientmasterindex/dao/hibernate/mapping/Domains.hbm.xml"/> -->
+    
+		<mapping
+			resource="com/artica/telesalud/persona/model/hibernate/OperationDTO.hbm.xml" />
+		<mapping
+			resource="com/artica/telesalud/persona/model/hibernate/PermissionDTO.hbm.xml" />
+		<mapping
+			resource="com/artica/telesalud/persona/model/hibernate/PrivilegeDTO.hbm.xml" />
+		<mapping
+			resource="com/artica/telesalud/persona/model/hibernate/ResourceDTO.hbm.xml" />
+		<mapping
+			resource="com/artica/telesalud/persona/model/hibernate/RoleDTO.hbm.xml" />
+		<mapping
+			resource="com/artica/telesalud/persona/model/hibernate/UserDTO.hbm.xml" />
+    </session-factory>
+</hibernate-configuration>
+
+
+

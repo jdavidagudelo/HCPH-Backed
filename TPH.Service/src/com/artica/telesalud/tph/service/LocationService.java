@@ -1,0 +1,123 @@
+package com.artica.telesalud.tph.service;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
+import com.artica.telesalud.common.service.DAOFactoryInstantiator;
+import com.artica.telesalud.tph.dao.CityDAO;
+import com.artica.telesalud.tph.dao.LocationDAO;
+import com.artica.telesalud.tph.dao.StateProvinceDAO;
+import com.artica.telesalud.tph.dao.hibernate.HibernateTPHDAOFactory;
+import com.artica.telesalud.tph.model.location.City;
+import com.artica.telesalud.tph.model.location.Location;
+import com.artica.telesalud.tph.model.location.StateProvince;
+
+public class LocationService {
+	
+	private LocationDAO locationDAO;
+	private CityDAO cityDAO;
+	private StateProvinceDAO stateDAO;
+	
+	public LocationService(String daoClassName, HashMap<String, String> params){
+		locationDAO = DAOFactoryInstantiator.instantiateDaoFactory(HibernateTPHDAOFactory.class, 
+			daoClassName, params).getLocationDAO();
+		cityDAO = DAOFactoryInstantiator.instantiateDaoFactory(HibernateTPHDAOFactory.class, 
+				daoClassName, params).getCityDAO();
+		stateDAO = DAOFactoryInstantiator.instantiateDaoFactory(HibernateTPHDAOFactory.class, 
+				daoClassName, params).getStateProvinceDAO();
+	}
+	
+	public List<Location> readAllLocation(){
+		return locationDAO.getAll();
+	}
+	
+	public Integer getTotalLocations() {
+		return locationDAO.getTotalLocations();
+	}
+	
+	public void editLocation(Integer id, String name, String description, String address, Integer cityId) {
+		Location l = locationDAO.getLocation(id);
+		City city = cityDAO.getCity(cityId);
+
+		l.setName(name);
+		l.setDescription(description);
+		l.setAddress1(address);
+		l.setCity(city);
+		
+		locationDAO.update(l);
+	}
+	
+	public void createLocation(String name, String description, String address, Integer cityId, Integer creator) {
+		Location location = new Location();
+		City city = cityDAO.getCity(cityId);
+
+		location.setName(name);
+		location.setDescription(description);
+		location.setAddress1(address);
+		location.setCity(city);
+		location.setCreator(creator);
+		location.setDateCreated(new Date());
+	    location.setRetired(0);
+	    location.setUuid(UUID.randomUUID().toString());
+	    
+		locationDAO.create(location);
+	}
+	
+	public List<StateProvince> getStates() {
+		List<StateProvince> states = stateDAO.getAll();
+		return states;
+	}
+	public City getCityByName(String cityName, String stateName, String countryName){
+		countryName = removeAccents(countryName);
+		stateName = removeAccents(stateName);
+		cityName = removeAccents(cityName);
+		return cityDAO.getCityByName(cityName, stateName, countryName);
+	}
+	public StateProvince getStateByName(String countryName, String stateName){
+		return stateDAO.getStateByName(countryName, stateName);
+	}
+	public List<City> getCitiesByState(Integer state) {
+		
+		List<City> cities = cityDAO.getByState(state);
+		return cities;
+	}
+	
+	public City obtenerCity(Integer city){
+		return cityDAO.getCity(city);
+	}
+	public List<City> getAllCities()
+	{
+		return cityDAO.getAll();
+	}
+	 public static String removeAccents(String s)
+	    {
+	        StringBuilder sb = new StringBuilder();
+	        for(char c : s.toCharArray()){
+	            String x = String.valueOf(c);
+	            String value = replacements.get(x);
+	            if(value != null)
+	            {
+	                sb.append(value);
+	            }
+	            else{
+	                sb.append(x);
+	            }
+	        }
+	        return sb.toString();
+	    }
+	    private static final HashMap<String, String> replacements = new HashMap<String, String>();
+	    static {
+	        replacements.put("á", "a");
+	        replacements.put("é", "e");
+	        replacements.put("í", "i");
+	        replacements.put("ó", "o");
+	        replacements.put("ú", "u");
+	        replacements.put("Á", "A");
+	        replacements.put("É", "E");
+	        replacements.put("Í", "I");
+	        replacements.put("Ó", "O");
+	        replacements.put("Ú", "U");
+	    }
+}

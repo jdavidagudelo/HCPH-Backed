@@ -1,0 +1,351 @@
+package com.artica.telesalud.tph.message.service.interactions;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.StringReader;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import javax.xml.rpc.ServiceException;
+
+import org.jdom2.Attribute;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
+
+import com.artica.telesalud.common.data.HibernateSessionFactoryManager;
+import com.artica.telesalud.mirth.connect.webservice.QueryPatientEncountersResponseMessageServiceLocator;
+import com.artica.telesalud.tph.dao.hibernate.HibernateTPHDAOFactory;
+import com.artica.telesalud.tph.message.service.exception.InvalidPatientException;
+import com.artica.telesalud.tph.message.service.properties.HibernateProperties;
+import com.artica.telesalud.tph.message.service.properties.XMLPathProperties;
+import com.artica.telesalud.tph.message.service.util.HL7Formatter;
+import com.artica.telesalud.tph.model.encounter.Encounter;
+import com.artica.telesalud.tph.model.patient.Patient;
+import com.artica.telesalud.tph.model.patient.PatientIdentifier;
+import com.artica.telesalud.tph.model.person.Person;
+import com.artica.telesalud.tph.model.user.User;
+import com.artica.telesalud.tph.service.EncounterService;
+import com.artica.telesalud.tph.service.PatientService;
+import com.artica.telesalud.tph.service.PersonService;
+import com.artica.telesalud.tph.service.UserService;
+/**
+ * Clase utilizada para generar y enviar mensajes asociados a la interaccion RCMR_IN900350UV02 al bus de servicios.
+ * @author Juan David Agudelo Alvarez jdaaa2009@gmail.com
+ *
+ */
+public class IN900350UV02MessageService {
+	/**
+	 * Atributo que contiene las propiedades por defecto de hibernate.
+	 */
+	private static final HibernateProperties HIBERNATE_PROPERTIES = HibernateProperties
+			.getInstance();
+	/**
+	 * Atributo que contiene las URL de las plantillas XML utilizadas
+	 */
+	private static final XMLPathProperties XPATH_PROPERTIES = XMLPathProperties
+			.getInstance();
+	/**
+	 * Atributo utilizado para formatear la informacion del paciente en formato HL7 V3.
+	 */
+	private static final HL7Formatter HL7_FORMATTER = HL7Formatter
+			.getInstance();
+	/**
+	 * Atributo utilizado para obtener los atributo y elemento del mensaje asociado a la interaccion 
+	 */
+	private static final IN900350UV02XMLParser PARSER = IN900350UV02XMLParser
+			.getInstance();
+	/**
+	 * Atributo utilizado para obtener la informacion de los encuentros de emergencias.
+	 */
+	private EncounterService encounterService;
+	/**
+	 * Atributo utilizado para obtener la informacion de los pacientes.
+	 */
+	private PatientService patientService;
+	/**
+	 * Atributo utilizado para obtener la informacion de los usuarios.
+	 */
+	private UserService userService;
+	/**
+	 * Atributo utilizado para obtener la informacion de los pacientes.
+	 */
+	private PersonService personService;
+	/**
+	 * Url utilizada para cargar las plantillas XML utilizadas por esta clase.
+	 * Este atributo debe ser especificado a partir del ambiente en el que se ejecute este servicio.
+	 * Para el caso de esta aplicacion es configurado a partir de parametros almacenados en el archivo 
+	 * web.xml de la aplicacion web asociada a esta historia clinica.
+	 * El valor por defecto corresponde al especificado en el archivo de propiedades.
+	 */
+	private String urlBaseTemplates = XPATH_PROPERTIES
+			.getXmlTemplateRootFilePath();
+	/**
+	 * Atributo utilizado para enviar el mensaje XML al bus de servicio.
+	 */
+	private static final QueryPatientEncountersResponseMessageServiceLocator SERVICE = new QueryPatientEncountersResponseMessageServiceLocator();
+	/**
+	 * Constructor que permite inicializar los servicios requeridos por esta clase a partir de los
+	 * parametros de configuracion especificados como argumento.
+	 * @param daoClassName nombre calificado de la clase que sirve con Fabrica para los objetos Dao 
+	 * especificados en la capa de persistencia de la aplicacion.
+	 * @param params corresponde a una lista de pares clave y valor que contiene los parametros de configuracion
+	 * de Hibernate.
+	 */
+	public IN900350UV02MessageService(String daoClassName, HashMap<String, String> params)
+	{
+		patientService = new PatientService(daoClassName, params);
+		encounterService = new EncounterService(daoClassName, params);
+		userService = new UserService(daoClassName, params);
+		personService = new PersonService(daoClassName, params);
+	}
+	/**
+	 * Constructor por defecto. Este constructor inicializa los servicios de la capa
+	 * de logica del negocio con la informacion alamacenda en el archivo de 
+	 * propiedades. No deberia ser usado en modo de produccion.
+	 */
+	public IN900350UV02MessageService() {
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put(HibernateTPHDAOFactory.TPH_HIBERNATE_CONFIG_FILE,
+				HIBERNATE_PROPERTIES.getHibernateTphCfgXml());
+		HibernateSessionFactoryManager manager = HibernateSessionFactoryManager
+				.getInstance();
+		manager.createFactory(HIBERNATE_PROPERTIES.getHibernateTphCfgXml());
+		patientService = new PatientService(
+				HIBERNATE_PROPERTIES.getHibernateFactoryClass(), params);
+		encounterService = new EncounterService(
+				HIBERNATE_PROPERTIES.getHibernateFactoryClass(), params);
+		userService = new UserService(
+				HIBERNATE_PROPERTIES.getHibernateFactoryClass(), params);
+		personService = new PersonService(
+				HIBERNATE_PROPERTIES.getHibernateFactoryClass(), params);
+	}
+	/**
+	 * Metodo utilizado para enviar un mensaje asociado a la interaccion RCMR_IN900350UV02 que
+	 * contiene la informacion de los encuentros de emergencias sufridos por un
+	 * paciente con el identificador y tipo de documento ingresados como argumento
+	 * en el intervalo de fechas especificado y dirigido a la historia clinica especificada como
+	 * argumento.
+	 * @param patientIdentifier numero de identificacion del paciente.
+	 * @param patientIdentifierType tipo de identificacion del paciente.
+	 * @param high Fecha final hasta la cual se desean buscar encuentros de emergencias del paciente.
+	 * @param low fecha inicial a partir de la cual se desean buscar los encuentros de emergencias.
+	 * @param senderId identificador de la historia clinica que envia el mensaje.
+	 * @param senderName nombre de la historia clinica que envia el mensaje.
+	 * @return Mensaje de exito en el envio delo mensaje.
+	 * @throws ServiceException
+	 * @throws InvalidPatientException
+	 * @throws IOException 
+	 * @throws JDOMException 
+	 * @throws FileNotFoundException 
+	 */
+	public String sendMessage(String patientIdentifier, String patientIdentifierType, Date high, Date low, String senderId, String senderName) throws ServiceException, InvalidPatientException, FileNotFoundException, JDOMException, IOException
+	{
+		//se crea y se envia el mensaje
+		return SERVICE.getQueryPatientEncountersResponseMessagePort().queryPatientEncountersResponseMessage(createMessage(patientIdentifier,patientIdentifierType, high, low, senderId, senderName));
+	}
+	/**
+	 * Metodo utilizado para crear un mensaje asociado a la interaccion RCMR_IN900350UV02 que
+	 * contiene la informacion de los encuentros de emergencias sufridos por un
+	 * paciente con el identificador y tipo de documento ingresados como argumento
+	 * en el intervalo de fechas especificado y dirigido a la historia clinica especificada como
+	 * argumento.
+	 * @param patientIdentifier numero de identificacion del paciente.
+	 * @param patientIdentifierType tipo de identificacion del paciente.
+	 * @param high Fecha final hasta la cual se desean buscar encuentros de emergencias del paciente.
+	 * @param low fecha inicial a partir de la cual se desean buscar los encuentros de emergencias.
+	 * @param senderId identificador de la historia clinica que envia el mensaje.
+	 * @param senderName nombre de la historia clinica que envia el mensaje.
+	 * @return String que contiene el mensaje XML  asociado a la interaccion RCMR_IN900350UV02.
+	 * @throws InvalidPatientException
+	 * @throws FileNotFoundException
+	 * @throws JDOMException
+	 * @throws IOException
+	 */
+	public String createMessage(String patientIdentifier, String patientIdentifierType, Date high, Date low, String senderId, String senderName)
+			throws InvalidPatientException, FileNotFoundException, JDOMException, IOException {
+		//se obtiene la plantilla XML utilizada para generar el mensaje
+		SAXBuilder builder = new SAXBuilder();
+		Document document = null;
+		document = builder.build(new FileInputStream(urlBaseTemplates
+					+ XPATH_PROPERTIES
+							.getXmlTemplatePRPA_IN900350UV02FilePath()));
+		//identificador unico del mensaje
+		Attribute idMensaje = PARSER.getIdExtension(document);
+		idMensaje.setValue(HL7_FORMATTER.getUuidMensaje());
+		//fecha de creacion del mensaje
+		Attribute creationTime = PARSER.getCreationTimeValue(document);
+		creationTime.setValue(HL7_FORMATTER.getFormattedCreationTime());
+		//identificador de la historia clinica que recibe el mensaje
+		Attribute receiverId = PARSER.getReceiverDeviceIdExtension(document);
+		receiverId.setValue(senderId);
+		//nombre de la historia clinica que recibe el mensaje
+		Attribute receiverName = PARSER.getReceiverDeviceSoftwareNameDisplayName(document);
+		receiverName.setValue(senderName);
+		//Identificador del tipo de documento del paciente en la base de datos
+		Integer patientIdentifierTypeId = HL7_FORMATTER.getPatientIdentifierId(patientIdentifierType);
+		//se obtienen todos los pacientes con numero de identificacion especificado como argumento
+		List<PatientIdentifier> patients = patientService
+				.getPatients(patientIdentifier);
+		//lista de encuentros del paciente
+		List<Encounter> encounters = new ArrayList<Encounter>();
+		for(PatientIdentifier identifier : patients)
+		{
+			//paciente actual
+			Patient patient = patientService.buscarPatient(identifier
+					.getPatient().getPatientId());
+			//se verifica el tipo de documento del paciente
+			if(identifier.getPatientIdentifierType().getPatientIdentifierTypeId().equals(patientIdentifierTypeId))
+			{
+				//se obtienen los encuentros del paciente en el intervalo de fechas especificado
+				encounters.addAll(encounterService.getEncounters(patient,
+						high, low));
+			}
+		}
+		//variable utilizada para retornar el mensaje
+		XMLOutputter xml = new XMLOutputter();
+		//Se crea un nuevo elemento subject por cada nuevo encuentro
+		Element subject = PARSER.getControlActProcessSubject(document).get(0);
+		//elemento padre del elemento subject
+		Element controlActProccess = PARSER.getControlActProcess(document).get(0);
+		//elemento utilizado para especificar el numero de encuentros
+		Element queryAck = PARSER.getControlActProcessQueryAck(document).get(0);
+		//lista de elementos agregados
+		List<Element> encounterElements = new ArrayList<Element>();
+		Integer encountersCount = encounters.size();
+		for (Encounter encounter : encounters) {
+			//paciente actual
+			Patient patient = patientService.buscarPatient(encounter.getPatient().getPatientId());
+			//creador del encuentro
+			Integer userCreatorId = encounter.getCreator();
+			User creatorUser = userService.getUser(userCreatorId);
+			Person creator = personService.obtenerPersona(creatorUser
+					.getPersonId());
+			//identificador del paciente
+			Attribute identifierType = PARSER.getControlActProcessSubjectEncounterEventSubjectPatientPatientPersonIdRoot(document);
+			identifierType.setValue(HL7_FORMATTER.getPatientIdentifierType(patient));
+			//identificador del encuentro
+			Attribute encounterId = PARSER
+					.getControlActProcessSubjectEncounterEventIdExtension(document);
+			encounterId.setValue(encounter.getEncounterId().toString());
+			//fecha de creacion del encuentro
+			Attribute effectiveTime = PARSER
+					.getControlActProcessSubjectEncounterEventEffectiveTimeValue(document);
+			effectiveTime.setValue(HL7_FORMATTER.getHL7EffectiveTime(encounter
+					.getDateCreated()));
+			//identificador de la historia clinica
+			Attribute history = PARSER
+					.getControlActProcessSubjectEncounterEventSubjectPatientIdCode(document);
+			history.setValue(HL7_FORMATTER.getHistoryCode(patient));
+			//identificador del paciente
+			Attribute patientPersonId = PARSER
+					.getControlActProcessSubjectEncounterEventSubjectPatientPatientPersonIdExtension(document);
+			patientPersonId.setValue(HL7_FORMATTER.getIdentifier(patient));
+			//apellidos del paciente
+			List<Element> family = PARSER
+					.getControlActProcessSubjectEncounterEventSubjectPatientPatientPersonNameFamily(document);
+			Element family1 = family.get(0);
+			Element family2 = family.get(1);
+			family1.setText(HL7_FORMATTER.getPersonNameFamily1(patient));
+			family2.setText(HL7_FORMATTER.getPersonNameFamily2(patient));
+			//nombres del paciente
+			List<Element> given = PARSER
+					.getControlActProcessSubjectEncounterEventSubjectPatientPatientPersonNameGiven(document);
+			Element givenName = given.get(0);
+			Element middle = given.get(1);
+			givenName.setText(HL7_FORMATTER.getPersonNameGiven(patient));
+			middle.setText(HL7_FORMATTER.getPersonNameMiddle(patient));
+			//genero del paciente
+			Attribute genderCode = PARSER
+					.getControlActProcessSubjectEncounterEventSubjectPatientPatientPersonAdministrativeGenderCodeCode(document);
+			genderCode.setValue(HL7_FORMATTER.getGenderCode(patient));
+			//nombre del genero del paciente
+			Attribute genderName = PARSER
+					.getControlActProcessSubjectEncounterEventSubjectPatientPatientPersonAdministrativeGenderCodeDisplayName(document);
+			genderName
+					.setValue(HL7_FORMATTER.getGenderCodeDisplayName(patient));
+			//fecha de nacimiento del paciente
+			Attribute birthTime = PARSER
+					.getControlActProcessSubjectEncounterEventSubjectPatientPatientPersonBirthTimeValue(document);
+			birthTime.setValue(HL7_FORMATTER.getFormattedBirthTime(patient));
+			//identificador del usuario que admite el paciente al encuentro
+			Attribute admitterId = PARSER
+					.getControlActProcessSubjectEncounterEventAdmitterAssignedPersonIdExtension(document);
+			admitterId.setValue(creator.getPersonId().toString());
+			//telefono del que admite el paciente
+			Attribute admitterTelecom = PARSER
+					.getControlActProcessSubjectEncounterEventAdmitterAssignedPersonTelecomValue(document);
+			admitterTelecom.setValue(HL7_FORMATTER.getAdmitterTelecom(creator));
+			//fecha del encuentro
+			Attribute time = PARSER
+					.getControlActProcessSubjectEncounterEventAdmitterTimeValue(document);
+			time.setValue(HL7_FORMATTER.getHL7Date(encounter.getDateCreated()));
+			//Estado del encuentro
+			Attribute status = PARSER.getControlActProcessSubjectEncounterEventStatusCodeCode(document);
+			status.setValue(encounter.getState());
+			//se clona el elemento subject modificado y se agrega a la lista
+			Element subjectClone = subject.clone();
+			encounterElements.add(subjectClone);
+		}
+		Element queryAckClone = queryAck.clone();
+		queryAck.detach();
+		subject.detach();
+		encounterElements.add(queryAckClone);
+		controlActProccess.addContent(encounterElements);
+		//cantidad de encuentros
+		Attribute quantity = PARSER.getControlActProcessQueryAckResultCurrentQuantityValue(document);
+		quantity.setValue(String.valueOf(encountersCount));
+		//retorna documento XML
+		String outputString = xml.outputString(document);
+		return outputString;
+	}
+	public String getUrlBaseTemplates() {
+		return urlBaseTemplates;
+	}
+	/**
+	 * Metodo que genera y envia al bus de servicios un documento asociado a la interaccion con codigo RCMR_IN900350UV02
+	 * a partir de un documento XML asociado a la interaccion con codigo RCMR_IN900300UV02.
+	 * @param xml documento asociado a la interaccion con codigo RCMR_IN900350UV02
+	 * @return documento asociado a la interaccion con codigo RCMR_IN900350UV02.
+	 * @throws ServiceException
+	 * @throws InvalidPatientException
+	 * @throws JDOMException
+	 * @throws IOException
+	 * @throws ParseException
+	 */
+	public String responseMessage(String xml) throws ServiceException, InvalidPatientException, JDOMException, IOException, ParseException
+	{
+		//variable utilizada para procesar el documento asociado a la interaccion con codigo RCMR_IN900350UV02
+		IN900300UV02XMLParser parser = IN900300UV02XMLParser.getInstance();
+		//se obtiene el documento a partir del parametro
+		SAXBuilder builder = new SAXBuilder();
+		Document document = builder.build(new StringReader(xml));
+		//se requiere modificar el formato de la fecha recibida como parametro en el mensaje XML
+		HL7Formatter formatter = HL7Formatter.getInstance();
+		//fecha inicial
+		Attribute lowAttribute = parser.getControlActProcessQueryByParameterPayloadEncounterTimeframeValueLowValue(document);
+		Date low = formatter.getHL7BirthTime(lowAttribute.getValue());
+		//fecha final
+		Attribute highAttribute = parser.getControlActProcessQueryByParameterPayloadEncounterTimeframeValueHighValue(document);
+		Date high = formatter.getHL7BirthTime(highAttribute.getValue());
+		//numero de documento
+		Attribute identifierAttribute = parser.getControlActProcessQueryByParameterPayloadPatientIdValueExtension(document);
+		String identifier = identifierAttribute.getValue();
+		//identificador de la historia clinica de origen
+		Attribute senderId = parser.getSenderDeviceIdExtension(document);
+		//nombre de la historia clinica de origen
+		Attribute senderName = parser.getSenderDeviceSoftwareNameDisplayName(document);
+		//tipo de documento
+		Attribute identifierType = parser.getControlActProcessQueryByParameterPayloadPatientIdValueRoot(document);
+		return sendMessage(identifier, identifierType.getValue(), high, low, senderId.getValue(), senderName.getValue());
+	}
+	public void setUrlBaseTemplates(String urlBaseTemplates) {
+		this.urlBaseTemplates = urlBaseTemplates;
+	}
+}

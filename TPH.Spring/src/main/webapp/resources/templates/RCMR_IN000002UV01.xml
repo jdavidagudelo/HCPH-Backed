@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<hl7:RCMR_IN000002UV01 xmlns:hl7="urn:hl7-org:v3"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="urn:hl7-org:v3 file:/home/interoperabilidad/workspace/intero/processable/multicacheschemas/RCMR_IN000002UV01.xsd" ITSVersion="XML_1.0">
+    <hl7:id extension="c4721ce0-4024-11e3-aa6e-0800200c9a66" />
+    <hl7:creationTime value="20131028180200"/>
+    <hl7:interactionId extension="RCMR_IN000002UV01"/>
+    <hl7:processingCode code="P"/>
+    <hl7:processingModeCode code="A"/>
+    <hl7:acceptAckCode code="AL"/>
+    <hl7:receiver typeCode="RCV">
+        <hl7:device classCode="DEV" determinerCode="INSTANCE">
+            <hl7:id extension="co.udea.telesalud.hcteleasis"/>
+            <hl7:softwareName displayName="Historia clínica teleasistencia domiciliaria. Artica, Udea V1.0"/>
+        </hl7:device>
+    </hl7:receiver>
+    <hl7:sender typeCode="SND">
+        <hl7:device classCode="DEV" determinerCode="INSTANCE">
+            <hl7:id extension="co.udea.telesalud.hcemr"/>
+            <hl7:softwareName displayName="Historia clínica prehospitalaria. Artica, Udea V1.0"/>
+        </hl7:device>
+    </hl7:sender>
+    <hl7:controlActProcess classCode="INFO" moodCode="EVN">
+        <hl7:text>BASE64DOCUMENT</hl7:text>
+        <hl7:subject typeCode="SUBJ">
+            <hl7:target classCode="DOCCLIN" moodCode="EVN">
+                <hl7:id extension="eb610560-1337-11e3-8ffd-0800200c9a66"/>
+                <hl7:code code="telesalud.emr" displayName="Información de emergencias" codeSystemName="TELESALUD.UDEA" />
+                <hl7:statusCode code="new"/>
+                <hl7:effectiveTime value="201201010101"/>
+                <hl7:confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.1" ></hl7:confidentialityCode>
+                <hl7:subject typeCode="SBJ">
+                    <hl7:relatedSubject classCode="PAT"/>
+                </hl7:subject>
+                <hl7:recordTarget typeCode="RCT">
+                    <hl7:patient classCode="PAT">
+                        <hl7:id extension="HC1020413454"/>
+                        <hl7:patientPerson>
+                            <hl7:id extension="1020413454" root="2.16.840.1.113883.19.57.1.1.1.1.1"/>
+                            <hl7:name>
+                                <hl7:given>Juan</hl7:given>
+                                <hl7:given>Camilo</hl7:given>
+                                <hl7:family>Alzate</hl7:family>
+                                <hl7:family>Restrepo</hl7:family>
+                            </hl7:name>
+                            <hl7:administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1" codeSystemName="AdministrativeGender" displayName="MASCULINO" />
+                            <hl7:birthTime value="19270101"/>
+                        </hl7:patientPerson>
+                    </hl7:patient>
+                </hl7:recordTarget>
+                <hl7:author typeCode="AUT">
+                    <hl7:time value="20131212080000"/>
+                    <hl7:assignedAuthor classCode="ASSIGNED">
+                        <hl7:id extension="co.udea.telesalud.hcemr"/>
+                    </hl7:assignedAuthor>
+                </hl7:author>
+                <hl7:custodian typeCode="CST">
+                    <hl7:assignedCustodian classCode="ASSIGNED">
+                        <hl7:representedOrganization classCode="ORG" determinerCode="INSTANCE">
+                            <hl7:id extension="co.udea.telesalud.hcemr"/>
+                        </hl7:representedOrganization>
+                    </hl7:assignedCustodian>
+                </hl7:custodian>
+            </hl7:target>
+        </hl7:subject>
+    </hl7:controlActProcess>
+</hl7:RCMR_IN000002UV01>

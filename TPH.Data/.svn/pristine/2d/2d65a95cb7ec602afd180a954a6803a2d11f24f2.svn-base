@@ -1,0 +1,452 @@
+package com.artica.telesalud.tph.dao.hibernate;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
+
+import com.artica.telesalud.common.data.HibernateDAO;
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.tph.dao.LesionadoDAO;
+import com.artica.telesalud.tph.model.evento.Evento;
+import com.artica.telesalud.tph.model.evento.Lesionado;
+import com.artica.telesalud.tph.model.patient.PatientIdentifier;
+
+/**
+ * Manipula la información de los eventos en la base de datos, esta es la
+ * implementación para Hibernate de la interface EventoDAO.
+ * 
+ * @author Elver Suárez Alzate
+ * @version 1.0
+ * 
+ */
+public class HibernateLesionadoDAO extends HibernateDAO implements LesionadoDAO {
+
+	public HibernateLesionadoDAO(String configFile) {
+		super(configFile);
+	}
+
+	public HibernateLesionadoDAO() {
+		super();
+	}
+
+	/**
+	 * Obtiene la información completa de una tripulacion dado su identificador
+	 * 
+	 * @param tripulacionId
+	 *            Identificador de la tripulacion
+	 * @return La información completa de la tripulacion
+	 */
+	
+	public Lesionado getLesionado(Integer lesionadoId) {
+
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Lesionado.class).add(
+					Restrictions.eq("lesionadoId", lesionadoId));
+			Lesionado result = (Lesionado) criteria.uniqueResult();
+			tx.commit();
+			return result;
+
+		} catch (Exception e) {
+			if(tx!=null)
+				tx.rollback();
+			throw new TelesaludException("Exception!", e,
+					HibernateConceptDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+
+	}
+
+	/**
+	 * 
+	 */
+	
+	public Lesionado save(Lesionado lesionado) {
+
+		Transaction tx = null;
+		Session session = null;
+		try {
+
+			session = getNewSession();
+			tx = session.beginTransaction();
+
+			if (lesionado.getDateCreated() == null)
+				lesionado.setDateCreated(new Date());
+
+			lesionado.setVoided(Boolean.valueOf(false));
+			lesionado.setUuid(UUID.randomUUID().toString());
+
+			session.save(lesionado);
+			tx.commit();
+
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			throw new TelesaludException("Exception!", e,
+					HibernateConceptDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		return lesionado;
+	}
+
+	/**
+	 * 
+	 */
+	
+	public Lesionado update(Lesionado lesionado) {
+
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+
+			if (lesionado.getDateChanged() == null)
+				lesionado.setDateChanged(new Date());
+
+			lesionado = (Lesionado) session.merge(lesionado);
+			session.update(lesionado);
+
+			tx.commit();
+
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			throw new TelesaludException("Exception!", e,
+					HibernateConceptDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		return lesionado;
+	}
+
+	/**
+	 * 
+	 */
+	
+	public Lesionado newLesionado() {
+		Lesionado lesionado = new Lesionado();
+		return lesionado;
+	}
+
+	/**	
+	 * 
+	 */
+	
+	public Lesionado delete(Lesionado lesionado) {
+
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+
+			if (lesionado.getDateVoided() == null) {
+				lesionado.setDateVoided(new Date());
+				lesionado.setVoided(true);
+			}
+
+			session.update(lesionado);
+			tx.commit();
+
+		} catch (Exception e) {
+			if (tx != null)
+				tx.rollback();
+			throw new TelesaludException("Exception!", e,
+					HibernateConceptDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		return lesionado;
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public List<Lesionado> getLesionados(Evento evento) {
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Lesionado.class)
+					.add(Restrictions.eq("voided", Boolean.valueOf(false)))
+					.add(Restrictions.eq("evento", evento));
+			List<Lesionado> result = criteria.list();
+			tx.commit();
+			return result;
+
+		} catch (Exception e) {
+			if(tx!=null)
+				tx.rollback();
+			throw new TelesaludException("Exception!", e,
+					HibernateConceptDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+
+	}
+	public Lesionado getLesionadoEvento(Evento evento, Integer eventLocalIdentifier) {
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Lesionado.class)
+					.add(Restrictions.eq("voided", Boolean.valueOf(false)))
+					.add(Restrictions.eq("evento", evento)).
+					add(Restrictions.eq("eventLocalIdentifier", eventLocalIdentifier));
+			if(criteria.list().isEmpty())
+			{
+				return null;
+			}
+			Lesionado result = (Lesionado)criteria.list().get(0);
+			tx.commit();
+			return result;
+
+		} catch (Exception e) {
+			if(tx!=null)
+				tx.rollback();
+			throw new TelesaludException("Exception!", e,
+					HibernateConceptDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+
+	}
+	@SuppressWarnings("unchecked")
+	public List<Lesionado> getLesionadosEncounter(Integer encounterId) {
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Query criteria = session.createQuery("FROM Lesionado l WHERE l.encuentro.encounterId='"+encounterId+"'");
+			List<Lesionado> result = criteria.list();
+			tx.commit();
+			return result;
+		} catch (Exception e) {
+			if(tx!=null)
+				tx.rollback();
+			throw new TelesaludException("Exception!", e,
+					HibernateConceptDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+		
+	}
+	@SuppressWarnings("unchecked")
+	
+	public List<Lesionado> getLesionadosEvent(Evento evento, Integer userId,
+			Integer personId) {
+
+		Session session = null;
+		Transaction tx = null;
+		try {
+
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Query criteria = session
+					.createQuery("Select distinct l FROM Evento e left outer join e.lesionados l left outer join l.responsablesAtencion AS ra WHERE l.voided = :Voided AND e=:Evento AND e.creator=:Creador");
+
+			criteria.setParameter("Voided", Boolean.valueOf(false));
+			criteria.setParameter("Evento", evento);
+			criteria.setParameter("Persona", personId);
+			criteria.setParameter("Creador", userId);
+			List<Lesionado> result = criteria.list();
+			tx.commit();
+			return result;
+
+		} catch (Exception e) {
+			if(tx!=null)
+				tx.rollback();
+			throw new TelesaludException("Exception!", e,
+					HibernateConceptDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	
+	public List<Lesionado> getLesionados(Evento evento, Integer userId,
+			Integer personId) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Query criteria = session
+					.createQuery("Select distinct l FROM Evento e left outer join e.lesionados l left outer join l.responsablesAtencion AS ra WHERE l.voided = :Voided AND e=:Evento AND e.creator=:Creador"
+							+ " OR ra.persona = :Persona");
+
+			criteria.setParameter("Voided", Boolean.valueOf(false));
+			criteria.setParameter("Evento", evento);
+			criteria.setParameter("Persona", personId);
+			criteria.setParameter("Creador", userId);
+			List<Lesionado> result = criteria.list();
+			tx.commit();
+			return result;
+
+		} catch (Exception e) {
+
+			throw new TelesaludException("Exception!", e,
+					HibernateConceptDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public List<Lesionado> getLesionadosSolicitudTeleasistencia(Evento evento) {
+
+		Session session = null;
+		Transaction tx = null;
+		try {
+
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Query criteria = session
+					.createQuery("Select l FROM Lesionado l WHERE l.solicitaTeleasistencia = :Teleasistencia AND l.evento = :Evento AND l.voided = :Voided");
+
+			criteria.setParameter("Voided", Boolean.valueOf(false));
+			criteria.setParameter("Evento", evento);
+			criteria.setParameter("Teleasistencia", Boolean.valueOf(true));
+			List<Lesionado> result = criteria.list();
+			tx.commit();
+			return result;
+
+		} catch (Exception e) {
+			if(tx!=null)
+				tx.rollback();
+			throw new TelesaludException("Exception!", e,
+					HibernateConceptDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public List<Lesionado> getLesionadosPorIdentificacion(
+			String identificacion, Integer tipo) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Query criteriaIdent = session
+					.createQuery("SELECT distinct i FROM PatientIdentifier i WHERE i.identifier = :Identificacion AND i.patientIdentifierType.patientIdentifierTypeId = :Tipo");
+			criteriaIdent.setParameter("Identificacion", identificacion);
+			criteriaIdent.setParameter("Tipo", tipo);
+			PatientIdentifier ident = (PatientIdentifier) criteriaIdent
+					.uniqueResult();
+
+			if (ident != null) {
+				Query criteria = session
+						.createQuery("Select distinct l FROM Evento e inner join e.lesionados l inner join l.encuentro en "
+								+ "inner join en.patient p "
+								+ "WHERE l.voided = :Voided AND p.patientId = :Paciente");
+				criteria.setParameter("Voided", Boolean.valueOf(false));
+				criteria.setParameter("Paciente", ident.getPatient()
+						.getPatientId());
+				List<Lesionado> result = criteria.list();
+				tx.commit();
+				return result;
+			}
+			return new ArrayList<Lesionado>();
+
+		} catch (Exception e) {
+
+			if(tx!=null)
+				tx.rollback();
+			throw new TelesaludException("Exception!", e,
+					HibernateConceptDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public List<Lesionado> getLesionadosPorRegistro(String registro) {
+
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Query criteria = session
+					.createQuery("Select distinct l FROM Evento e left outer join e.lesionados l left outer join l.responsablesAtencion AS ra left outer join ra.person as p WHERE l.voided = :Voided "
+							+ " AND p.registro = :Registro");
+
+			criteria.setParameter("Voided", Boolean.valueOf(false));
+			criteria.setParameter("Registro", registro);
+			List<Lesionado> result = criteria.list();
+			tx.commit();
+			return result;
+
+		} catch (Exception e) {
+
+			if(tx!=null)
+				tx.rollback();
+			throw new TelesaludException("Exception!", e,
+					HibernateConceptDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+
+	}
+
+	public List<Lesionado> getLesionadosActivos() {
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Query criteria = session.createQuery("FROM Lesionado l WHERE l.evento.estado='Activo'");
+			@SuppressWarnings("unchecked")
+			List<Lesionado> result = criteria.list();
+			tx.commit();
+			return result;
+		} catch (Exception e) {
+
+			if(tx!=null)
+				tx.rollback();
+			throw new TelesaludException("Exception!", e,
+					HibernateConceptDAO.class);
+		} finally {
+			if (session != null)
+				session.close();
+		}
+	}
+
+}

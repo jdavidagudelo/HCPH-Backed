@@ -1,0 +1,55 @@
+package com.artica.telesalud.patientmasterindex.service;
+
+import java.util.HashMap;
+import java.util.List;
+
+import com.artica.telesalud.common.service.DAOFactoryInstantiator;
+import com.artica.telesalud.patientmasterindex.dao.PatientIndexDAO;
+import com.artica.telesalud.patientmasterindex.dao.hibernate.HibernateMasterPatientMasterIndexDAOFactory;
+import com.artica.telesalud.patientmasterindex.model.PatientIndex;
+import com.artica.telesalud.patientmasterindex.service.properties.DomainsProperties;
+import com.artica.telesalud.patientmasterindex.service.properties.EhrProperties;
+
+public class PatientIndexService {
+	private PatientIndexDAO patientIndexDAO;
+	private static final DomainsProperties DOMAINS = DomainsProperties
+			.getInstance();
+	private static final EhrProperties EHR = EhrProperties.getInstance();
+
+	public List<PatientIndex> findClinicHistoriesByPatient(
+			String patientIdentifier, String domainUuid) {
+		return patientIndexDAO.findClinicHistoriesByPatient(patientIdentifier,
+				domainUuid);
+	}
+
+	public List<PatientIndex> findClinicHistoriesAMPByPatient(
+			String patientIdentifier) {
+		return findClinicHistoriesByPatient(patientIdentifier,
+				DOMAINS.getTelesaludAmp());
+	}
+
+	public List<PatientIndex> findClinicHistoriesEMRByPatient(
+			String patientIdentifier) {
+		return findClinicHistoriesByPatient(patientIdentifier,
+				DOMAINS.getTelesaludEmr());
+	}
+	public List<PatientIndex> findExternalClinicHistoriesByPatient(String identifier, String ehrUuid){
+		return patientIndexDAO.findExternalClinicHistoriesByPatient(identifier, ehrUuid);
+	}
+	public List<PatientIndex> findCoUdeaTelesaludHcemrExternalClinicHistoriesByPatient(String identifier)
+	{
+		return findExternalClinicHistoriesByPatient(identifier, EHR.getCoUdeaTelesaludHcemr());
+	}	
+	public List<PatientIndex> findCoUdeaTelesaludHcteleasisExternalClinicHistoriesByPatient(String identifier)
+	{
+		return findExternalClinicHistoriesByPatient(identifier, EHR.getCoUdeaTelesaludHcteleasis());
+	}
+	public PatientIndexService(String daoClassName,
+			HashMap<String, String> params) {
+
+		patientIndexDAO = DAOFactoryInstantiator.instantiateDaoFactory(
+				HibernateMasterPatientMasterIndexDAOFactory.class,
+				daoClassName, params).getPatientIndexDAO();
+	}
+	
+}

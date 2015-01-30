@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2/11/2010 02:06:19 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.person.RelationshipType" table="relationship_type" catalog="RCMedicalRecordTPH">
+        <id name="relationshipTypeId" type="java.lang.Integer">
+            <column name="RELATIONSHIP_TYPE_ID" />
+            <generator class="identity" />
+        </id>
+        <property name="aIstoB" type="java.lang.String">
+            <column name="A_IS_TO_B" />
+        </property>
+        <property name="bIstoA" type="java.lang.String">
+            <column name="B_IS_TO_A" />
+        </property>
+        <property name="prefered" type="java.lang.Boolean">
+            <column name="PREFERED" />
+        </property>
+        <property name="weight" type="java.lang.Integer">
+            <column name="WEIGHT" />
+        </property>
+        <property name="description" type="java.lang.String">
+            <column name="DESCRIPTION" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="retired" type="java.lang.Boolean">
+            <column name="RETIRED" />
+        </property>
+        <property name="retiredBy" type="java.lang.Integer">
+            <column name="RETIRED_BY" />
+        </property>
+        <property name="dateRetired" type="java.util.Date">
+            <column name="DATE_RETIRED" />
+        </property>
+        <property name="retireReason" type="java.lang.String">
+            <column name="RETIRE_REASON" />
+        </property>
+        <property name="Uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+    </class>
+</hibernate-mapping>

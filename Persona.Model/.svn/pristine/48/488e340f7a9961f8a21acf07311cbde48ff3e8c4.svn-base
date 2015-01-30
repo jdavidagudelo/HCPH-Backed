@@ -1,0 +1,77 @@
+package com.artica.telesalud.persona.model;
+
+import java.io.Serializable;
+import java.util.Date;
+
+
+public interface UserOld extends Serializable{
+
+	public abstract Integer getUserId();
+
+	public abstract void setUserId(Integer userId);
+
+	public abstract String getSystemId();
+
+	public abstract void setSystemId(String systemId);
+
+	public abstract String getUsername();
+
+	public abstract void setUsername(String username);
+
+	public abstract String getPassword();
+
+	public abstract void setPassword(String password);
+
+	public abstract String getSalt();
+
+	public abstract void setSalt(String salt);
+
+	public abstract String getSecretQuestion();
+
+	public abstract void setSecretQuestion(String secretQuestion);
+
+	public abstract String getSecretAnswer();
+
+	public abstract void setSecretAnswer(String secretAnswer);
+
+	public abstract UserOld getCreator();
+
+	public abstract void setCreator(UserOld creator);
+
+	public abstract Date getDateCreated();
+
+	public abstract void setDateCreated(Date dateCreated);
+
+	public abstract UserOld getChangedBy();
+
+	public abstract void setChangedBy(UserOld changedBy);
+
+	public abstract Date getDateChanged();
+
+	public abstract void setDateChanged(Date dateChanged);
+
+	public abstract Boolean getRetired();
+
+	public abstract void setRetired(Boolean retired);
+
+	public abstract UserOld getRetiredBy();
+
+	public abstract void setRetiredBy(UserOld retiredBy);
+
+	public abstract Date getDateRetired();
+
+	public abstract void setDateRetired(Date dateRetired);
+
+	public abstract String getRetireReason();
+
+	public abstract void setRetireReason(String retireReason);
+
+	public abstract String getUuid();
+
+	public abstract void setUuid(String uuid);
+	
+	public abstract Role getRole();
+	
+	public abstract void setRole(Role role);
+
+}

@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Apr 10, 2014 4:47:09 PM by Hibernate Tools 3.6.0 -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.patientmasterindex.model.Domains" table="Domains" catalog="RCMedicalRecordTPH">
+        <id name="uuid" type="string">
+            <column name="UUID" />
+            <generator class="assigned" />
+        </id>
+        <property name="name" type="string">
+            <column name="name" not-null="true" unique="true">
+                <comment>Nombre del dominio</comment>
+            </column>
+        </property>
+      
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2/11/2010 02:06:19 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.observation.HL7Message" table="hl7_message" catalog="RCMedicalRecordTPH">
+        <id name="hl7MessageId" type="java.lang.Integer">
+            <column name="HL7_MESSAGE_ID" />
+            <generator class="identity" />
+        </id>
+        <property name="typeMsg" type="java.lang.String">
+            <column name="TYPE_MSG" />
+        </property>
+        <property name="message" type="java.lang.String">
+            <column name="MESSAGE" />
+        </property>
+        <property name="ackMsg" type="java.lang.String">
+            <column name="ACK_MSG" />
+        </property>
+        <many-to-one name="encounter" class="com.artica.telesalud.tph.model.encounter.Encounter" fetch="select" lazy="false">
+            <column name="ENCOUNTER_ID" />
+        </many-to-one>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="dateChanged" type="java.util.Date">
+            <column name="DATE_CHANGED" />
+        </property>
+        <property name="status" type="java.lang.String">
+            <column name="STATUS" />
+        </property>
+        <property name="Uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+    </class>
+</hibernate-mapping>

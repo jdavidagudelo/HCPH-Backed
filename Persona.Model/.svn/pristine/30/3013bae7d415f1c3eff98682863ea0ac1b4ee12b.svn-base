@@ -1,0 +1,12 @@
+package com.artica.telesalud.persona.model;
+
+public interface Operation{
+	public Integer getOperationId();
+	public void setOperationId(Integer operationId);
+	public String getName();
+	public void setName(String Name);
+	public String getDescription();
+	public void setDescription(String Description);
+	public String getUuid();
+	public void setUuid(String Uuid);
+}

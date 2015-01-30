@@ -1,0 +1,7 @@
+package com.artica.telesalud.persona.service.user;
+
+import com.artica.telesalud.persona.model.UserOld;
+
+public interface ValidUserListener {
+	public void onValidUser(UserOld user);
+}

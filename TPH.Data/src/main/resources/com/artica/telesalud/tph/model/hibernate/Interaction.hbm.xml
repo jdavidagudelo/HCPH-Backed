@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 23/11/2010 03:50:10 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.concept.Interaction" table="INTERACTION" catalog="RCMedicalRecordTPH">
+        <id name="interactionId" type="java.lang.Integer">
+            <column name="INTERACTIONID" />
+            <generator class="assigned" />
+        </id>
+        <many-to-one name="interactionsType" class="com.artica.telesalud.tph.model.concept.InteractionType" fetch="join">
+            <column name="INTERACTIONSTYPE" />
+        </many-to-one>
+        <many-to-one name="drugPpal" class="com.artica.telesalud.tph.model.concept.Concept" fetch="join">
+            <column name="DRUGPPAL" />
+        </many-to-one>
+        <many-to-one name="drugSec" class="com.artica.telesalud.tph.model.concept.Concept" fetch="join">
+            <column name="DRUGSEC" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

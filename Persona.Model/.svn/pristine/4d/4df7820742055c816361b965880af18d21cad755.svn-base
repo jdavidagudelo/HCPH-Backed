@@ -1,0 +1,44 @@
+package com.artica.telesalud.persona.model;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public interface User extends Serializable{
+	
+	public Integer getUserId();
+	public void setUserId(Integer user_id);
+	public String getSystem_id();
+	public void setSystemId(String system_id);
+	public String getUsername();
+	public void setUsername(String username);
+	public String getPassword();
+	public void setPassword(String password);
+	public String getSalt();
+	public void setSalt(String salt);
+	public String getSecretQuestion();
+	public void setSecretQuestion(String secret_question);
+	public String getSecretAnswer();
+	public void setSecretAnswer(String secret_answer);
+	public Integer getRole();
+	public void setRole(Integer role);
+	public Integer getCreator();
+	public void setCreator(Integer creator);
+	public Date getDateCreated();
+	public void setDateCreated(Date date_created);
+	public Integer getChangedBy();
+	public void setChangedBy(Integer changed_by);
+	public Date getDateChanged();
+	public void setDateChanged(Date date_changed);
+	public Integer getPersonId();
+	public void setPersonId(Integer person_id);
+	public Boolean getRetired();
+	public void setRetired(Boolean retired);
+	public Integer getRetired_by();
+	public void setRetiredBy(Integer retired_by);
+	public Date getDateRetired();
+	public void setDateRetired(Date date_retired);
+	public String getRetireReason();
+	public void setRetireReason(String retire_reason);
+	public String getUuid();
+	public void setUuid(String uuid);
+}

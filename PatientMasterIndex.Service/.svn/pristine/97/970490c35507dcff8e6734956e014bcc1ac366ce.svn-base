@@ -1,0 +1,35 @@
+package test;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.junit.Test;
+
+import com.artica.telesalud.common.data.HibernateSessionFactoryManager;
+import com.artica.telesalud.patientmasterindex.dao.hibernate.HibernateMasterPatientMasterIndexDAOFactory;
+import com.artica.telesalud.patientmasterindex.model.PatientIndex;
+import com.artica.telesalud.patientmasterindex.service.PatientIndexService;
+
+public class TestPatientIndexService {
+	PatientIndexService patientIndexService;
+	public void test()
+	{}
+	@Test
+	public void testService()
+	{
+		HashMap<String, String> params = new HashMap<String, String>();
+		
+		params.put(HibernateMasterPatientMasterIndexDAOFactory.RIESGO_HIBERNATE_CONFIG_FILE, "hibernate-patientindex.cfg.xml");
+		
+		HibernateSessionFactoryManager manager = HibernateSessionFactoryManager.getInstance();
+		manager.createFactory("hibernate-patientindex.cfg.xml");
+		patientIndexService = new PatientIndexService("com.artica.telesalud.patientmasterindex.dao.hibernate.HibernateMasterPatientMasterIndexDAOFactory", params);
+		List<PatientIndex> histories = patientIndexService.findClinicHistoriesEMRByPatient("1037524435");
+		histories =patientIndexService.findCoUdeaTelesaludHcemrExternalClinicHistoriesByPatient("1020434561");
+		for(PatientIndex h : histories)
+		{
+			System.out.println(h.getDomains().getName());
+			System.out.println(h.getEhr().getName());
+		}
+	}
+}

@@ -1,0 +1,43 @@
+package com.artica.telesalud.persona.service;
+
+import java.util.HashMap;
+
+import com.artica.telesalud.common.service.DAOFactoryInstantiator;
+import com.artica.telesalud.persona.dao.PersonaDAOFactory;
+import com.artica.telesalud.persona.dao.PrivilegeDAO;
+import com.artica.telesalud.persona.model.Operation;
+import com.artica.telesalud.persona.model.Privilege;
+import com.artica.telesalud.persona.model.Resource;
+
+public class PrivilegeService {
+	
+	private PrivilegeDAO privilegeDao;
+	
+	public PrivilegeService(String daoClassName, HashMap<String, String> params){
+		privilegeDao = DAOFactoryInstantiator.instantiateDaoFactory(PersonaDAOFactory.class, 
+			daoClassName, params).getPrivilegeDao();
+	}
+		
+	public Privilege newBlankPrivilege(){
+		return privilegeDao.newBlankPrivilege();
+	}
+	
+	public Privilege insertPrivilege(Privilege privilege){
+		return privilegeDao.insert(privilege);
+	}
+	
+	public Privilege updatePrivilege(Privilege privilege){
+		
+		return privilegeDao.insert(privilege);
+	}
+	
+	public Privilege deletePrivilege(Privilege privilege){
+		return privilegeDao.delete(privilege);
+	}
+	
+	public Privilege getPrivilegeFor(Resource resource, Operation operation){
+		//TODO
+		return null;
+	}
+	
+}

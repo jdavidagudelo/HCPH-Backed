@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 23/11/2010 03:50:10 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.location.City" table="cities" catalog="RCMedicalRecordTPH">
+        <id name="cityId" type="java.lang.Integer">
+            <column name="CITIES_ID" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="stateProvince" class="com.artica.telesalud.tph.model.location.StateProvince" fetch="select" lazy="false">
+            <column name="STATE_PROVINCE" />
+        </many-to-one>
+        <property name="code" type="java.lang.String">
+            <column name="CODE" />
+        </property>
+        <property name="name" type="java.lang.String">
+            <column name="NAME" />
+        </property>
+        
+        <property name="voided" type="java.lang.Integer">
+            <column name="VOIDED" />
+        </property>
+    </class>
+</hibernate-mapping>

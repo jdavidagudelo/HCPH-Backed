@@ -1,0 +1,330 @@
+package com.artica.telesalud.tph.dao.hibernate;
+
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+
+import com.artica.telesalud.common.data.HibernateDAO;
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.tph.dao.EncounterDAO;
+import com.artica.telesalud.tph.model.encounter.Encounter;
+import com.artica.telesalud.tph.model.encounter.EncounterType;
+import com.artica.telesalud.tph.model.patient.Patient;
+
+public class HibernateEncounterDAO extends HibernateDAO implements EncounterDAO {
+
+	public HibernateEncounterDAO(String configFile) {
+		super(configFile);
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public List<Encounter> getAll() {
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Encounter.class);
+		
+			List<Encounter> encounters = criteria.list();
+		tx.commit();
+			return encounters;
+		
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+			{
+				tx.rollback();
+			}
+			e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateEncounterDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		
+	}
+
+	
+	public Encounter insert(Encounter encounter, Integer creator) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    
+		    if(encounter.getDateCreated()== null)
+		    	encounter.setDateCreated(new Date());
+		    
+		    encounter.setState(Encounter.STATE_ACTIVE);
+		    encounter.setVoided(0);
+		    encounter.setCreator(creator);
+		    encounter.setUuid(UUID.randomUUID().toString());
+		    
+		    session.save(encounter);
+		    
+		    tx.commit();
+		    
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateEncounterDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return encounter;
+	}
+
+	
+	public Encounter update(Encounter encounter) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    if(encounter.getDateChanged()==null)
+		    	encounter.setDateChanged(new Date());
+		    
+		    session.update(encounter);
+		    
+		    tx.commit();
+		    
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateEncounterDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return encounter;
+	}
+	
+	
+	public Encounter finish(Integer encounter) {
+		Transaction tx = null;
+		Session session = null;
+		Encounter enc = null;
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    enc = (Encounter)getNewSession().load(Encounter.class, encounter);
+		    
+		    if(enc.getDateChanged()==null)
+		    	enc.setDateChanged(new Date());
+		    
+		    enc.setState(Encounter.STATE_TERMINATED);
+		    
+		    session.update(enc);
+		    tx.commit();
+		    
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateEncounterDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return enc;
+	}
+
+	
+	public Encounter newEncounter() {
+		Encounter encounter = new Encounter();
+		encounter.setState(Encounter.STATE_ACTIVE);
+		
+		return encounter;
+	}
+
+	
+	public Encounter delete(Encounter encounter) {
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    if(encounter.getDateVoided()==null){
+		    	encounter.setDateVoided(new Date());
+		    	encounter.setVoided(1);
+		    }
+		    
+			session.update(encounter);
+		    tx.commit();
+		    
+		} catch(Exception e) {
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateEncounterDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return encounter;
+	}
+
+	
+	@SuppressWarnings("unchecked")
+	
+	public List<Encounter> getEncounters(Patient patient, int maxResult, int offset) {
+		
+		Session session = null;
+		Transaction tx = null;
+		try {
+			
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Encounter.class)
+								.add(Restrictions.eq("patient", patient))
+								.add(Restrictions.eq("voided", 0))
+								.addOrder(Order.desc("encounterDatetime"));
+								
+	        criteria.setMaxResults(maxResult);
+			criteria.setFirstResult(offset);
+			List<Encounter> result = criteria.list();
+			tx.commit();
+			return result;
+			
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    throw new TelesaludException("Exception!",e,HibernateEncounterDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+	}
+	
+	
+	
+	
+	public Encounter getEncounter(Integer encounterId) {
+		
+		
+		Session session = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(Encounter.class)
+								.add(Restrictions.eq("encounterId", encounterId));
+			Encounter result = (Encounter)criteria.uniqueResult();
+			tx.commit();
+			return result;
+			
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateEncounterDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+	}
+	
+	
+	public Long getTotalEncounters(Patient patient) {
+		Session session = null;
+		Transaction tx = null;
+		Long total;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Query criteria = session.createQuery("Select count(e) FROM Encounter e WHERE e.patient=:Paciente AND e.voided=0");
+			
+			criteria.setParameter("Paciente", patient);
+			
+			total=(Long)criteria.uniqueResult();
+			tx.commit();
+			
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateEncounterDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return total;
+	}
+
+	
+	public EncounterType getEncounterType(Integer encounterTypeId) {
+		
+		EncounterType encounterType = null;
+		Transaction tx = null;
+		Session session = null;
+		
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(EncounterType.class)
+								.add(Restrictions.eq("encounterTypeId", encounterTypeId));
+			
+			encounterType=(EncounterType)criteria.uniqueResult();
+			tx.commit();
+			
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernateEncounterDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return encounterType;
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public List<Encounter> getEncounters(Patient patient, Date high, Date low) {
+		Session session = null;
+		Transaction tx = null;
+		try {
+			
+			session = getNewSession();
+				tx = session.beginTransaction();
+			Query criteria = session.createQuery("FROM Encounter e WHERE e.patient=:Paciente AND e.voided=0 AND e.encounterDatetime <=:high AND e.encounterDatetime >=:low");
+			
+			criteria.setParameter("Paciente", patient);
+			criteria.setParameter("high", high);
+			criteria.setParameter("low", low);
+			List<Encounter> result = criteria.list();
+			tx.commit();
+			return result;
+			
+		} catch(Exception e) {
+
+			if(tx != null && session.isOpen())
+				tx.rollback();   
+		    throw new TelesaludException(e.getMessage(),e,HibernateEncounterDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+	}
+}

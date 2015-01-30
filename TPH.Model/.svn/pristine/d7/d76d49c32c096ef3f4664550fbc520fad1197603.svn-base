@@ -1,0 +1,37 @@
+package com.artica.telesalud.tph.alerta;
+
+import java.util.Date;
+
+public class AlertaVigilante {
+	
+	private String idPaciente;
+	private Date fechaAlerta;
+	private Integer conceptoInformacionAlerta;
+	
+	
+	public String getIdPaciente() {
+		return idPaciente;
+	}
+
+	public void setIdPaciente(String idPaciente) {
+		this.idPaciente = idPaciente;
+	}
+
+	public Date getFechaAlerta() {
+		return fechaAlerta;
+	}
+
+	public void setFechaAlerta(Date fechaAlerta) {
+		this.fechaAlerta = fechaAlerta;
+	}
+
+	public Integer getConceptoInformacionAlerta() {
+		return conceptoInformacionAlerta;
+	}
+
+	public void setConceptoInformacionAlerta(Integer conceptoInformacionAlerta) {
+		this.conceptoInformacionAlerta = conceptoInformacionAlerta;
+	}
+
+	
+}

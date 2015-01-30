@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 23/11/2010 03:50:10 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.observation.Obs" table="obs" catalog="RCMedicalRecordTPH">
+        <id name="obsId" type="java.lang.Integer">
+            <column name="OBS_ID" />
+           	<generator class="identity" />
+        </id>
+        <many-to-one name="person" class="com.artica.telesalud.tph.model.person.Person" fetch="select" lazy="false">
+            <column name="PERSON_ID" />
+        </many-to-one>
+        <property name="concept" type="java.lang.Integer">
+            <column name="CONCEPT_ID" />
+        </property>
+        <many-to-one name="completeConcept" class="com.artica.telesalud.tph.model.concept.Concept" update="false" insert="false" fetch="select" lazy="false">
+            <column name="CONCEPT_ID" />
+        </many-to-one>
+        <many-to-one name="encounter" class="com.artica.telesalud.tph.model.encounter.Encounter" fetch="select" lazy="false">
+            <column name="ENCOUNTER_ID" />
+        </many-to-one>
+        <many-to-one name="order" class="com.artica.telesalud.tph.model.order.Order" fetch="select" lazy="false">
+            <column name="ORDER_ID" />
+        </many-to-one>
+        <property name="obsDatetime" type="timestamp">
+            <column name="OBS_DATETIME" />
+        </property>
+        <many-to-one name="location" class="com.artica.telesalud.tph.model.location.City" fetch="select" lazy="false">
+            <column name="LOCATION_ID" />
+        </many-to-one>
+        <many-to-one name="obsGroup" class="com.artica.telesalud.tph.model.observation.Obs" fetch="select" lazy="false">
+            <column name="OBS_PARENT" />
+        </many-to-one>
+        <property name="valueBoolean" type="java.lang.Integer">
+            <column name="VALUE_BOOLEAN" />
+        </property>
+        <property name="valueCoded" type="java.lang.Integer">
+            <column name="VALUE_CODED" />
+        </property>
+        <many-to-one name="valueDrug" class="com.artica.telesalud.tph.model.concept.Drug" fetch="select" lazy="false">
+            <column name="VALUE_DRUG" />
+        </many-to-one>
+        <property name="valueDatetime" type="timestamp">
+            <column name="VALUE_DATETIME" />
+        </property>
+        <property name="valueNumeric" type="java.lang.Double">
+            <column name="VALUE_NUMERIC" />
+        </property>
+        <property name="valueText" type="java.lang.String">
+            <column name="VALUE_TEXT" />
+        </property>
+        <property name="comments" type="java.lang.String">
+            <column name="COMMENTS" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="timestamp">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="voided" type="short">
+            <column name="VOIDED" />
+        </property>
+        <property name="dateVoided" type="timestamp">
+            <column name="DATE_VOIDED" />
+        </property>
+        <property name="voidedBy" type="java.lang.Integer">
+            <column name="VOIDED_BY" />
+        </property>
+        <property name="voidedReason" type="java.lang.String">
+            <column name="VOID_REASON" />
+        </property>
+        <property name="uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+        <property name="check" type="java.lang.String">
+            <column name="CHECK_SUM" />
+        </property>
+    </class>
+</hibernate-mapping>

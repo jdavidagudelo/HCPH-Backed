@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 8/11/2010 03:19:25 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.form.FormField" table="form_field" catalog="RCMedicalRecordTPH">
+        <id name="formFieldId" type="java.lang.Integer">
+            <column name="FORM_FIELD_ID" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="form" class="com.artica.telesalud.tph.model.form.Form" fetch="join" lazy="false">
+            <column name="FORM_ID" />
+        </many-to-one>
+        <many-to-one name="field" class="com.artica.telesalud.tph.model.form.Field" fetch="join" lazy="false">
+            <column name="FIELD_ID" />
+        </many-to-one>
+        <property name="fieldNumber" type="java.lang.Integer">
+            <column name="FIELD_NUMBER" />
+        </property>
+        <many-to-one name="parentFormField" class="com.artica.telesalud.tph.model.form.FormField" fetch="join" lazy="false">
+            <column name="PARENT_FORM_FIELD" />
+        </many-to-one>
+        <property name="required" type="java.lang.Boolean">
+            <column name="REQUIRED" />
+        </property>
+        <property name="changedBy" type="java.lang.Integer">
+            <column name="CHANGED_BY" />
+        </property>
+        <property name="dateChanged" type="java.util.Date">
+            <column name="DATE_CHANGED" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+        
+        <set name="childrenForm" inverse="true" lazy="false" fetch="select" order-by="field_number">
+        	<key>
+        		<column name="PARENT_FORM_FIELD"></column>
+        	</key>
+        	<one-to-many class="com.artica.telesalud.tph.model.form.FormField"/>
+        </set>
+    </class>
+</hibernate-mapping>

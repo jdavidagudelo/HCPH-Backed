@@ -1,0 +1,105 @@
+package com.artica.telesalud.persona.model.impl;
+import java.io.Serializable;
+
+import com.artica.telesalud.persona.model.Resource;
+
+public class ResourceDTO implements Resource, Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Integer resource_id;
+	private String name;
+	private String description;
+	private String uuid;
+	private String url;
+	private String category;
+	private String tag;
+	
+	@Override
+	public Integer getResourceId(){
+		return this.resource_id;
+	}
+	
+	@Override
+	public void setResourceId(Integer resource_id){
+		this.resource_id = resource_id;
+	}
+	
+	@Override
+	public String getName(){
+		return this.name;
+	}
+	
+	@Override
+	public void setName(String name){
+		this.name = name;
+	}
+	
+	@Override
+	public String getDescription(){
+		return this.description;
+	}
+	
+	@Override
+	public void setDescription(String description){
+		this.description = description;
+	}
+	
+	@Override
+	public String getUuid(){
+		return this.uuid;
+	}
+	
+	@Override
+	public void setUuid(String uuid){
+		this.uuid = uuid;
+	}
+	
+	@Override
+	public String getUrl(){
+		return this.url;
+	}
+	
+	@Override
+	public void setUrl(String url){
+		this.url = url;
+	}
+	
+	@Override
+	public String getCategory(){
+		return this.category;
+	}
+	
+	@Override
+	public void setCategory(String category){
+		this.category = category;
+	}
+	
+	@Override
+	public String getTag(){
+		return this.tag;
+	}
+	
+	@Override
+	public void setTag(String tag){
+		this.tag = tag;
+	}
+	
+	
+	public boolean equals(Object obj) {
+		Resource op = (Resource)obj;
+		if( !(obj instanceof Resource) )
+			return false;
+		
+		if ( this.resource_id == null )
+			return op.getResourceId() == null;
+		
+		return ( getResourceId().equals(op.getResourceId()) );
+	}
+
+	
+	public String toString() {
+		return this.getName();
+	}
+}

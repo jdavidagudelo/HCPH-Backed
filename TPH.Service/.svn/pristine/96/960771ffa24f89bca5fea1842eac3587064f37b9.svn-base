@@ -1,0 +1,1198 @@
+package com.artica.telesalud.tph.concepts;
+
+import java.io.IOException;
+import java.util.Properties;
+
+public class ConceptsCode {
+
+	private Properties prop;
+
+	public ConceptsCode() {
+		prop = new Properties();
+		try {
+			prop.load(ConceptsCode.class
+					.getResourceAsStream("ConceptsCode.properties"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public Integer cCausasAtencion() {
+		return Integer.parseInt(prop.getProperty("cCausasAtencion"));
+	}
+
+	public Integer cZonas() {
+		return Integer.parseInt(prop.getProperty("cZonas"));
+	}
+
+	public Integer cZonaRural() {
+		return Integer.parseInt(prop.getProperty("cZonaRural"));
+	}
+
+	public Integer cZonaUrbana() {
+		return Integer.parseInt(prop.getProperty("cZonaUrbana"));
+	}
+
+	public Integer cEncuentroEmergencia() {
+		return Integer.parseInt(prop.getProperty("cEncuentroEmergencia"));
+	}
+
+	public Integer cEstadosCiviles() {
+		return Integer.parseInt(prop.getProperty("cEstadosCiviles"));
+	}
+
+	public Integer cAseguradoras() {
+		return Integer.parseInt(prop.getProperty("cAseguradoras"));
+	}
+
+	public Integer cPlanesBeneficios() {
+		return Integer.parseInt(prop.getProperty("cPlanesBeneficios"));
+	}
+
+	public Integer cEpss() {
+		return Integer.parseInt(prop.getProperty("cEpss"));
+	}
+
+	public Integer cAnioAntecedente() {
+		return Integer.parseInt(prop.getProperty("cAnioAntecedente"));
+	}
+
+	public Integer cTipoAntecedente() {
+		return Integer.parseInt(prop.getProperty("cTipoAntecedente"));
+	}
+
+	public Integer cAntecedentes() {
+		return Integer.parseInt(prop.getProperty("cAntecedentes"));
+	}
+
+	public Integer cObservacionAntecedente() {
+		return Integer.parseInt(prop.getProperty("cObservacionAntecedente"));
+	}
+
+	public Integer cTiposAntecedentes() {
+		return Integer.parseInt(prop.getProperty("cTiposAntecedentes"));
+	}
+
+	public Integer cAspiracionSecreciones() {
+		return Integer.parseInt(prop.getProperty("cAspiracionSecreciones"));
+	}
+
+	public Integer cCanulaOrofaringea() {
+		return Integer.parseInt(prop.getProperty("cCanulaOrofaringea"));
+	}
+
+	public Integer cDespejeManual() {
+		return Integer.parseInt(prop.getProperty("cDespejeManual"));
+	}
+
+	public Integer cCollarCervical() {
+		return Integer.parseInt(prop.getProperty("cCollarCervical"));
+	}
+
+	public Integer cCanulaNasofaringea() {
+		return Integer.parseInt(prop.getProperty("cCanulaNasofaringea"));
+	}
+
+	public Integer cEvaluacionB() {
+		return Integer.parseInt(prop.getProperty("cEvaluacionB"));
+	}
+
+	public Integer cReanimacionRespiratoria() {
+		return Integer.parseInt(prop.getProperty("cReanimacionRespiratoria"));
+	}
+
+	public Integer cCanulaNasal() {
+		return Integer.parseInt(prop.getProperty("cCanulaNasal"));
+	}
+
+	public Integer cMascaraNoReinhalacion() {
+		return Integer.parseInt(prop.getProperty("cMascaraNoReinhalacion"));
+	}
+
+	public Integer cMascaraSimple() {
+		return Integer.parseInt(prop.getProperty("cMascaraSimple"));
+	}
+
+	public Integer cBvm() {
+		return Integer.parseInt(prop.getProperty("cBvm"));
+	}
+
+	public Integer cEvaluacionC() {
+		return Integer.parseInt(prop.getProperty("cEvaluacionC"));
+	}
+
+	public Integer cRccp() {
+		return Integer.parseInt(prop.getProperty("cRccp"));
+	}
+
+	public Integer cHemostasia() {
+		return Integer.parseInt(prop.getProperty("cHemostasia"));
+	}
+
+	public Integer cDea() {
+		return Integer.parseInt(prop.getProperty("cDea"));
+	}
+
+	public Integer cMonitoreoSignosVitales() {
+		return Integer.parseInt(prop.getProperty("cMonitoreoSignosVitales"));
+	}
+
+	public Integer cDispositivoSupragliotico() {
+		return Integer.parseInt(prop.getProperty("cDispositivoSupragliotico"));
+	}
+
+	public Integer cCricotiroidotomia() {
+		return Integer.parseInt(prop.getProperty("cCricotiroidotomia"));
+	}
+
+	public Integer cIntubacionOrotraqueal() {
+		return Integer.parseInt(prop.getProperty("cIntubacionOrotraqueal"));
+	}
+
+	public Integer cDescompresionTorax() {
+		return Integer.parseInt(prop.getProperty("cDescompresionTorax"));
+	}
+
+	public Integer cVentilacionMecanica() {
+		return Integer.parseInt(prop.getProperty("cVentilacionMecanica"));
+	}
+
+	public Integer cRehidratacionOral() {
+		return Integer.parseInt(prop.getProperty("cRehidratacionOral"));
+	}
+
+	public Integer cSsn09() {
+		return Integer.parseInt(prop.getProperty("cSsn09"));
+	}
+
+	public Integer cAccesoVenosoPeriferico() {
+		return Integer.parseInt(prop.getProperty("cAccesoVenosoPeriferico"));
+	}
+
+	public Integer cDestrosa() {
+		return Integer.parseInt(prop.getProperty("cDestrosa"));
+	}
+
+	public Integer cPunsionOsea() {
+		return Integer.parseInt(prop.getProperty("cPunsionOsea"));
+	}
+
+	public Integer cColoides() {
+		return Integer.parseInt(prop.getProperty("cColoides"));
+	}
+
+	public Integer cHartman() {
+		return Integer.parseInt(prop.getProperty("cHartman"));
+	}
+
+	public Integer cExposicion() {
+		return Integer.parseInt(prop.getProperty("cExposicion"));
+	}
+
+	public Integer cMovimientoBloque() {
+		return Integer.parseInt(prop.getProperty("cMovimientoBloque"));
+	}
+
+	public Integer cLavadoCuracion() {
+		return Integer.parseInt(prop.getProperty("cLavadoCuracion"));
+	}
+
+	public Integer cChalecoExtracionVehicular() {
+		return Integer.parseInt(prop.getProperty("cChalecoExtracionVehicular"));
+	}
+
+	public Integer cMantaTermica() {
+		return Integer.parseInt(prop.getProperty("cMantaTermica"));
+	}
+
+	public Integer cTablaEspinalLarga() {
+		return Integer.parseInt(prop.getProperty("cTablaEspinalLarga"));
+	}
+
+	public Integer cInmovilizacionFerulas() {
+		return Integer.parseInt(prop.getProperty("cInmovilizacionFerulas"));
+	}
+
+	public Integer cTablaEspinalCorta() {
+		return Integer.parseInt(prop.getProperty("cTablaEspinalCorta"));
+	}
+
+	public Integer cOtrosProcedimientos() {
+		return Integer.parseInt(prop.getProperty("cOtrosProcedimientos"));
+	}
+
+	public Integer cProcedimientos() {
+		return Integer.parseInt(prop.getProperty("cProcedimientos"));
+	}
+
+	public Integer cTransporteHospital() {
+		return Integer.parseInt(prop.getProperty("cTransporteHospital"));
+	}
+
+	public Integer cTransporteSecundario() {
+		return Integer.parseInt(prop.getProperty("cTransporteSecundario"));
+	}
+
+	public Integer cDeAltaSitio() {
+		return Integer.parseInt(prop.getProperty("cDeAltaSitio"));
+	}
+
+	public Integer cEntregaOtroArrib() {
+		return Integer.parseInt(prop.getProperty("cEntregaOtroArrib"));
+	}
+
+	public Integer cRCCPExitosa() {
+		return Integer.parseInt(prop.getProperty("cRCCPExitosa"));
+	}
+
+	public Integer cFalleceTraslado() {
+		return Integer.parseInt(prop.getProperty("cFalleceTraslado"));
+	}
+
+	public Integer cFalleceHospital() {
+		return Integer.parseInt(prop.getProperty("cFalleceHospital"));
+	}
+
+	public Integer cFalleceSitio() {
+		return Integer.parseInt(prop.getProperty("cFalleceSitio"));
+	}
+
+	public Integer cSeNiegaAtencion() {
+		return Integer.parseInt(prop.getProperty("cSeNiegaAtencion"));
+	}
+
+	public Integer cNiegaRemision() {
+		return Integer.parseInt(prop.getProperty("cNiegaRemision"));
+	}
+
+	public Integer cNiegaAtencion() {
+		return Integer.parseInt(prop.getProperty("cNiegaAtencion"));
+	}
+
+	public Integer cCamillaMiller() {
+		return Integer.parseInt(prop.getProperty("cCamillaMiller"));
+	}
+
+	public Integer cCamillaLona() {
+		return Integer.parseInt(prop.getProperty("cCamillaLona"));
+	}
+
+	public Integer cCamillaScoop() {
+		return Integer.parseInt(prop.getProperty("cCamillaScoop"));
+	}
+
+	public Integer cCamillaRigida() {
+		return Integer.parseInt(prop.getProperty("cCamillaRigida"));
+	}
+
+	public Integer cHallazgosClinicos() {
+		return Integer.parseInt(prop.getProperty("cHallazgosClinicos"));
+	}
+
+	public Integer cImpresionDiagnostica() {
+		return Integer.parseInt(prop.getProperty("cImpresionDiagnostica"));
+	}
+
+	public Integer cCuidadanos() {
+		return Integer.parseInt(prop.getProperty("cCuidadanos"));
+	}
+
+	public Integer cSocorristas() {
+		return Integer.parseInt(prop.getProperty("cSocorristas"));
+	}
+
+	public Integer cMedicos() {
+		return Integer.parseInt(prop.getProperty("cMedicos"));
+	}
+
+	public Integer cPolicia() {
+		return Integer.parseInt(prop.getProperty("cPolicia"));
+	}
+
+	public Integer cBomberos() {
+		return Integer.parseInt(prop.getProperty("cBomberos"));
+	}
+
+	public Integer cTransito() {
+		return Integer.parseInt(prop.getProperty("cTransito"));
+	}
+
+	public Integer cFamiliares() {
+		return Integer.parseInt(prop.getProperty("cFamiliares"));
+	}
+
+	public Integer cIdArchivo() {
+		return Integer.parseInt(prop.getProperty("cIdArchivo"));
+	}
+
+	public Integer cArchivosAdjuntos() {
+		return Integer.parseInt(prop.getProperty("cArchivosAdjuntos"));
+	}
+
+	public Integer cTipoContenidoArchivos() {
+		return Integer.parseInt(prop.getProperty("cTipoContenidoArchivos"));
+	}
+
+	public Integer cNombreGuardadoArchivo() {
+		return Integer.parseInt(prop.getProperty("cNombreGuardadoArchivo"));
+	}
+
+	public Integer cNombreOriginalArchivo() {
+		return Integer.parseInt(prop.getProperty("cNombreOriginalArchivo"));
+	}
+
+	public Integer cEntidadesRecepcion() {
+		return Integer.parseInt(prop.getProperty("cEntidadesRecepcion"));
+	}
+
+	public Integer cSolicitudTeleasistencia() {
+		return Integer.parseInt(prop.getProperty("cSolicitudTeleasistencia"));
+	}
+
+	public Integer cFechaSolicitudTeleasistencia() {
+		return Integer.parseInt(prop
+				.getProperty("cFechaSolicitudTeleasistencia"));
+	}
+
+	public Integer cMotivoSolicitudTeleasistencia() {
+		return Integer.parseInt(prop
+				.getProperty("cMotivoSolicitudTeleasistencia"));
+	}
+
+	public Integer cDetalleSolicitudTeleasistencia() {
+		return Integer.parseInt(prop
+				.getProperty("cDetalleSolicitudTeleasistencia"));
+	}
+
+	public Integer cMedioSolicitudTeleasistencia() {
+		return Integer.parseInt(prop
+				.getProperty("cMedioSolicitudTeleasistencia"));
+	}
+
+	public Integer cNotaEvolucion() {
+		return Integer.parseInt(prop.getProperty("cNotaEvolucion"));
+	}
+
+	public Integer cFechaNotaEvolucion() {
+		return Integer.parseInt(prop.getProperty("cFechaNotaEvolucion"));
+	}
+
+	public Integer cDiagnosticoPrincipalNotaEvolucion() {
+		return Integer.parseInt(prop
+				.getProperty("cDiagnosticoPrincipalNotaEvolucion"));
+	}
+
+	public Integer cDiagnosticoSecundarioNotaEvolucion() {
+		return Integer.parseInt(prop
+				.getProperty("cDiagnosticoSecundarioNotaEvolucion"));
+	}
+
+	public Integer cRecomendacionesNotaEvolucion() {
+		return Integer.parseInt(prop
+				.getProperty("cRecomendacionesNotaEvolucion"));
+	}
+
+	public Integer cMedicoTratanteNotaEvolucion() {
+		return Integer.parseInt(prop
+				.getProperty("cMedicoTratanteNotaEvolucion"));
+	}
+
+	public Integer cMediosSolicitudTeleasistencia() {
+		return Integer.parseInt(prop
+				.getProperty("cMediosSolicitudTeleasistencia"));
+	}
+
+	public Integer cControlesAPH() {
+		return Integer.parseInt(prop.getProperty("cControlesAPH"));
+	}
+
+	public Integer CSignosVitales() {
+		return Integer.parseInt(prop.getProperty("CSignosVitales"));
+	}
+
+	public Integer cRespiracion() {
+		return Integer.parseInt(prop.getProperty("cRespiracion"));
+	}
+
+	public Integer cPresionArterialSistolica() {
+		return Integer.parseInt(prop.getProperty("cPresionArterialSistolica"));
+	}
+
+	public Integer cPresionArterialDiastolica() {
+		return Integer.parseInt(prop.getProperty("cPresionArterialDiastolica"));
+	}
+
+	public Integer cGlicemia() {
+		return Integer.parseInt(prop.getProperty("cGlicemia"));
+	}
+
+	public Integer cFrecuenciaPulso() {
+		return Integer.parseInt(prop.getProperty("cFrecuenciaPulso"));
+	}
+
+	public Integer cTemperatura() {
+		return Integer.parseInt(prop.getProperty("cTemperatura"));
+	}
+
+	public Integer cSPO2() {
+		return Integer.parseInt(prop.getProperty("cSPO2"));
+	}
+
+	public Integer cCierreAtencionLesionado() {
+		return Integer.parseInt(prop.getProperty("cCierreAtencionLesionado"));
+	}
+
+	public Integer cTipoCierreAtencion() {
+		return Integer.parseInt(prop.getProperty("cTipoCierreAtencion"));
+	}
+
+	public Integer cCierreAtencionAprobada() {
+		return Integer.parseInt(prop.getProperty("cCierreAtencionAprobada"));
+	}
+
+	public Integer cCierreAtencionNoAprobada() {
+		return Integer.parseInt(prop.getProperty("cCierreAtencionNoAprobada"));
+	}
+
+	public Integer cCierreAtencionAnulada() {
+		return Integer.parseInt(prop.getProperty("cCierreAtencionAnulada"));
+	}
+
+	public Integer cNotaAclaratoriaCierre() {
+		return Integer.parseInt(prop.getProperty("cNotaAclaratoriaCierre"));
+	}
+
+	public Integer cNotaAclaratoria() {
+		return Integer.parseInt(prop.getProperty("cNotaAclaratoria"));
+	}
+
+	public Integer cFechaNotaAclaratoria() {
+		return Integer.parseInt(prop.getProperty("cFechaNotaAclaratoria"));
+	}
+
+	public Integer cUsuarioNotaAclaratoria() {
+		return Integer.parseInt(prop.getProperty("cUsuarioNotaAclaratoria"));
+	}
+
+	public Integer cTextoNotaAclaratoria() {
+		return Integer.parseInt(prop.getProperty("cTextoNotaAclaratoria"));
+	}
+
+	public Integer cFechaSignoVital() {
+		return Integer.parseInt(prop.getProperty("cFechaSignoVital"));
+	}
+
+	public Integer cPermeabilidadViaArea() {
+		return Integer.parseInt(prop.getProperty("cPermeabilidadViaArea"));
+	}
+
+	public Integer cViaAereaPermeable() {
+		return Integer.parseInt(prop.getProperty("cViaAereaPermeable"));
+	}
+
+	public Integer cViaAereaObstruida() {
+		return Integer.parseInt(prop.getProperty("cViaAereaObstruida"));
+	}
+
+	public Integer cCausaObstruccionViaAerea() {
+		return Integer.parseInt(prop.getProperty("cCausaObstruccionViaAerea"));
+	}
+
+	public Integer cValoracionPrimariaRespiracion() {
+		return Integer.parseInt(prop
+				.getProperty("cValoracionPrimariaRespiracion"));
+	}
+
+	public Integer cRespiracionAusente() {
+		return Integer.parseInt(prop.getProperty("cRespiracionAusente"));
+	}
+
+	public Integer cRespiracionDificultosa() {
+		return Integer.parseInt(prop.getProperty("cRespiracionDificultosa"));
+	}
+
+	public Integer CRespiracionNormal() {
+		return Integer.parseInt(prop.getProperty("CRespiracionNormal"));
+	}
+
+	public Integer cRespiracionSuperficial() {
+		return Integer.parseInt(prop.getProperty("cRespiracionSuperficial"));
+	}
+
+	public Integer cValoracioPrimariaPulso() {
+		return Integer.parseInt(prop.getProperty("cValoracioPrimariaPulso"));
+	}
+
+	public Integer cPulsoAusente() {
+		return Integer.parseInt(prop.getProperty("cPulsoAusente"));
+	}
+
+	public Integer cPulsoPresente() {
+		return Integer.parseInt(prop.getProperty("cPulsoPresente"));
+	}
+
+	public Integer cRitmoPulso() {
+		return Integer.parseInt(prop.getProperty("cRitmoPulso"));
+	}
+
+	public Integer cRitmoRitmico() {
+		return Integer.parseInt(prop.getProperty("cRitmoRitmico"));
+	}
+
+	public Integer cPulsoAritmico() {
+		return Integer.parseInt(prop.getProperty("cPulsoAritmico"));
+	}
+
+	public Integer cFuerzaPulso() {
+		return Integer.parseInt(prop.getProperty("cFuerzaPulso"));
+	}
+
+	public Integer cPulsoFuerte() {
+		return Integer.parseInt(prop.getProperty("cPulsoFuerte"));
+	}
+
+	public Integer cPulsoDebil() {
+		return Integer.parseInt(prop.getProperty("cPulsoDebil"));
+	}
+
+	public Integer cNivelRespuestaValoracionPrimaria() {
+		return Integer.parseInt(prop
+				.getProperty("cNivelRespuestaValoracionPrimaria"));
+	}
+
+	public Integer cNivelRespuestaAlerta() {
+		return Integer.parseInt(prop.getProperty("cNivelRespuestaAlerta"));
+	}
+
+	public Integer cNivelRespuestaLlamado() {
+		return Integer.parseInt(prop.getProperty("cNivelRespuestaLlamado"));
+	}
+
+	public Integer cNivelRespuestaDolor() {
+		return Integer.parseInt(prop.getProperty("cNivelRespuestaDolor"));
+	}
+
+	public Integer cSinNivelRespuesta() {
+		return Integer.parseInt(prop.getProperty("cSinNivelRespuesta"));
+	}
+
+	public Integer cPielNormal() {
+		return Integer.parseInt(prop.getProperty("cPielNormal"));
+	}
+
+	public Integer cPielPalidaFria() {
+		return Integer.parseInt(prop.getProperty("cPielPalidaFria"));
+	}
+
+	public Integer cPielCaliente() {
+		return Integer.parseInt(prop.getProperty("cPielCaliente"));
+	}
+
+	public Integer cPielCrianotica() {
+		return Integer.parseInt(prop.getProperty("cPielCrianotica"));
+	}
+
+	public Integer cPielHumeda() {
+		return Integer.parseInt(prop.getProperty("cPielHumeda"));
+	}
+
+	public Integer cPielEnrojecida() {
+		return Integer.parseInt(prop.getProperty("cPielEnrojecida"));
+	}
+
+	public Integer cPielSeca() {
+		return Integer.parseInt(prop.getProperty("cPielSeca"));
+	}
+
+	public Integer cPupilasMioticas() {
+		return Integer.parseInt(prop.getProperty("cPupilasMioticas"));
+	}
+
+	public Integer cPupilasMidriaticas() {
+		return Integer.parseInt(prop.getProperty("cPupilasMidriaticas"));
+	}
+
+	public Integer cPupilasArisocoricas() {
+		return Integer.parseInt(prop.getProperty("cPupilasArisocoricas"));
+	}
+
+	public Integer cPielPupilasIsocoricas() {
+		return Integer.parseInt(prop.getProperty("cPielPupilasIsocoricas"));
+	}
+
+	public Integer cPupilasReactivas() {
+		return Integer.parseInt(prop.getProperty("cPupilasReactivas"));
+	}
+
+	public Integer cPupilasNoReactivas() {
+		return Integer.parseInt(prop.getProperty("cPupilasNoReactivas"));
+	}
+
+	public Integer cPupilasNoEvaluables() {
+		return Integer.parseInt(prop.getProperty("cPupilasNoEvaluables"));
+	}
+
+	public Integer cPupilasProtesisIzquierda() {
+		return Integer.parseInt(prop.getProperty("cPupilasProtesisIzquierda"));
+	}
+
+	public Integer cPupilasProtesisDerecha() {
+		return Integer.parseInt(prop.getProperty("cPupilasProtesisDerecha"));
+	}
+
+	public Integer cTipoEmergenciaMedica() {
+		return Integer.parseInt(prop.getProperty("cTipoEmergenciaMedica"));
+	}
+
+	public Integer cParoCardiaco() {
+		return Integer.parseInt(prop.getProperty("cParoCardiaco"));
+	}
+
+	public Integer cNeurologia() {
+		return Integer.parseInt(prop.getProperty("cNeurologia"));
+	}
+
+	public Integer cOrganosSentidos() {
+		return Integer.parseInt(prop.getProperty("cOrganosSentidos"));
+	}
+
+	public Integer cCardiovascular() {
+		return Integer.parseInt(prop.getProperty("cCardiovascular"));
+	}
+
+	public Integer cGastrointestinal() {
+		return Integer.parseInt(prop.getProperty("cGastrointestinal"));
+	}
+
+	public Integer cGenitourinario() {
+		return Integer.parseInt(prop.getProperty("cGenitourinario"));
+	}
+
+	public Integer cGnicoObstetrico() {
+		return Integer.parseInt(prop.getProperty("cGnicoObstetrico"));
+	}
+
+	public Integer cShock() {
+		return Integer.parseInt(prop.getProperty("cShock"));
+	}
+
+	public Integer cIntoxicacion() {
+		return Integer.parseInt(prop.getProperty("cIntoxicacion"));
+	}
+
+	public Integer cPsiquiatrica() {
+		return Integer.parseInt(prop.getProperty("cPsiquiatrica"));
+	}
+
+	public Integer cOvace() {
+		return Integer.parseInt(prop.getProperty("cOvace"));
+	}
+
+	public Integer cTermica() {
+		return Integer.parseInt(prop.getProperty("cTermica"));
+	}
+
+	public Integer cEnfermedadComun() {
+		return Integer.parseInt(prop.getProperty("cEnfermedadComun"));
+	}
+
+	public Integer cTraumaPolitrauma() {
+		return Integer.parseInt(prop.getProperty("cTraumaPolitrauma"));
+	}
+
+	public Integer cTraumaTEC() {
+		return Integer.parseInt(prop.getProperty("cTraumaTEC"));
+	}
+
+	public Integer cTraumaMaxilofacial() {
+		return Integer.parseInt(prop.getProperty("cTraumaMaxilofacial"));
+	}
+
+	public Integer cTraumaRaquimedular() {
+		return Integer.parseInt(prop.getProperty("cTraumaRaquimedular"));
+	}
+
+	public Integer cTraumaTorax() {
+		return Integer.parseInt(prop.getProperty("cTraumaTorax"));
+	}
+
+	public Integer cTraumaAbdomen() {
+		return Integer.parseInt(prop.getProperty("cTraumaAbdomen"));
+	}
+
+	public Integer cTraumaPelvico() {
+		return Integer.parseInt(prop.getProperty("cTraumaPelvico"));
+	}
+
+	public Integer cTraumaExtremidadSuperior() {
+		return Integer.parseInt(prop.getProperty("cTraumaExtremidadSuperior"));
+	}
+
+	public Integer cTraumaTejidosBlandos() {
+		return Integer.parseInt(prop.getProperty("cTraumaTejidosBlandos"));
+	}
+
+	public Integer cTraumaOsteomuscular() {
+		return Integer.parseInt(prop.getProperty("cTraumaOsteomuscular"));
+	}
+
+	public Integer cTraumaOrganosSentidos() {
+		return Integer.parseInt(prop.getProperty("cTraumaOrganosSentidos"));
+	}
+
+	public Integer cOtroTrauma() {
+		return Integer.parseInt(prop.getProperty("cOtroTrauma"));
+	}
+
+	public Integer cCualOtroTrauma() {
+		return Integer.parseInt(prop.getProperty("cCualOtroTrauma"));
+	}
+
+	public Integer cGlasgowRO() {
+		return Integer.parseInt(prop.getProperty("cGlasgowRO"));
+	}
+
+	public Integer cGlasgowRV() {
+		return Integer.parseInt(prop.getProperty("cGlasgowRV"));
+	}
+
+	public Integer cGlasgowRM() {
+		return Integer.parseInt(prop.getProperty("cGlasgowRM"));
+	}
+
+	public Integer cGlasgowTotal() {
+		return Integer.parseInt(prop.getProperty("cGlasgowTotal"));
+	}
+
+	public Integer cEvaluacionLesionado() {
+		return Integer.parseInt(prop.getProperty("cEvaluacionLesionado"));
+	}
+
+	public Integer cPrioridadTriage() {
+		return Integer.parseInt(prop.getProperty("cPrioridadTriage"));
+	}
+
+	public Integer cPrioridadTriageRojo() {
+		return Integer.parseInt(prop.getProperty("cPrioridadTriageRojo"));
+	}
+
+	public Integer cPrioridadTriageAmarillo() {
+		return Integer.parseInt(prop.getProperty("cPrioridadTriageAmarillo"));
+	}
+
+	public Integer cPrioridadTriageNegro() {
+		return Integer.parseInt(prop.getProperty("cPrioridadTriageNegro"));
+	}
+
+	public Integer cPrioridadTriageVerde() {
+		return Integer.parseInt(prop.getProperty("cPrioridadTriageVerde"));
+	}
+
+	public Integer cPrioridadTriageBlanco() {
+		return Integer.parseInt(prop.getProperty("cPrioridadTriageBlanco"));
+	}
+
+	public Integer cTraumaExtremidadInferior() {
+		return Integer.parseInt(prop.getProperty("cTraumaExtremidadInferior"));
+	}
+
+	public Integer cHallazgo() {
+		return Integer.parseInt(prop.getProperty("cHallazgo"));
+	}
+
+	public Integer cLesionAbrasion() {
+		return Integer.parseInt(prop.getProperty("cLesionAbrasion"));
+	}
+
+	public Integer cLesionAmputacion() {
+		return Integer.parseInt(prop.getProperty("cLesionAmputacion"));
+	}
+
+	public Integer cLesionAplastamiento() {
+		return Integer.parseInt(prop.getProperty("cLesionAplastamiento"));
+	}
+
+	public Integer cLesionAvulsion() {
+		return Integer.parseInt(prop.getProperty("cLesionAvulsion"));
+	}
+
+	public Integer cLesionContusion() {
+		return Integer.parseInt(prop.getProperty("cLesionContusion"));
+	}
+
+	public Integer cLesionDolor() {
+		return Integer.parseInt(prop.getProperty("cLesionDolor"));
+	}
+
+	public Integer cLesionEsguince() {
+		return Integer.parseInt(prop.getProperty("cLesionEsguince"));
+	}
+
+	public Integer cLesionFracturaAbierta() {
+		return Integer.parseInt(prop.getProperty("cLesionFracturaAbierta"));
+	}
+
+	public Integer cLesionQuemadura() {
+		return Integer.parseInt(prop.getProperty("cLesionQuemadura"));
+	}
+
+	public Integer cLesionHerida() {
+		return Integer.parseInt(prop.getProperty("cLesionHerida"));
+	}
+
+	public Integer cLesionFracturaCerrada() {
+		return Integer.parseInt(prop.getProperty("cLesionFracturaCerrada"));
+	}
+
+	public Integer cLesionHeridaArmaFuego() {
+		return Integer.parseInt(prop.getProperty("cLesionHeridaArmaFuego"));
+	}
+
+	public Integer cLesionHeridaArmaBlanca() {
+		return Integer.parseInt(prop.getProperty("cLesionHeridaArmaBlanca"));
+	}
+
+	public Integer cLesionHemorragia() {
+		return Integer.parseInt(prop.getProperty("cLesionHemorragia"));
+	}
+
+	public Integer cLesionLaceracion() {
+		return Integer.parseInt(prop.getProperty("cLesionLaceracion"));
+	}
+
+	public Integer cLesionMordida() {
+		return Integer.parseInt(prop.getProperty("cLesionMordida"));
+	}
+
+	public Integer cLesionPicadura() {
+		return Integer.parseInt(prop.getProperty("cLesionPicadura"));
+	}
+
+	public Integer cLesionPuncion() {
+		return Integer.parseInt(prop.getProperty("cLesionPuncion"));
+	}
+
+	public Integer cLesionTraumaCerrado() {
+		return Integer.parseInt(prop.getProperty("cLesionTraumaCerrado"));
+	}
+
+	public Integer cLesionTraumaPenetrante() {
+		return Integer.parseInt(prop.getProperty("cLesionTraumaPenetrante"));
+	}
+
+	public Integer cLesionHematoma() {
+		return Integer.parseInt(prop.getProperty("cLesionHematoma"));
+	}
+
+	public Integer cHallazgoPosicionX() {
+		return Integer.parseInt(prop.getProperty("cHallazgoPosicionX"));
+	}
+
+	public Integer cHallazgoPosicionY() {
+		return Integer.parseInt(prop.getProperty("cHallazgoPosicionY"));
+	}
+
+	public Integer cProcedimientoHallazgo() {
+		return Integer.parseInt(prop.getProperty("cProcedimientoHallazgo"));
+	}
+
+	public Integer cHallazgoOrden() {
+		return Integer.parseInt(prop.getProperty("cHallazgoOrden"));
+	}
+
+	public Integer cUsuarioSolicitaTeleasistencia() {
+		return Integer.parseInt(prop
+				.getProperty("cUsuarioSolicitaTeleasistencia"));
+	}
+
+	public Integer cUsuarioCierraAtencion() {
+		return Integer.parseInt(prop.getProperty("cUsuarioCierraAtencion"));
+	}
+
+	public Integer cProcedimientosHallazgo() {
+		return Integer.parseInt(prop.getProperty("cProcedimientosHallazgo"));
+	}
+
+	public Integer classProcedimientos() {
+		return Integer.parseInt(prop.getProperty("classProcedimientos"));
+	}
+
+	public Integer cNivelHospital() {
+		return Integer.parseInt(prop.getProperty("cNivelHospital"));
+	}
+
+	public Integer cViaAereaObstruidaTriage() {
+		return Integer.parseInt(prop.getProperty("cViaAereaObstruidaTriage"));
+	}
+
+	public Integer cInsuficienciaRespiratoriaTriage() {
+		return Integer.parseInt(prop
+				.getProperty("cInsuficienciaRespiratoriaTriage"));
+	}
+
+	public Integer cPaMenor90Triage() {
+		return Integer.parseInt(prop.getProperty("cPaMenor90Triage"));
+	}
+
+	public Integer cMultiplesHeridasTriage() {
+		return Integer.parseInt(prop.getProperty("cMultiplesHeridasTriage"));
+	}
+
+	public Integer cHemorragiasNoControladasTriage() {
+		return Integer.parseInt(prop
+				.getProperty("cHemorragiasNoControladasTriage"));
+	}
+
+	public Integer cLesionCervicalIncompletaTriage() {
+		return Integer.parseInt(prop
+				.getProperty("cLesionCervicalIncompletaTriage"));
+	}
+
+	public Integer cGlasgow48Triage() {
+		return Integer.parseInt(prop.getProperty("cGlasgow48Triage"));
+	}
+
+	public Integer cExcitacionPsicomotoraTriage() {
+		return Integer.parseInt(prop
+				.getProperty("cExcitacionPsicomotoraTriage"));
+	}
+
+	public Integer cAbdomenAgudoTriage() {
+		return Integer.parseInt(prop.getProperty("cAbdomenAgudoTriage"));
+	}
+
+	public Integer cEvisceracionTriage() {
+		return Integer.parseInt(prop.getProperty("cEvisceracionTriage"));
+	}
+
+	public Integer cTrabajoPartoSangradoTriage() {
+		return Integer
+				.parseInt(prop.getProperty("cTrabajoPartoSangradoTriage"));
+	}
+
+	public Integer cDolorToracicoTriage() {
+		return Integer.parseInt(prop.getProperty("cDolorToracicoTriage"));
+	}
+
+	public Integer cArritmiasTriage() {
+		return Integer.parseInt(prop.getProperty("cArritmiasTriage"));
+	}
+
+	public Integer cHemorragiasControladasTriage() {
+		return Integer.parseInt(prop
+				.getProperty("cHemorragiasControladasTriage"));
+	}
+
+	public Integer cLesionMedularDorsalTriage() {
+		return Integer.parseInt(prop.getProperty("cLesionMedularDorsalTriage"));
+	}
+
+	public Integer cGlasgow913Triage() {
+		return Integer.parseInt(prop.getProperty("cGlasgow913Triage"));
+	}
+
+	public Integer cAlteracionEstadoConcienciaTriage() {
+		return Integer.parseInt(prop
+				.getProperty("cAlteracionEstadoConcienciaTriage"));
+	}
+
+	public Integer cFracturasMayoresTriage() {
+		return Integer.parseInt(prop.getProperty("cFracturasMayoresTriage"));
+	}
+
+	public Integer cQuemadurasModeradasTriage() {
+		return Integer.parseInt(prop.getProperty("cQuemadurasModeradasTriage"));
+	}
+
+	public Integer cIntoxicacionTriage() {
+		return Integer.parseInt(prop.getProperty("cIntoxicacionTriage"));
+	}
+
+	public Integer cLesionMedularLumbarTriage() {
+		return Integer.parseInt(prop.getProperty("cLesionMedularLumbarTriage"));
+	}
+
+	public Integer cGlasgow1415Triage() {
+		return Integer.parseInt(prop.getProperty("cGlasgow1415Triage"));
+	}
+
+	public Integer cFracturasNoProximalesTriage() {
+		return Integer.parseInt(prop
+				.getProperty("cFracturasNoProximalesTriage"));
+	}
+
+	public Integer cLesionesSuperficialesTriage() {
+		return Integer.parseInt(prop
+				.getProperty("cLesionesSuperficialesTriage"));
+	}
+
+	public Integer cQuemadurasGradoITriage() {
+		return Integer.parseInt(prop.getProperty("cQuemadurasGradoITriage"));
+	}
+
+	public Integer cAfectadosTriage() {
+		return Integer.parseInt(prop.getProperty("cAfectadosTriage"));
+	}
+
+	public Integer cParoProlongadoTriage() {
+		return Integer.parseInt(prop.getProperty("cParoProlongadoTriage"));
+	}
+
+	public Integer cLesionCervicalCompletaTriage() {
+		return Integer.parseInt(prop
+				.getProperty("cLesionCervicalCompletaTriage"));
+	}
+
+	public Integer cGlasgow3Triage() {
+		return Integer.parseInt(prop.getProperty("cGlasgow3Triage"));
+	}
+
+	public Integer cExposicionMasaEncefalicaTriage() {
+		return Integer.parseInt(prop
+				.getProperty("cExposicionMasaEncefalicaTriage"));
+	}
+
+	public Integer cLesionesImpidenRCPTriage() {
+		return Integer.parseInt(prop.getProperty("cLesionesImpidenRCPTriage"));
+	}
+
+	public Integer cQuemadurasGravesTriage() {
+		return Integer.parseInt(prop.getProperty("cQuemadurasGravesTriage"));
+	}
+
+	public Integer cOtroTriage() {
+		return Integer.parseInt(prop.getProperty("cOtroTriage"));
+	}
+
+	public Integer cOtraCausaEvento() {
+		return Integer.parseInt(prop.getProperty("cOtraCausaEvento"));
+	}
+	public Integer cPupilasNormales()
+	{
+		return Integer.parseInt(prop.getProperty("cPupilasNormales"));
+	}
+	public Integer cPupilasAnisocoricas()
+	{
+		return Integer.parseInt(prop.getProperty("cPupilasAnisocoricas"));
+	}
+	public Integer cLlenadoCapilar(){
+		return Integer.parseInt(prop.getProperty("cLlenadoCapilar"));
+	}
+	public Integer cLlenadoCapilarMayor3()
+	{
+		return Integer.parseInt(prop.getProperty("cLlenadoCapilarMayor3"));
+	}
+	public Integer cLlenadoCapilarMenor3()
+	{
+		return Integer.parseInt(prop.getProperty("cLlenadoCapilarMenor3"));
+	}
+	public Integer cUbicacionPulso()
+	{
+		return Integer.parseInt(prop.getProperty("cUbicacionPulso"));
+	}
+	public Integer cUbicacionPulsoRadial()
+	{
+		return Integer.parseInt(prop.getProperty("cUbicacionPulsoRadial"));
+	}
+	public Integer cUbicacionPulsoCarotideo()
+	{
+		return Integer.parseInt(prop.getProperty("cUbicacionPulsoCarotideo"));
+	}
+	public Integer cSangrado()
+	{
+		return Integer.parseInt(prop.getProperty("cSangrado"));
+	}
+	public Integer cSangradoExistente()
+	{
+		return Integer.parseInt(prop.getProperty("cSangradoExistente"));
+	}
+	public Integer cSangradoInexistente()
+	{
+		return Integer.parseInt(prop.getProperty("cSangradoInexistente"));
+	}
+	public Integer cOtraEmergenciaMedica()
+	{
+		return Integer.parseInt(prop.getProperty("cOtraEmergenciaMedica"));
+	}
+	public Integer cOtraEmergenciaMedicaText()
+	{
+		return Integer.parseInt(prop.getProperty("cOtraEmergenciaMedicaText"));
+	}
+	public Integer cRespiracionPresente()
+	{
+		return Integer.parseInt(prop.getProperty("cRespiracionPresente"));
+	}
+	public Integer cEstadoRespiracion()
+	{
+		return Integer.parseInt(prop.getProperty("cEstadoRespiracion"));
+	}
+	public Integer cEstadoRespiracionNormal()
+	{
+		return Integer.parseInt(prop.getProperty("cEstadoRespiracionNormal"));
+	}
+	public Integer cEstadoRespiracionDificultosa()
+	{
+		return Integer.parseInt(prop.getProperty("cEstadoRespiracionDificultosa"));
+	}
+	public Integer cEstadoRespiracionSimetrica()
+	{
+		return Integer.parseInt(prop.getProperty("cEstadoRespiracionSimetrica"));
+	}
+	public Integer cEstadoRespiracionAsimetrica()
+	{
+		return Integer.parseInt(prop.getProperty("cEstadoRespiracionAsimetrica"));
+	}
+	public Integer cCianosis()
+	{
+		return Integer.parseInt(prop.getProperty("cCianosis"));
+	}
+	public Integer cCianosisExistente()
+	{
+		return Integer.parseInt(prop.getProperty("cCianosisExistente"));
+	}
+	public Integer cCianosisInexistente()
+	{
+		return Integer.parseInt(prop.getProperty("cCianosisInexistente"));
+	}
+	public Integer cPielIcterica()
+	{
+		return Integer.parseInt(prop.getProperty("cPielIcterica"));
+	}
+	public Integer cPielFria()
+	{
+		return Integer.parseInt(prop.getProperty("cPielFria"));
+	}
+	public Integer cTriageCadenaCustodia()
+	{
+		return Integer.parseInt(prop.getProperty("cTriageCadenaCustodia"));
+	}
+	public Integer cTriageEntregadoEntidad()
+	{
+		return Integer.parseInt(prop.getProperty("cTriageEntregadoEntidad"));
+	}
+	public Integer cTriageEntidadEntregaPacienteDifunto()
+	{
+		return Integer.parseInt(prop.getProperty("cTriageEntidadEntregaPacienteDifunto"));
+	}
+	public Integer cTriageNombrePersonaRecibeDifunto()
+	{
+		return Integer.parseInt(prop.getProperty("cTriageNombrePersonaRecibeDifunto"));
+	}
+	public Integer cTriageRegistroPersonaRecibeDifunto()
+	{
+		return Integer.parseInt(prop.getProperty("cTriageRegistroPersonaRecibeDifunto"));
+	}
+	public Integer cProcedimientoMasajeCardiaco()
+	{
+		return Integer.parseInt(prop.getProperty("cProcedimientoMasajeCardiaco"));
+	}
+	public Integer cProcedimientoAccesoVenosoCentral()
+	{
+		return Integer.parseInt(prop.getProperty("cProcedimientoAccesoVenosoCentral"));
+	}
+	public Integer cProcedimientoPuncionOsea()
+	{
+		return Integer.parseInt(prop.getProperty("cProcedimientoPuncionOsea"));
+	}
+
+}

@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2/11/2010 02:06:19 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.person.PersonAddress" table="person_address" catalog="RCMedicalRecordTPH">
+        <id name="personAddressId" type="java.lang.Integer">
+            <column name="PERSON_ADDRESS_ID" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="person" class="com.artica.telesalud.tph.model.person.Person" fetch="select" lazy="false">
+            <column name="PERSON_ID" />
+        </many-to-one>
+        
+        <many-to-one name="completeAddress" class="com.artica.telesalud.tph.model.evento.EventAddress" fetch="join" lazy="false">
+            <column name="COMPLETE_ADDRESS" />
+        </many-to-one>
+        <property name="preferred" type="java.lang.Boolean">
+            <column name="PREFERRED" />
+        </property>
+        <property name="address" type="java.lang.String">
+            <column name="ADDRESS" />
+        </property>
+        <property name="city" type="java.lang.Integer">
+            <column name="CITY" />
+        </property>
+        <property name="neightborhoodCell" type="java.lang.String">
+            <column name="NEIGHBORHOOD_CELL" />
+        </property>
+        <property name="region" type="java.lang.String">
+            <column name="REGION" />
+        </property>
+        <property name="postalCode" type="java.lang.String">
+            <column name="POSTAL_CODE" />
+        </property>
+        <property name="latitude" type="java.lang.String">
+            <column name="LATITUDE" />
+        </property>
+        <property name="longitude" type="java.lang.String">
+            <column name="LONGITUDE" />
+        </property>
+        <property name="phone1" type="java.lang.String">
+            <column name="PHONE1" />
+        </property>
+        <property name="phone2" type="java.lang.String">
+            <column name="PHONE2" />
+        </property>
+        <property name="email" type="java.lang.String">
+            <column name="EMAIL" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="voided" type="java.lang.Boolean">
+            <column name="VOIDED" />
+        </property>
+        <property name="voidedBy" type="java.lang.Integer">
+            <column name="VOIDED_BY" />
+        </property>
+        <property name="dateVoided" type="java.util.Date">
+            <column name="DATE_VOIDED" />
+        </property>
+        <property name="voidReason" type="java.lang.String">
+            <column name="VOID_REASON" />
+        </property>
+        <property name="Uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+    </class>
+</hibernate-mapping>	

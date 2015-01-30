@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="Riesgo.Service">
+        <wb-resource deploy-path="/" source-path="/src"/>
+        <dependent-module archiveName="Persona.Data.jar" deploy-path="/" handle="module:/resource/Persona.Data/Persona.Data">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="Riesgo.Model.jar" deploy-path="/" handle="module:/resource/TPH.Model/TPH.Model">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="Riesgo.Data.jar" deploy-path="/" handle="module:/resource/TPH.Data/TPH.Data">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="Persona.Model.jar" deploy-path="/" handle="module:/resource/Persona.Model/Persona.Model">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+    </wb-module>
+</project-modules>

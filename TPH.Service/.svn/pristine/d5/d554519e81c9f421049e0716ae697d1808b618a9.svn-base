@@ -1,0 +1,351 @@
+package com.artica.telesalud.tph.service;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.common.service.DAOFactoryInstantiator;
+import com.artica.telesalud.tph.dao.ConceptDAO;
+import com.artica.telesalud.tph.dao.EventAddressDAO;
+import com.artica.telesalud.tph.dao.LocationDAO;
+import com.artica.telesalud.tph.dao.PatientDAO;
+import com.artica.telesalud.tph.dao.PatientIdentifierDAO;
+import com.artica.telesalud.tph.dao.PatientIdentifierTypeDAO;
+import com.artica.telesalud.tph.dao.PersonAddressDAO;
+import com.artica.telesalud.tph.dao.PersonDAO;
+import com.artica.telesalud.tph.dao.PersonNameDAO;
+import com.artica.telesalud.tph.dao.hibernate.HibernateTPHDAOFactory;
+import com.artica.telesalud.tph.model.concept.Concept;
+import com.artica.telesalud.tph.model.evento.EventAddress;
+import com.artica.telesalud.tph.model.location.Location;
+import com.artica.telesalud.tph.model.patient.Patient;
+import com.artica.telesalud.tph.model.patient.PatientIdentifier;
+import com.artica.telesalud.tph.model.patient.PatientIdentifierType;
+import com.artica.telesalud.tph.model.patient.PersonComplete;
+import com.artica.telesalud.tph.model.person.Person;
+import com.artica.telesalud.tph.model.person.PersonAddress;
+import com.artica.telesalud.tph.model.person.PersonName;
+
+public class PatientService {
+	
+	private PatientDAO patientDAO;
+	private PersonNameDAO personNameDAO;
+	private PatientIdentifierDAO patientIdentifierDAO;
+	private PatientIdentifierTypeDAO patientIdentifierTypeDAO;
+	private PersonDAO personDAO;
+	private PersonAddressDAO personAddressDAO;
+	private EventAddressDAO eventAddressDAO;
+	
+	private ConceptDAO conceptDAO;
+	private LocationDAO locationDAO;
+	
+	public PatientService(String daoClassName, HashMap<String, String> params){
+		patientDAO = DAOFactoryInstantiator.instantiateDaoFactory(HibernateTPHDAOFactory.class, 
+			daoClassName, params).getPatientDAO();
+		
+		personDAO = DAOFactoryInstantiator.instantiateDaoFactory(HibernateTPHDAOFactory.class, 
+				daoClassName, params).getPersonDAO();
+		
+		personNameDAO = DAOFactoryInstantiator.instantiateDaoFactory(HibernateTPHDAOFactory.class, 
+				daoClassName, params).getPersonNameDAO();
+		
+		patientIdentifierDAO = DAOFactoryInstantiator.instantiateDaoFactory(HibernateTPHDAOFactory.class, 
+				daoClassName, params).getPatientIdentifierDAO();
+		
+		patientIdentifierTypeDAO = DAOFactoryInstantiator.instantiateDaoFactory(HibernateTPHDAOFactory.class, 
+				daoClassName, params).getPatientIdentifierTypeDAO();
+		
+		personAddressDAO = DAOFactoryInstantiator.instantiateDaoFactory(HibernateTPHDAOFactory.class, 
+				daoClassName, params).getPersonAddressDAO();
+		
+		conceptDAO = DAOFactoryInstantiator.instantiateDaoFactory(HibernateTPHDAOFactory.class, 
+				daoClassName, params).getConceptDAO();
+		
+		locationDAO = DAOFactoryInstantiator.instantiateDaoFactory(HibernateTPHDAOFactory.class, 
+				daoClassName, params).getLocationDAO();
+
+		eventAddressDAO = DAOFactoryInstantiator.instantiateDaoFactory(HibernateTPHDAOFactory.class, 
+				daoClassName, params).getEventAddressDAO();
+		
+	}
+	
+	public int calculateAge(Patient patient){
+		int edad=0;
+		
+		Calendar hoy = new GregorianCalendar();
+		Calendar nac = new GregorianCalendar();
+		
+		if(patient.getPerson().getBirthdate()!=null){
+			nac.setTime(patient.getPerson().getBirthdate());
+			
+			edad=hoy.get(Calendar.YEAR) - nac.get(Calendar.YEAR);
+		}
+		
+		return edad;
+			
+	}
+	
+	public Patient buscarPatient(Integer idPaciente){
+        
+        try{
+                
+            Patient paciente = patientDAO.getPatient(idPaciente);
+            if(paciente!=null){
+                
+                paciente.getPerson().setPreferredName(personNameDAO.getPreferredPersonName(paciente.getPerson()));
+                paciente.setPreferredIdentifier(patientIdentifierDAO.getPreferredIdentifier(paciente));
+                paciente.getPerson().setPreferredAddress(personAddressDAO.getPreferredPersonAddress(paciente.getPerson()));
+                
+                paciente.getPerson().setAge(calculateAge(paciente));
+                
+            }
+            
+            return paciente;
+        }catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,PatientService.class);
+		}
+	}
+	
+	public List<PatientIdentifierType> getPatientIdentifierTypes(){
+		return patientIdentifierTypeDAO.getAll();
+	}
+	
+	public Patient crearPacienteVacio(Integer creator) {
+		
+		try{
+			Person person = this.savePerson(null, null, creator, null, null, null, null, null, null, null);
+			this.savePersonName(person, true, null, null, null, null, creator);
+			this.savePersonAddress(person, true, null, null, null, null, null, null, null);
+			
+			Patient patient = new Patient();
+			patient.setPerson(person);
+			patient.setVoided(false);
+			patient.setCreator(creator);
+			
+			Patient patientDB = patientDAO.insert(patient);
+			this.savePatientIdentifier(patientDB, null,null, creator);
+			
+			return patientDB;
+		}catch (Exception e) {
+			e.printStackTrace();			
+			throw new TelesaludException("Exception!",e,PatientService.class);
+		}
+	}
+	
+	public PersonName savePersonName(Person person, Boolean prefered, String primerNombre, String segundoNombre, String primerApellido, String segundoApellido, Integer creator) {
+		
+		try {
+			PersonName personName = personNameDAO.newBlankPersonName();
+			personName.setPerson(person);
+			personName.setGivenName(primerNombre);
+			personName.setMiddleName(segundoNombre);
+			personName.setFamilyName(primerApellido);
+			personName.setFamilyName2(segundoApellido);
+			
+			personName.setCreator(creator);
+			personName.setPreferred(prefered);
+			
+			personName.setUuid(UUID.randomUUID().toString());
+			
+			return personNameDAO.insert(personName);
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,PatientService.class);
+		}
+	}
+	
+	public Person savePerson(String gener, Date birthdate, Integer creator, String identifier, Integer location,
+			String registro, Integer especialidad, Integer erp, Integer nivel, String firma) {
+		
+		return savePerson(gener, birthdate, creator, identifier, location, registro, especialidad, erp, nivel, firma, null);
+	}
+	
+	public Person savePerson(String gener, Date birthdate, Integer creator, String identifier, Integer location,
+			String registro, Integer especialidad, Integer erp, Integer nivel, String firma, Integer controlAph) {
+		
+		try {
+			Person person = personDAO.newBlankPerson();
+			person.setGender(gener);
+			person.setBirthdate(birthdate);
+			person.setCreator(creator);
+			person.setBirthdateEstimated(false);
+			person.setIdentification(identifier);
+			person.setDead(false);
+			person.setRegistro(registro);
+			person.setSpecialty(especialidad);
+			
+			if(controlAph!=null){
+				Concept concept = conceptDAO.getConcept(controlAph);
+				person.setControlAph(concept);
+			}
+				
+			if(firma != null)
+			person.setFirma(firma);
+			
+			if(erp != null)
+			person.setErp(conceptDAO.getConcept(erp));
+			
+			if(nivel != null)
+			person.setNivel(conceptDAO.getConcept(nivel));
+			
+			Location loc = locationDAO.getLocation(location);
+			person.setLocation(loc);
+			
+			person.setUuid(UUID.randomUUID().toString());
+			
+			return personDAO.insert(person);
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,PatientService.class);
+		}
+	}
+	
+	public PersonAddress savePersonAddress (Person person, Boolean prefered, String direc, Integer city, String zone, String phone1, String phone2, String email, EventAddress eventAddress) {
+		
+		try {
+			PersonAddress personAddress = personAddressDAO.newBlankPersonAddress();
+			
+			personAddress.setPerson(person);
+			personAddress.setCity(city);
+			personAddress.setAddress(direc);
+			personAddress.setRegion(zone);
+			personAddress.setPhone1(phone1);
+			personAddress.setPhone2(phone2);
+			personAddress.setEmail(email);
+			personAddress.setPreferred(prefered);
+			personAddress.setCreator(person.getCreator());
+			personAddress.setVoided(false);
+			personAddress.setUuid(UUID.randomUUID().toString());
+			personAddress.setCompleteAddress(eventAddress);
+			if(eventAddress != null)
+			{
+				eventAddressDAO.insert(eventAddress);
+			}
+			return personAddressDAO.insert(personAddress);
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,PatientService.class);
+		}
+
+	}
+ 
+ 	private PatientIdentifier savePatientIdentifier(Patient patient, Integer patientIdentifier, String identifier, Integer creator){
+		
+		try{
+			PatientIdentifier patientIdent = patientIdentifierDAO.newBlankPatientIdentifier();
+			
+			patientIdent.setCountry(1);
+			patientIdent.setPatient(patient);
+			patientIdent.setPatientIdentifierType(patientIdentifierTypeDAO.getPatientIdentifierType(patientIdentifier));
+			patientIdent.setIdentifier(identifier);
+			patientIdent.setCreator(creator);
+			patientIdent.setPreferred(true);
+			patientIdent.setUuid(UUID.randomUUID().toString());
+			patientIdent.setVoided(false);
+			
+			patientIdentifierDAO.insert(patientIdent);
+			
+			return patientIdent;
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,PatientService.class);
+		}
+	}
+ 	public void updatePatient(PersonComplete personComplete, Integer user) {
+		
+		try{
+			Patient patientDB = patientDAO.getPatient(personComplete.getPatientId());
+			
+			Person personDB = patientDB.getPerson();
+			personDB.setBirthdate(personComplete.getBirthdate());
+			personDB.setGender(personComplete.getGender());
+			personDB.setErp(conceptDAO.getConcept(personComplete.getErp()));
+			personDB.setNivel(conceptDAO.getConcept(personComplete.getNivel()));
+			personDB.setChangedBy(user);
+			personDAO.update(personDB);
+			
+			PersonName pnameDB = personNameDAO.getPreferredPersonName(personDB);
+			pnameDB.setFamilyName(personComplete.getFamilyName());
+			pnameDB.setFamilyName2(personComplete.getFamilyName2());
+			pnameDB.setGivenName(personComplete.getGivenName());
+			pnameDB.setMiddleName(personComplete.getMiddleName());
+			personNameDAO.update(pnameDB);
+			
+			PersonAddress padrDB = personAddressDAO.getPreferredPersonAddress(personDB);
+			if(padrDB == null)
+				padrDB = this.savePersonAddress(personDB, true, personComplete.getAddress(), personComplete.getCity(), personComplete.getZone(), personComplete.getPhone1(), personComplete.getPhone2(), personComplete.getEmail(), personComplete.getEventAddress());
+			else {
+				padrDB.setCity(personComplete.getCity());
+				padrDB.setAddress(personComplete.getAddress());
+				padrDB.setEmail(personComplete.getEmail());
+				padrDB.setPhone1(personComplete.getPhone1());
+				padrDB.setPhone2(personComplete.getPhone2());
+				padrDB.setRegion(personComplete.getZone());
+				padrDB.setCompleteAddress(personComplete.getEventAddress());
+				if(personComplete.getEventAddress() != null)
+				{
+					eventAddressDAO.insert(personComplete.getEventAddress());
+				}
+				personAddressDAO.update(padrDB);
+			}
+				
+			PatientIdentifier pidDB = patientIdentifierDAO.getPreferredIdentifier(patientDB);
+			if(pidDB == null)
+				pidDB = this.savePatientIdentifier(patientDB, personComplete.getPatientIdentifierType(),personComplete.getIdentifier(), personComplete.getCreator());
+			else {
+				pidDB.setIdentifier(personComplete.getIdentifier());
+				pidDB.setPatientIdentifierType(patientIdentifierTypeDAO.getPatientIdentifierType(personComplete.getPatientIdentifierType()));
+				patientIdentifierDAO.update(pidDB);
+			}
+			
+			patientDB = this.mapPersonToPatient(patientDB, personComplete);
+			patientDAO.update(patientDB);
+			
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			throw new TelesaludException("Exception!",e,PatientService.class);
+		}
+	}
+ 	public List<PatientIdentifier> getPatients(String identifier)
+ 	{
+ 		return patientDAO.getPatients(identifier);
+ 	}
+ 	public Patient mapPersonToPatient(Patient patient, PersonComplete personComplete) {
+		
+		patient.setMaritalStatus(conceptDAO.getConcept(personComplete.getMaritalStatus()));
+		patient.setOcupation(personComplete.getOcupation());
+		patient.setUserType(conceptDAO.getConcept(personComplete.getUserType()));
+		patient.setExternalCause(conceptDAO.getConcept(personComplete.getExternalCause()));
+		patient.setAfiliateType(conceptDAO.getConcept(personComplete.getAfiliateType()));
+		patient.setMomId(personComplete.getMomId());
+		patient.setMomName(personComplete.getMomName());
+		patient.setDadId(personComplete.getDadId());
+		patient.setDadName(personComplete.getDadName());
+		patient.setResponsableName(personComplete.getResponsableName());
+		patient.setResponsableFamily(personComplete.getResponsableFamily());
+		patient.setResponsablePhone(personComplete.getResponsablePhone());
+		patient.setResponsableKin(personComplete.getResponsableKin());
+		patient.setHasAttendat(personComplete.getHasAttendat());
+		patient.setAttendatName(personComplete.getAttendatName());
+		patient.setAttendatFamily(personComplete.getAttendatFamily());
+		patient.setAttendatPhone(personComplete.getAttendatPhone());
+		patient.setAttendatKin(personComplete.getAttendatKin());
+		patient.setResponsablePhone2(personComplete.getResponsablePhone1());
+		
+		return patient;
+	}
+	public PatientIdentifier getPatientIdentifier(Patient patient)
+	{
+		return patientIdentifierDAO.getPreferredIdentifier(patient);
+	}
+	public List<Patient> getAll()
+	{
+		return patientDAO.getAll();
+	}
+}

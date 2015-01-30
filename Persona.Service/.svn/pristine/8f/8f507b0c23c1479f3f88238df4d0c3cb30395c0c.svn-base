@@ -1,0 +1,42 @@
+package com.artica.telesalud.persona.service;
+
+
+import java.util.HashMap;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.artica.telesalud.persona.dao.mysql.MySQLPersonaDAOFactory;
+
+public class ACLServiceTest {
+	
+	private ACLService aclSrv;
+	
+	@Before
+	public void setUp() throws Exception {
+		HashMap<String, String> params = new HashMap<String, String>();
+		params.put(MySQLPersonaDAOFactory.PERSONA_CONNECTION_URL, "jdbc:mysql://telesalud.udea.edu.co:3306/RCMedicalRecordPruebas");
+		params.put(MySQLPersonaDAOFactory.PERSONA_CONNECTION_NAME, "riesgo_user");
+		params.put(MySQLPersonaDAOFactory.PERSONA_CONNECTION_PASSWORD, "r13sg0us3r");
+		
+		aclSrv = new ACLService("com.artica.telesalud.persona.dao.mysql.MySQLPersonaDAOFactory", params);
+	}
+	
+	@Test
+	public void variousAssertions(){
+		int adminId = 2;
+		int otherId = 4;
+		
+		aclSrv.assertAccess(adminId, "resource1", "ver");
+		aclSrv.assertAccess(otherId, "resource1", "crear");
+		aclSrv.assertAccess(otherId, "resource2", "editar");
+		
+		//Not allowed:
+		//aclSrv.assertAccess(adminId, "resource2", "editar");
+		
+		//Non existent
+		//aclSrv.assertAccess(adminId, "NonExistent", "NonExistent");
+		
+	}
+	
+}

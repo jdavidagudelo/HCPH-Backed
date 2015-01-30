@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2/11/2010 02:06:19 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.person.PersonName" table="person_name" catalog="RCMedicalRecordTPH">
+        <id name="personNameId" type="java.lang.Integer">
+            <column name="PERSON_NAME_ID" />
+            <generator class="identity" />
+        </id>
+        <property name="preferred" type="java.lang.Integer">
+            <column name="preferred" />
+        </property>
+        <many-to-one name="person" class="com.artica.telesalud.tph.model.person.Person" fetch="select" lazy="false">
+            <column name="PERSON_ID" />
+        </many-to-one>
+        <property name="prefix" type="java.lang.String">
+            <column name="PREFIX" />
+        </property>
+        <property name="givenName" type="java.lang.String">
+            <column name="GIVEN_NAME" />
+        </property>
+        <property name="middleName" type="java.lang.String">
+            <column name="MIDDLE_NAME" />
+        </property>
+        <property name="familyNamePrefix" type="java.lang.String">
+            <column name="FAMILY_NAME_PREFIX" />
+        </property>
+        <property name="familyName" type="java.lang.String">
+            <column name="FAMILY_NAME" />
+        </property>
+        <property name="familyName2" type="java.lang.String">
+            <column name="FAMILY_NAME2" />
+        </property>
+        <property name="familyNameSuffix" type="java.lang.String">
+            <column name="FAMILY_NAME_SUFFIX" />
+        </property>
+        <property name="degree" type="java.lang.String">
+            <column name="DEGREE" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATE_CREATED" />
+        </property>
+        <property name="changedBy" type="java.lang.Integer">
+            <column name="CHANGED_BY" />
+        </property>
+        <property name="dateChanged" type="java.util.Date">
+            <column name="DATE_CHANGED" />
+        </property>
+        <property name="voided" type="java.lang.Integer">
+            <column name="VOIDED" />
+        </property>
+        <property name="voidedBy" type="java.lang.Integer">
+            <column name="VOIDED_BY" />
+        </property>
+        <property name="dateVoided" type="java.util.Date">
+            <column name="DATE_VOIDED" />
+        </property>
+        <property name="voidReason" type="java.lang.String">
+            <column name="VOID_REASON" />
+        </property>
+        <property name="Uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+    </class>
+</hibernate-mapping>

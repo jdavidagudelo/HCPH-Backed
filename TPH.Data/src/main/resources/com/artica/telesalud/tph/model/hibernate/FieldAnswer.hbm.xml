@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 8/11/2010 03:19:25 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.artica.telesalud.tph.model.form.FieldAnswer" table="field_answer" catalog="RCMedicalRecordTPH">
+    	<composite-id class="com.artica.telesalud.tph.model.form.FieldAnswerId" name="fieldAnswerId">
+	      <key-many-to-one class="com.artica.telesalud.tph.model.form.Field" name="field">
+	        <column name="FIELD_ID"/>
+	      </key-many-to-one>
+	      <key-many-to-one class="com.artica.telesalud.tph.model.concept.Concept" name="answer">
+	        <column name="ANSWER_ID"/>
+	      </key-many-to-one>
+   		</composite-id>
+        <property name="uuid" type="java.lang.String">
+            <column name="UUID" />
+        </property>
+        <property name="creator" type="java.lang.Integer">
+            <column name="CREATOR" />
+        </property>
+        <property name="dateCreated" type="java.util.Date">
+            <column name="DATECREATED" />
+        </property>
+    </class>
+</hibernate-mapping>

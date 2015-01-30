@@ -1,0 +1,77 @@
+package com.artica.telesalud.persona.model.impl;
+
+
+import java.io.Serializable;
+
+import com.artica.telesalud.persona.model.Operation;
+
+public class OperationDTO implements Operation, Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Integer operation_id;
+	private String name;
+	private String description;
+	private String uuid;
+	
+	@Override
+	public Integer getOperationId(){
+		return this.operation_id;
+	}
+	
+	@Override
+	public void setOperationId(Integer operation_id){
+		this.operation_id = operation_id;
+	}
+	
+	@Override
+	public String getName(){
+		return this.name;
+	}
+	
+	@Override
+	public void setName(String name){
+		this.name = name;
+	}
+	
+	@Override
+	public String getDescription(){
+		return this.description;
+	}
+	
+	@Override
+	public void setDescription(String description){
+		this.description = description;
+	}
+	
+	@Override
+	public String getUuid(){
+		return this.uuid;
+	}
+	
+	@Override
+	public void setUuid(String uuid){
+		this.uuid = uuid;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		Operation op = (Operation)obj;
+		
+		if( !(obj instanceof Operation) )
+			return false;
+		
+		if ( this.operation_id == null )
+			return op.getOperationId() == null;
+		
+		return ( getOperationId().equals(op.getOperationId()) );
+	}
+
+	@Override
+	public String toString() {
+		return this.getName();
+	}
+	
+	
+}

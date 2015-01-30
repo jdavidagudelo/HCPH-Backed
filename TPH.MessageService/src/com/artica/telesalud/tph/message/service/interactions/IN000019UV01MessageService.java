@@ -1,0 +1,235 @@
+package com.artica.telesalud.tph.message.service.interactions;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.HashMap;
+
+import javax.xml.rpc.ServiceException;
+
+import org.jdom2.Attribute;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.input.SAXBuilder;
+import org.jdom2.output.XMLOutputter;
+
+import com.artica.telesalud.common.data.HibernateSessionFactoryManager;
+import com.artica.telesalud.mirth.connect.webservice.SavePatientIndexMessageServiceLocator;
+import com.artica.telesalud.tph.dao.hibernate.HibernateTPHDAOFactory;
+import com.artica.telesalud.tph.message.service.exception.InvalidPatientException;
+import com.artica.telesalud.tph.message.service.properties.HibernateProperties;
+import com.artica.telesalud.tph.message.service.properties.XMLPathProperties;
+import com.artica.telesalud.tph.message.service.util.HL7Formatter;
+import com.artica.telesalud.tph.model.encounter.Encounter;
+import com.artica.telesalud.tph.model.evento.Lesionado;
+import com.artica.telesalud.tph.model.patient.Patient;
+import com.artica.telesalud.tph.model.person.Person;
+import com.artica.telesalud.tph.service.EncounterService;
+import com.artica.telesalud.tph.service.LesionadoService;
+import com.artica.telesalud.tph.service.PatientService;
+
+/**
+ * Esta clase permite la creacion y el envio de mensajes en formato HL7
+ * asociados a la interaccion matricular paciente, esta clase utiliza la
+ * plantilla XML identificada con el codigo RCMR_IN000019UV01, y a partir de
+ * lainformacion de la base de datos completa la informacion requerida en
+ * el mensaje.
+ * @author Juan David Agudelo Alvarez jdaaa2009@gmail.com
+ *
+ */
+public class IN000019UV01MessageService {
+
+	/**
+	 * Cliente del servicio web en el bus de servicios. Este permite enviar el documento XML a las
+	 * historias clinicas externas.
+	 */
+	private static final SavePatientIndexMessageServiceLocator SERVICE = new SavePatientIndexMessageServiceLocator();
+	/**
+	 *Propiedades de configuracion tales como la url de los archivos XML.
+	 */
+	private static final XMLPathProperties XPATH_PROPERTIES = XMLPathProperties.getInstance();
+	/**
+	 * Atributo utilizado para obtener la informacion del mensaje a partir de la informacion de un paciente.
+	 */
+	private static final HL7Formatter HL7_FORMATTER = HL7Formatter.getInstance();
+	/**
+	 * Atributo utilizado para obtener los atributos y elementos a partir del documento XML
+	 * utilizado como plantilla para generar el mensaje.
+	 */
+	private static final IN000019UV01XMLParser PARSER = IN000019UV01XMLParser.getInstance();
+	/**
+	 * Atributo utilizado para obtener la configuracion por defecto de la base de datos.
+	 */
+	private static final HibernateProperties HIBERNATE_PROPERTIES = HibernateProperties.getInstance();
+	/**
+	 * Servicio para obtener los encuentros de emergencias.
+	 */
+	private EncounterService encounterService;
+	/**
+	 * Servicio para obtener la informacion de pacientes.
+	 */
+	private PatientService patientService;
+	/**
+	 * Servicio para obtener la informacion de los lesionados de un evento.
+	 */
+	private LesionadoService lesionadoService;
+	/**
+	 * Url utilizada para cargar las plantillas XML utilizadas por esta clase.
+	 * Este atributo debe ser especificado a partir del ambiente en el que se ejecute este servicio.
+	 * Para el caso de esta aplicacion es configurado a partir de parametros almacenados en el archivo 
+	 * web.xml de la aplicacion web asociada a esta historia clinica.
+	 * El valor por defecto corresponde al especificado en el archivo de propiedades.
+	 */
+	private String urlBaseTemplates = XPATH_PROPERTIES
+			.getXmlTemplateRootFilePath();
+	/**
+	 * Constructor que permite inicializar los servicios requeridos por esta clase a partir de los
+	 * parametros de configuracion especificados como argumento.
+	 * @param daoClassName nombre calificado de la clase que sirve con Fabrica para los objetos Dao 
+	 * especificados en la capa de persistencia de la aplicacion.
+	 * @param params corresponde a una lista de pares clave y valor que contiene los parametros de configuracion
+	 * de Hibernate.
+	 */
+	public IN000019UV01MessageService(String daoClassName, HashMap<String, String> params)
+	{
+		patientService = new PatientService(daoClassName, params);
+		encounterService = new EncounterService(daoClassName, params);
+		lesionadoService = new LesionadoService(daoClassName, params);	
+
+	}
+	/**
+	 * Constructor por defecto. Este constructor inicializa los servicios de la capa
+	 * de logica del negocio con la informacion alamacenda en el archivo de 
+	 * propiedades. No deberia ser usado en modo de produccion.
+	 */
+	public IN000019UV01MessageService(){
+		HashMap<String, String> params = new HashMap<String, String>();
+	params.put(HibernateTPHDAOFactory.TPH_HIBERNATE_CONFIG_FILE, HIBERNATE_PROPERTIES.getHibernateTphCfgXml());
+	HibernateSessionFactoryManager manager = HibernateSessionFactoryManager.getInstance();
+	manager.createFactory(HIBERNATE_PROPERTIES.getHibernateTphCfgXml());
+	patientService = new PatientService(HIBERNATE_PROPERTIES.getHibernateFactoryClass(), params);
+	encounterService = new EncounterService(HIBERNATE_PROPERTIES.getHibernateFactoryClass(), params);
+	lesionadoService = new LesionadoService(HIBERNATE_PROPERTIES.getHibernateFactoryClass(), params);	
+
+		
+	}
+	/**
+	 * Permite enviar al servidor mith connect un mensaje en formato HL7 asociado 
+	 * con la interaccion matricular paciente.
+	 * @param message el mensaje en formato HL7 asociado con la
+	 * interaccion matricular paciente.
+	 * @throws RemoteException 
+	 * @throws ServiceException
+	 * @return valor que indica el exito del envio del mensaje
+	 */
+	public String sendMessage(String message) throws RemoteException, ServiceException
+	{
+		return SERVICE.getSavePatientIndexMessagePort().savePatientIndex(message);
+	}
+	
+	/**
+	 * Permite enviar al servidor mith connect un mensaje en formato HL7 asociado 
+	 * con la interaccion matricular paciente.
+	 * @param patient objeto que contiene la informacion asociada a un paciente obtenido
+	 * a partir de la base de datos.
+	 * @throws RemoteException 
+	 * @throws ServiceException
+	 * @return valor que indica el exito del envio del mensaje
+	 */
+	public String sendMessage(Patient patient, Person medico) throws RemoteException, ServiceException, Exception
+	{
+		//se crea el mensaje a partir del paciente y se envia al bus de servicios
+		return sendMessage(createMessage(patient, medico));
+	}
+	/**
+	 * Este metodo permite crear un nuevo mensaje asociado a la
+	 * interaccion con codigo RCMR_IN000019UV01 a partir del Id de un lesionado
+	 * durante un encuentro de emergencias.
+	 * @param lesionadoId Identificador del lesionado en un evento de emergencias.
+	 * @return Mensaje con la informacion del paciente asociado con el encuentro que incluye al lesionado
+	 * con el id ingresado como argumento.
+	 * @throws FileNotFoundException
+	 * @throws InvalidPatientException
+	 * @throws JDOMException
+	 * @throws IOException
+	 */
+	public String createMessage(Integer lesionadoId, Person medico) throws FileNotFoundException, InvalidPatientException, JDOMException, IOException{
+		//obtiene el lesionado de la base de datos
+		Lesionado lesionado = lesionadoService.obtenerLesionado(lesionadoId);
+		//encuentro asociado al lesionado, es unico
+		Encounter encounter = encounterService.getEncounterById(lesionado.getEncuentro().getEncounterId());
+		//paciente asociado al encuentro
+		Patient patient = patientService.buscarPatient(encounter.getPatient().getPatientId());
+		//se crea el mensaje a partir de la informacion del paciente
+		return createMessage(patient, medico);
+	}
+	/**
+	 * Este metodo permite crear un mensaje en formato HL7 asociado con
+	 * la interaccion Matricular documento de paciente a partir de la
+	 * informacion almacenada en la base de datos.
+	 * @param patient patiente para el cual se desea crear el documento en formato Hl7
+	 * @return texto que representa el mensaje requerido por el bus de servicios de
+	 *  acuerdo con el artefacto definido para la interaccion matricular documento de
+	 *  paciente.
+	 * @throws IOException 
+	 * @throws JDOMException 
+	 * @throws FileNotFoundException 
+	 * @throws InvalidPatientException en caso de tener un paciente invalido.
+	 */
+	public String createMessage(Patient patient, Person medico) throws InvalidPatientException, FileNotFoundException, JDOMException, IOException{
+		//se obtiene el documento XML a partir de la plantilla
+		SAXBuilder builder = new SAXBuilder(); 
+		//la ruta del archivo depende de la configuracion realizada en el servicio
+        Document document = builder.build(new FileInputStream(urlBaseTemplates+XPATH_PROPERTIES.getXmlTemplateRCMR_IN000019UV01FilePath()));
+        //variable utilizada para generar el String a partir del documento XML
+        XMLOutputter xml = new XMLOutputter();
+      //id del doctor que genera el mensaje
+        Attribute authorOrPreformerId = PARSER.getControlActProcessAuthorOrPerformerIdExtension(document);
+        authorOrPreformerId.setValue(medico.getRegistro());
+        //Numero de contacto del medico que genera el mensaje
+        Attribute authorOrPreformerTelecom = PARSER.getControlActProcessAuthorOrPerformerTelecomValue(document);
+        authorOrPreformerTelecom.setValue(medico.getPreferredAddress().getPhone1());
+        //Nombre y apellido del medico que genera el mensaje
+        Element authorOrPreformerGiven = PARSER.getControlActProcessAuthorOrPerformerAssignedPersonNameGiven(document);
+        authorOrPreformerGiven.setText(medico.getPreferredName().getGivenName());
+        Element authorOrPreformerFamily = PARSER.getControlActProcessAuthorOrPerformerAssignedPersonNameFamily(document);
+        authorOrPreformerFamily.setText(medico.getPreferredName().getFamilyName()); 
+        //Tipo de identificacion del paciente
+        Attribute patientIdentifierType = PARSER.getControlActProcessSubjectTargetRecordTargetPatientPatientPersonIdRoot(document);
+        patientIdentifierType.setValue(HL7_FORMATTER.getPatientIdentifierType(patient));        
+        //identificador de la historia clinica del paciente
+        Attribute clinicHistory = PARSER.getControlActProcessSubjectTargetRecordTargetPatientIdExtension(document);
+        clinicHistory.setValue(HL7_FORMATTER.getHistoryCode(patient));
+        //numero de identificacion del paciente
+        Attribute identifier = PARSER.getControlActProcessSubjectTargetRecordTargetPatientPatientPersonIdExtension(document);
+        identifier.setValue(HL7_FORMATTER.getIdentifier(patient));
+        //fecha de creacion del documento
+        Attribute creationTime = PARSER.getCreationTimeValue(document);
+        creationTime.setValue(HL7_FORMATTER.getFormattedCreationTime());
+        //fecha de creacion del documento
+        Attribute effectiveTime = PARSER.getControlActProcessSubjectTargetEffectiveTimeValue(document);
+        effectiveTime.setValue(HL7_FORMATTER.getFormattedEffectiveTime(patient));        
+        //identificador generado del paciente
+        Attribute idMensaje = PARSER.getIdExtension(document);
+        idMensaje.setValue(HL7_FORMATTER.getUuidMensaje());
+        //identificador del contenido del mensaje
+        Attribute idContenidoMensaje = PARSER.getControlActProcessSubjectTargetIdExtension(document);
+        idContenidoMensaje.setValue(HL7_FORMATTER.getUuidContenidoMensaje());
+        //fecha de autoria del documento
+        Attribute authorTime = PARSER.getControlActProcessSubjectTargetAuthorTimeValue(document);
+        authorTime.setValue(HL7_FORMATTER.getFormattedCreationTime());
+        //mensaje para ser enviado al bus de servicios
+        String outputString = xml.outputString(document);
+        return outputString;
+	}
+	public String getUrlBaseTemplates() {
+		return urlBaseTemplates;
+	}
+	public void setUrlBaseTemplates(String urlBaseTemplates) {
+		this.urlBaseTemplates = urlBaseTemplates;
+	}
+		
+
+}

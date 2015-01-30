@@ -1,0 +1,162 @@
+package com.artica.telesalud.tph.dao.hibernate;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Restrictions;
+
+import com.artica.telesalud.common.data.HibernateDAO;
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.tph.dao.PersonAddressDAO;
+import com.artica.telesalud.tph.model.person.Person;
+import com.artica.telesalud.tph.model.person.PersonAddress;
+
+public class HibernatePersonaAddressDAO extends HibernateDAO implements
+		PersonAddressDAO {
+
+	public HibernatePersonaAddressDAO(String configFile) {
+		super(configFile);
+	}
+
+	
+	public PersonAddress delete(PersonAddress personAddress) {
+		
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    if(personAddress.getDateVoided()==null){
+		    	personAddress.setDateVoided(new Date());
+		    	personAddress.setVoided(true);
+		    }
+		    
+			session.update(personAddress);
+		    tx.commit();
+		} catch(Exception e) {
+			if(tx!=null)
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernatePersonaAddressDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return personAddress;
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public List<PersonAddress> getAll() {
+		
+		Session session = null;
+		Transaction tx = null;
+		List<PersonAddress> personAddresses = new ArrayList<PersonAddress>();
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(PersonAddress.class).add(Restrictions.eq("voided", Boolean.valueOf(false)));
+			
+			personAddresses = criteria.list();
+			tx.commit();
+		} catch(Exception e) {
+
+			if(tx!=null)
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernatePersonaAddressDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		
+		return personAddresses;
+	}
+
+	
+	public PersonAddress getPreferredPersonAddress(Person person) {
+		
+		Session session = null;
+		PersonAddress personAddress = null;
+		Transaction tx = null;
+		try {
+			session = getNewSession();
+			tx = session.beginTransaction();
+			Criteria criteria = session.createCriteria(PersonAddress.class)
+					               .add(Restrictions.eq("person", person))
+					               .add(Restrictions.eq("preferred", Boolean.valueOf(true)));
+		
+			personAddress = (PersonAddress)criteria.uniqueResult();
+		tx.commit();
+		} catch(Exception e) {
+
+			if(tx!=null)
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernatePersonaAddressDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return personAddress;
+	}
+
+	
+	public PersonAddress insert(PersonAddress personAddress) {
+		
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    if(personAddress.getDateCreated()==null)
+		    	personAddress.setDateCreated(new Date());
+		    
+		    session.saveOrUpdate(personAddress);
+		    tx.commit();
+		} catch(Exception e) {
+			if(tx!=null)
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernatePersonaAddressDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return personAddress;
+	}
+
+	
+	public PersonAddress newBlankPersonAddress() {
+		return new PersonAddress();
+	}
+
+	
+	public PersonAddress update(PersonAddress personAddress) {
+		
+		Transaction tx = null;
+		Session session = null;
+		try {
+			session = getNewSession();
+		    tx = session.beginTransaction();
+		    
+		    session.update(personAddress);
+		    tx.commit();
+		} catch(Exception e) {
+			if(tx!=null)
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernatePersonaAddressDAO.class);
+		}finally{
+			if(session!=null)
+				session.close();
+		}
+		return personAddress;
+	}
+}

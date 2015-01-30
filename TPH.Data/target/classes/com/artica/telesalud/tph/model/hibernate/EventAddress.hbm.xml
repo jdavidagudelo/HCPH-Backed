@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 2/11/2010 02:06:19 PM by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+	<class name="com.artica.telesalud.tph.model.evento.EventAddress" table="event_address"
+		catalog="RCMedicalRecordTPH">
+		<id name="eventAddressId" type="java.lang.Integer">
+			<column name="EVENT_ADDRESS_ID" />
+			<generator class="identity" />
+		</id>
+		
+        <property name="mainWay" type="java.lang.String">
+            <column name="MAIN_WAY" />
+        </property>
+        
+        <property name="mainWayNumber" type="java.lang.String">
+            <column name="MAIN_WAY_NUMBER" />
+        </property>
+        
+        <property name="mainWaySecondaryNumber" type="java.lang.String">
+            <column name="MAIN_WAY_SECONDARY_NUMBER" />
+        </property>
+        
+        <property name="mainWayDirection" type="java.lang.String">
+            <column name="MAIN_WAY_DIRECTION" />
+        </property>
+        
+        <property name="secondaryWayNumber" type="java.lang.String">
+            <column name="SECONDARY_WAY_NUMBER" />
+        </property>
+        
+        <property name="secondaryWaySecondaryNumber" type="java.lang.String">
+            <column name="SECONDARY_WAY_SECONDARY_NUMBER" />
+        </property>
+        
+        <property name="secondaryWayDirection" type="java.lang.String">
+            <column name="SECONDARY_WAY_DIRECTION" />
+        </property>
+        <property name="wayNumberIdentifier" type="java.lang.String">
+            <column name="WAY_NUMBER_IDENTIFIER" />
+        </property>
+        <property name="blockName" type="java.lang.String">
+            <column name="BLOCK_NAME" />
+        </property>
+        <property name="blockNumber" type="java.lang.String">
+            <column name="BLOCK_NUMBER" />
+        </property>
+        <property name="homeName" type="java.lang.String">
+            <column name="HOME_NAME" />
+        </property>
+        <property name="homeNumber" type="java.lang.String">
+            <column name="HOME_NUMBER" />
+        </property>
+	</class>
+
+
+</hibernate-mapping>
+        

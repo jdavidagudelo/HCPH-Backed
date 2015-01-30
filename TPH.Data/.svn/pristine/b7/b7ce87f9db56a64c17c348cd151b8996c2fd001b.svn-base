@@ -1,0 +1,144 @@
+package com.artica.telesalud.tph.dao.hibernate;
+
+import java.util.Date;
+import java.util.List;
+
+import org.hibernate.Criteria;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
+
+import com.artica.telesalud.common.data.HibernateDAO;
+import com.artica.telesalud.common.exception.TelesaludException;
+import com.artica.telesalud.tph.dao.PatientIdentifierTypeDAO;
+import com.artica.telesalud.tph.model.patient.PatientIdentifierType;
+
+public class HibernatePatientIdentifierTypeDAO extends HibernateDAO implements
+PatientIdentifierTypeDAO {
+
+	
+	public HibernatePatientIdentifierTypeDAO(String configFile) {
+		super(configFile);
+	}
+	
+	
+	public PatientIdentifierType delete(PatientIdentifierType patientIdentifierType) {
+		
+		Transaction tx = null;
+		Session session = getSession();
+		try {
+		    tx = session.beginTransaction();
+		    
+		    if(patientIdentifierType.getDateRetired()==null){
+		    	patientIdentifierType.setDateRetired(new Date());
+		    	patientIdentifierType.setRetired(true);
+		    }
+		    
+			session.update(patientIdentifierType);
+			session.flush();
+		    tx.commit();
+		} catch(Exception e) {
+			if(tx!=null)
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernatePatientIdentifierTypeDAO.class);
+		}
+		return patientIdentifierType;
+		
+	}
+
+	@SuppressWarnings("unchecked")
+	
+	public List<PatientIdentifierType> getAll() {
+		
+		try {
+			
+			Session session = getNewSession();
+			Criteria criteria = session.createCriteria(PatientIdentifierType.class)
+								.add(Restrictions.eq("retired", Boolean.valueOf(false)))
+								.addOrder(Order.asc("name"));
+			
+			List<PatientIdentifierType> patientIdentifiers = criteria.list();
+						
+			session.close();
+		
+			return patientIdentifiers;
+		}catch (Exception e) {
+			
+			 e.printStackTrace();
+			 throw new TelesaludException("Exception!",e,HibernatePatientIdentifierTypeDAO.class);
+		}
+	}
+	
+	
+	public PatientIdentifierType getPatientIdentifierType(Integer p) {
+		
+		try {
+			Session session = getNewSession();
+			Criteria criteria = session.createCriteria(PatientIdentifierType.class).add(Restrictions.eq("patientIdentifierTypeId", p));
+		
+			PatientIdentifierType patientIdentifierType = (PatientIdentifierType)criteria.uniqueResult();
+		
+			session.close();
+		
+			return patientIdentifierType;
+		
+		}catch (Exception e) {
+			
+			 e.printStackTrace();
+			 throw new TelesaludException("Exception!",e,HibernatePatientIdentifierTypeDAO.class);
+		}
+	}
+	
+	
+	public PatientIdentifierType insert(PatientIdentifierType patientIdentifierType) {
+		
+		Transaction tx = null;
+		Session session = getSession();
+		try {
+		    tx = session.beginTransaction();
+		    
+		    if(patientIdentifierType.getDateCreated()==null)
+		    	patientIdentifierType.setDateCreated(new Date());
+		    
+		    session.save(patientIdentifierType);
+		    session.flush();
+		    tx.commit();
+		} catch(Exception e) {
+			if(tx!=null)
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernatePatientIdentifierTypeDAO.class);
+		}
+		return patientIdentifierType;
+		
+	}
+
+	
+	public PatientIdentifierType newBlankPatientIdentifierType() {
+		return new PatientIdentifierType();
+	}
+
+	
+	public PatientIdentifierType update(PatientIdentifierType patientIdentifierType) {
+		
+		Transaction tx = null;
+		Session session = getSession();
+		try {
+		    tx = session.beginTransaction();
+		    
+		    session.update(patientIdentifierType);
+		    session.flush();
+		    tx.commit();
+		} catch(Exception e) {
+			if(tx!=null)
+				tx.rollback();
+		    e.printStackTrace();
+		    throw new TelesaludException("Exception!",e,HibernatePatientIdentifierTypeDAO.class);
+		}
+		return patientIdentifierType;
+		
+	}
+	
+}
